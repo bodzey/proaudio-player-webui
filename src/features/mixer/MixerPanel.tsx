@@ -1,12 +1,4 @@
-import {
-  For,
-  Show,
-  createEffect,
-  createResource,
-  createSignal,
-  onCleanup,
-  type Component,
-} from 'solid-js';
+import { For, Show, createEffect, createSignal, onCleanup, type Component } from 'solid-js';
 
 import { api } from '../../api/client';
 import type { AudioLevel, PlayerStatus } from '../../api/types';
@@ -14,6 +6,7 @@ import type { MeterBuffer, MeterBus } from '../../realtime/meter-buffer';
 import { MeterCanvas } from './MeterCanvas';
 
 type MixerTarget = 'master' | 'music' | 'alert';
+type DirectTarget = Exclude<MixerTarget, 'music'>;
 
 const MIN_DB = -60;
 const MAX_DB = 0;
@@ -34,11 +27,12 @@ interface MixerPanelProps {
   status: PlayerStatus | undefined;
   buffer: MeterBuffer;
   meterLive: boolean;
+  onMusicVolume: (percent: number) => void;
+  onMusicMute: (muted: boolean) => void;
 }
 
-interface MixerRequest {
-  db: number;
-  muted?: boolean | undefined;
+interface DirectRequest {
+  percent: number;
 }
 
 function clampDb(db: number): number {
@@ -97,39 +91,69 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Не вдалося змінити рівень мікшера';
 }
 
+function levelsMatch(left: AudioLevel, right: AudioLevel): boolean {
+  return Math.abs(left.db - right.db) <= 0.2 && left.muted === right.muted;
+}
+
 export const MixerPanel: Component<MixerPanelProps> = (props) => {
-  const [mixer, { mutate, refetch }] = createResource(api.mixer);
   const [error, setError] = createSignal<string>();
   const [pendingVersion, setPendingVersion] = createSignal(0);
-  const queued: Partial<Record<MixerTarget, MixerRequest>> = {};
-  const running = new Set<MixerTarget>();
+  const [overrides, setOverrides] = createSignal<Partial<Record<DirectTarget, AudioLevel>>>({});
+  const queued: Partial<Record<DirectTarget, DirectRequest>> = {};
+  const running = new Set<DirectTarget>();
 
-  const fallback = (target: MixerTarget): AudioLevel => {
+  const statusLevel = (target: MixerTarget): AudioLevel => {
     if (target === 'master') {
       return (
         props.status?.audio_levels.physical ??
         props.status?.audio_levels.hardware ??
-        levelFromPercent(0, false)
+        levelFromPercent(100, false)
       );
     }
     if (target === 'alert') {
-      return props.status?.audio_levels.alert_bus ?? levelFromPercent(0, false);
+      return props.status?.audio_levels.alert_bus ?? levelFromPercent(100, false);
     }
     return levelFromPercent(
-      props.status?.audio_levels.music_bus ?? 0,
+      props.status?.audio_levels.music_bus ?? props.status?.volume ?? 0,
       props.status?.muted ?? false,
     );
   };
 
-  const level = (target: MixerTarget): AudioLevel => mixer()?.[target] ?? fallback(target);
-  const pending = (target: MixerTarget) => {
-    pendingVersion();
-    return running.has(target);
+  const level = (target: MixerTarget): AudioLevel => {
+    if (target === 'music') return statusLevel(target);
+    return overrides()[target] ?? statusLevel(target);
   };
 
-  const queueSet = (target: MixerTarget, db: number, muted?: boolean) => {
-    const normalizedDb = roundDb(db);
-    queued[target] = muted === undefined ? { db: normalizedDb } : { db: normalizedDb, muted };
+  createEffect(() => {
+    const current = overrides();
+    let changed = false;
+    const next = { ...current };
+    for (const target of ['master', 'alert'] as const) {
+      const local = current[target];
+      if (local && levelsMatch(local, statusLevel(target))) {
+        delete next[target];
+        changed = true;
+      }
+    }
+    if (changed) setOverrides(next);
+  });
+
+  const pending = (target: MixerTarget) => {
+    pendingVersion();
+    return target !== 'music' && running.has(target);
+  };
+
+  const queueDirect = (target: DirectTarget, db: number, muted?: boolean) => {
+    const current = level(target);
+    const percent = muted === true ? 0 : dbToPercent(db);
+    const optimistic: AudioLevel = {
+      ...current,
+      volume: percent,
+      db: percentToDb(percent),
+      muted: percent <= 0,
+    };
+    setOverrides((value) => ({ ...value, [target]: optimistic }));
+    queued[target] = { percent };
     if (running.has(target)) return;
 
     running.add(target);
@@ -139,21 +163,37 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         while (queued[target]) {
           const request = queued[target]!;
           delete queued[target];
-          const next = await api.setMixer(target, request.db, request.muted);
+          const confirmed = await api.setAudioLevel(target, request.percent);
           if (!queued[target]) {
-            mutate(next);
+            setOverrides((value) => ({ ...value, [target]: confirmed }));
           }
         }
         setError(undefined);
       } catch (cause) {
         delete queued[target];
+        setOverrides((value) => {
+          const next = { ...value };
+          delete next[target];
+          return next;
+        });
         setError(errorMessage(cause));
-        await refetch();
       } finally {
         running.delete(target);
         setPendingVersion((value) => value + 1);
       }
     })();
+  };
+
+  const setLevel = (target: MixerTarget, db: number, muted?: boolean) => {
+    if (target === 'music') {
+      if (muted === true) {
+        props.onMusicMute(true);
+      } else {
+        props.onMusicVolume(dbToPercent(db));
+      }
+      return;
+    }
+    queueDirect(target, db, muted);
   };
 
   return (
@@ -163,7 +203,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Console</h2>
           <p class="mt-1.5 text-[10px] leading-4 text-slate-600">
-            Реальні Peak/RMS рівні та атенюація шин у dB.
+            Реальні Peak/RMS рівні та абсолютна атенюація шин у dB.
           </p>
         </div>
         <div
@@ -194,8 +234,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             meterLive={props.meterLive}
             blocked={false}
             pending={pending('master')}
-            detail={level('master').card_name ?? level('master').control ?? 'Master bus'}
-            onSet={queueSet}
+            detail={level('master').name ?? level('master').card_name ?? 'Physical output'}
+            onSet={setLevel}
           />
           <MixerStrip
             target="music"
@@ -204,9 +244,9 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             buffer={props.buffer}
             meterLive={props.meterLive}
             blocked={props.status?.priority.blocking === true}
-            pending={pending('music')}
+            pending={false}
             detail="Music bus"
-            onSet={queueSet}
+            onSet={setLevel}
           />
           <MixerStrip
             target="alert"
@@ -217,7 +257,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             blocked={props.status?.priority.blocking === true}
             pending={pending('alert')}
             detail="Priority bus"
-            onSet={queueSet}
+            onSet={setLevel}
           />
         </div>
       </div>
@@ -231,10 +271,9 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </Show>
 
       <p class="mt-4 text-[10px] leading-4 text-slate-600">
-        Ручка фейдера рухається локально без очікування API. Backend отримує актуальне значення з
-        обмеженням частоти запитів, тому повільна відповідь не повинна тягнути ручку назад. Shift під
-        час захоплення вмикає точне керування. Master лишається доступним під час пріоритетного
-        оповіщення.
+        Фейдери відправляють абсолютний лінійний gain, а не відносні від’ємні dB-команди. MUSIC і
+        регулятор плеєра використовують один спільний стан, тому їх положення синхронізуються
+        відразу. Shift під час захоплення вмикає точне керування.
       </p>
     </section>
   );
@@ -265,7 +304,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
   let dragSensitivity = 1;
 
   createEffect(() => {
-    if (!dragging() && !props.pending) {
+    if (!dragging() && !props.pending && !props.level.muted) {
       setDraft(roundDb(props.level.db));
     }
   });
@@ -440,7 +479,9 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             onPointerMove={(event) => {
               if (!dragging()) return;
               event.preventDefault();
-              updateFromPointer(event.clientY, true);
+              const samples = event.getCoalescedEvents?.() ?? [event];
+              const latest = samples.at(-1) ?? event;
+              updateFromPointer(latest.clientY, true);
             }}
             onPointerUp={(event) => {
               if (!dragging()) return;
