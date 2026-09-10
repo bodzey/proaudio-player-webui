@@ -3,6 +3,7 @@ import type {
   AlertProviderTestResponse,
   AlertProviderUpdate,
   ApiErrorPayload,
+  AudioLevel,
   AudioOutputSelectionResponse,
   AudioOutputsResponse,
   AudioSettings,
@@ -85,6 +86,12 @@ export const api = {
     request<{ muted: boolean }>('/mute', {
       method: 'POST',
       ...jsonBody({ muted }),
+    }),
+
+  setAudioLevel: (target: 'master' | 'music' | 'alert', percent: number) =>
+    request<AudioLevel>('/audio/level', {
+      method: 'POST',
+      ...jsonBody({ target, percent }),
     }),
 
   setMixer: (target: 'master' | 'music' | 'alert', db: number, muted?: boolean) =>
