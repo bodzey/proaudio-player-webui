@@ -3,7 +3,7 @@ import { Show, type Component } from 'solid-js';
 import type { PlayerStatus } from '../../api/types';
 
 interface PlayerPanelProps {
-  status?: PlayerStatus;
+  status: PlayerStatus | undefined;
 }
 
 export const PlayerPanel: Component<PlayerPanelProps> = (props) => (
