@@ -9,7 +9,7 @@ import {
 } from 'solid-js';
 
 import { api } from '../../api/client';
-import type { AudioLevel, MixerState, PlayerStatus } from '../../api/types';
+import type { AudioLevel, PlayerStatus } from '../../api/types';
 import type { MeterBuffer, MeterBus } from '../../realtime/meter-buffer';
 import { MeterCanvas } from './MeterCanvas';
 
@@ -17,6 +17,8 @@ type MixerTarget = 'master' | 'music' | 'alert';
 
 const MIN_DB = -60;
 const MAX_DB = 0;
+const FADER_HEIGHT_PX = 256;
+const CONTROL_INTERVAL_MS = 32;
 const FADER_MARKS = [0, -6, -12, -24, -36, -48, -60] as const;
 const FADER_SCALE = [
   { db: 0, position: 0 },
@@ -105,8 +107,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
   const fallback = (target: MixerTarget): AudioLevel => {
     if (target === 'master') {
       return (
-        props.status?.audio_levels.hardware ??
         props.status?.audio_levels.physical ??
+        props.status?.audio_levels.hardware ??
         levelFromPercent(0, false)
       );
     }
@@ -125,22 +127,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     return running.has(target);
   };
 
-  const applyOptimistic = (target: MixerTarget, db: number, muted?: boolean) => {
-    const current = mixer();
-    if (!current) return;
-    const previous = current[target];
-    const nextLevel: AudioLevel = {
-      ...previous,
-      db,
-      volume: dbToPercent(db),
-      muted: muted ?? previous.muted,
-    };
-    mutate({ ...current, [target]: nextLevel } satisfies MixerState);
-  };
-
   const queueSet = (target: MixerTarget, db: number, muted?: boolean) => {
     const normalizedDb = roundDb(db);
-    applyOptimistic(target, normalizedDb, muted);
     queued[target] = muted === undefined ? { db: normalizedDb } : { db: normalizedDb, muted };
     if (running.has(target)) return;
 
@@ -152,7 +140,9 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
           const request = queued[target]!;
           delete queued[target];
           const next = await api.setMixer(target, request.db, request.muted);
-          mutate(next);
+          if (!queued[target]) {
+            mutate(next);
+          }
         }
         setError(undefined);
       } catch (cause) {
@@ -195,7 +185,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </div>
 
       <div class="overflow-x-auto pb-1">
-        <div class="grid min-w-[390px] grid-cols-3 gap-2.5">
+        <div class="grid min-w-[420px] grid-cols-3 gap-2.5">
           <MixerStrip
             target="master"
             label="MASTER"
@@ -204,7 +194,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             meterLive={props.meterLive}
             blocked={false}
             pending={pending('master')}
-            detail={level('master').card_name ?? level('master').control ?? 'Physical output'}
+            detail={level('master').card_name ?? level('master').control ?? 'Master bus'}
             onSet={queueSet}
           />
           <MixerStrip
@@ -241,9 +231,10 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </Show>
 
       <p class="mt-4 text-[10px] leading-4 text-slate-600">
-        Peak/RMS вимірюються з monitor-потоків аудіошин. Фейдери мають підвищену роздільність біля 0
-        dB і безперервне pointer-керування. Master лишається доступним під час пріоритетного
-        оповіщення; Music та Alert підкоряються backend policy.
+        Ручка фейдера рухається локально без очікування API. Backend отримує актуальне значення з
+        обмеженням частоти запитів, тому повільна відповідь не повинна тягнути ручку назад. Shift під
+        час захоплення вмикає точне керування. Master лишається доступним під час пріоритетного
+        оповіщення.
       </p>
     </section>
   );
@@ -265,7 +256,13 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
   const [draft, setDraft] = createSignal(0);
   const [dragging, setDragging] = createSignal(false);
   let track!: HTMLDivElement;
-  let updateTimer: number | undefined;
+  let sendTimer: number | undefined;
+  let scheduledDb: number | undefined;
+  let lastSentDb: number | undefined;
+  let lastSentAt = -Infinity;
+  let dragStartY = 0;
+  let dragStartPosition = 0;
+  let dragSensitivity = 1;
 
   createEffect(() => {
     if (!dragging() && !props.pending) {
@@ -273,36 +270,66 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
     }
   });
 
-  onCleanup(() => {
-    if (updateTimer !== undefined) window.clearTimeout(updateTimer);
-  });
+  const send = (db: number) => {
+    const value = roundDb(db);
+    lastSentDb = value;
+    lastSentAt = performance.now();
+    props.onSet(props.target, value);
+  };
+
+  const flushScheduled = () => {
+    if (scheduledDb === undefined) return;
+    const value = scheduledDb;
+    scheduledDb = undefined;
+    send(value);
+  };
 
   const schedule = (db: number) => {
-    if (updateTimer !== undefined) window.clearTimeout(updateTimer);
-    updateTimer = window.setTimeout(() => {
-      updateTimer = undefined;
-      props.onSet(props.target, db);
-    }, 45);
+    scheduledDb = roundDb(db);
+    const remaining = CONTROL_INTERVAL_MS - (performance.now() - lastSentAt);
+    if (remaining <= 0) {
+      if (sendTimer !== undefined) {
+        window.clearTimeout(sendTimer);
+        sendTimer = undefined;
+      }
+      flushScheduled();
+      return;
+    }
+    if (sendTimer === undefined) {
+      sendTimer = window.setTimeout(() => {
+        sendTimer = undefined;
+        flushScheduled();
+      }, remaining);
+    }
   };
 
   const commit = (db: number) => {
-    if (updateTimer !== undefined) {
-      window.clearTimeout(updateTimer);
-      updateTimer = undefined;
+    if (sendTimer !== undefined) {
+      window.clearTimeout(sendTimer);
+      sendTimer = undefined;
     }
-    props.onSet(props.target, roundDb(db));
+    scheduledDb = undefined;
+    const value = roundDb(db);
+    if (lastSentDb !== value) {
+      send(value);
+    }
   };
+
+  onCleanup(() => {
+    if (sendTimer !== undefined) window.clearTimeout(sendTimer);
+  });
 
   const valueFromPointer = (clientY: number): number => {
     const rect = track.getBoundingClientRect();
     if (rect.height <= 0) return draft();
-    return faderPositionToDb((clientY - rect.top) / rect.height);
+    const delta = ((clientY - dragStartY) / rect.height) * dragSensitivity;
+    return faderPositionToDb(dragStartPosition + delta);
   };
 
-  const updateFromPointer = (clientY: number, send: boolean) => {
+  const updateFromPointer = (clientY: number, sendUpdate: boolean) => {
     const value = valueFromPointer(clientY);
     setDraft(value);
-    if (send) schedule(value);
+    if (sendUpdate) schedule(value);
     return value;
   };
 
@@ -345,7 +372,8 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
 
   const bus = (): MeterBus => props.target;
   const displayDb = () => (draft() <= MIN_DB ? '−∞' : draft().toFixed(1));
-  const thumbTop = () => `${dbToFaderPosition(draft()) * 100}%`;
+  const thumbTransform = () =>
+    `translate3d(-50%, ${dbToFaderPosition(draft()) * FADER_HEIGHT_PX}px, 0) translateY(-50%)`;
 
   return (
     <div
@@ -364,7 +392,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
 
       <div class="mt-4 flex items-center justify-center gap-2">
         <MeterCanvas buffer={props.buffer} bus={bus()} />
-        <div class="relative h-56 w-16 shrink-0 select-none">
+        <div class="relative h-64 w-16 shrink-0 select-none">
           <For each={FADER_MARKS}>
             {(mark) => (
               <div
@@ -386,7 +414,9 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             class={
               props.blocked
                 ? 'absolute inset-y-0 right-0 left-7 cursor-not-allowed touch-none opacity-45'
-                : 'absolute inset-y-0 right-0 left-7 cursor-ns-resize touch-none outline-none'
+                : dragging()
+                  ? 'absolute inset-y-0 right-0 left-7 cursor-grabbing touch-none outline-none'
+                  : 'absolute inset-y-0 right-0 left-7 cursor-grab touch-none outline-none'
             }
             role="slider"
             tabIndex={props.blocked ? -1 : 0}
@@ -401,9 +431,11 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             onPointerDown={(event) => {
               if (props.blocked) return;
               event.preventDefault();
+              dragStartY = event.clientY;
+              dragStartPosition = dbToFaderPosition(draft());
+              dragSensitivity = event.shiftKey ? 0.25 : 1;
               track.setPointerCapture(event.pointerId);
               setDragging(true);
-              updateFromPointer(event.clientY, true);
             }}
             onPointerMove={(event) => {
               if (!dragging()) return;
@@ -428,8 +460,8 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
           >
             <div class="pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 rounded-full border border-white/[0.06] bg-[#090c11] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]" />
             <div
-              class="pointer-events-none absolute left-1/2 h-7 w-9 -translate-x-1/2 -translate-y-1/2 rounded-[5px] border border-white/25 bg-[linear-gradient(180deg,#d9e1eb,#7c8998)] shadow-[0_5px_12px_rgba(0,0,0,0.45)] transition-shadow"
-              style={{ top: thumbTop() }}
+              class="pointer-events-none absolute top-0 left-1/2 h-7 w-9 rounded-[5px] border border-white/25 bg-[linear-gradient(180deg,#d9e1eb,#7c8998)] shadow-[0_5px_12px_rgba(0,0,0,0.45)] will-change-transform"
+              style={{ transform: thumbTransform() }}
             >
               <span class="absolute top-1/2 left-1/2 h-px w-5 -translate-x-1/2 -translate-y-1/2 bg-slate-800/90" />
             </div>
