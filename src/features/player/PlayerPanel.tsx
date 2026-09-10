@@ -50,7 +50,6 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const [volumeDraft, setVolumeDraft] = createSignal(0);
   let positionAnchor = 0;
   let positionAnchorAt = performance.now();
-  let volumeTimer: number | undefined;
   let clockTimer: number | undefined;
 
   createEffect(() => {
@@ -71,7 +70,6 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   onCleanup(() => {
     if (clockTimer !== undefined) window.clearInterval(clockTimer);
-    if (volumeTimer !== undefined) window.clearTimeout(volumeTimer);
   });
 
   const isRadio = () =>
@@ -122,11 +120,6 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   });
 
   const disabledByPriority = () => props.status?.priority.blocking === true;
-
-  const sendVolume = (value: number) => {
-    if (volumeTimer !== undefined) window.clearTimeout(volumeTimer);
-    volumeTimer = window.setTimeout(() => props.onVolume(value), 70);
-  };
 
   return (
     <section class="overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#11161e] shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)]">
@@ -325,21 +318,13 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 type="range"
                 min="0"
                 max="100"
-                step="0.5"
+                step="0.1"
                 value={volumeDraft()}
                 disabled={disabledByPriority()}
                 aria-label="Гучність музики"
                 onInput={(event) => {
                   const value = Number(event.currentTarget.value);
                   setVolumeDraft(value);
-                  sendVolume(value);
-                }}
-                onChange={(event) => {
-                  const value = Number(event.currentTarget.value);
-                  if (volumeTimer !== undefined) {
-                    window.clearTimeout(volumeTimer);
-                    volumeTimer = undefined;
-                  }
                   props.onVolume(value);
                 }}
               />
