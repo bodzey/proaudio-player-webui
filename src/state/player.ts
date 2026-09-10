@@ -82,7 +82,7 @@ export function createPlayerState() {
             queuedVolume = undefined;
             await api.setVolume(next);
           }
-          setError(undefined);
+          await refresh();
         } catch (cause) {
           queuedVolume = undefined;
           setError(errorMessage(cause));
@@ -111,7 +111,20 @@ export function createPlayerState() {
 
     unsubscribe = subscribeToStatusEvents({
       onStatus: (next) => {
-        setStatus(next);
+        setStatus((current) => {
+          if (!current || (!volumeWorker && queuedVolume === undefined)) {
+            return next;
+          }
+          return {
+            ...next,
+            volume: current.volume,
+            muted: current.muted,
+            audio_levels: {
+              ...next.audio_levels,
+              music_bus: current.audio_levels.music_bus,
+            },
+          };
+        });
         setConnection('online');
         setError(undefined);
       },
