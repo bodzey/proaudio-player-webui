@@ -94,6 +94,12 @@ export const api = {
       ...jsonBody({ target, db, muted }),
     }),
 
+  playStream: (url: string) =>
+    request<{ playing: string; source: string }>('/streams/play', {
+      method: 'POST',
+      ...jsonBody({ url }),
+    }),
+
   setAlertSettings: (settings: AlertProviderUpdate) =>
     request<AlertProviderSettings>('/settings/alerts', {
       method: 'PUT',

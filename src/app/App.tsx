@@ -6,11 +6,12 @@ import { PriorityBanner } from '../components/PriorityBanner';
 import { AlertsPanel } from '../features/alerts/AlertsPanel';
 import { MixerPanel } from '../features/mixer/MixerPanel';
 import { PlayerPanel } from '../features/player/PlayerPanel';
+import { RadioPanel } from '../features/radio/RadioPanel';
 import { SourcesPanel } from '../features/sources/SourcesPanel';
 import { MeterBuffer } from '../realtime/meter-buffer';
 import { createPlayerState } from '../state/player';
 
-type AppPage = 'player' | 'alerts';
+type AppPage = 'player' | 'radio' | 'alerts';
 
 export function App() {
   const player = createPlayerState();
@@ -60,7 +61,7 @@ export function App() {
         </header>
 
         <nav
-          class="mb-5 flex w-fit max-w-full gap-1 rounded-2xl border border-white/[0.07] bg-[#0d1118]/90 p-1"
+          class="mb-5 flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-white/[0.07] bg-[#0d1118]/90 p-1"
           aria-label="Основні розділи"
         >
           <NavButton active={page() === 'player'} onClick={() => setPage('player')}>
@@ -68,6 +69,22 @@ export function App() {
               <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
             </svg>
             Плеєр
+          </NavButton>
+          <NavButton active={page() === 'radio'} onClick={() => setPage('radio')}>
+            <svg
+              viewBox="0 0 24 24"
+              class="size-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3.5" y="7" width="17" height="12" rx="2" />
+              <path d="m7 7 9-4M7.5 12h.01M7.5 15h.01M11 12h5.5M11 15h5.5" />
+            </svg>
+            Радіо
           </NavButton>
           <NavButton active={page() === 'alerts'} onClick={() => setPage('alerts')}>
             <svg
@@ -144,6 +161,13 @@ export function App() {
           </div>
         </Show>
 
+        <Show when={page() === 'radio'}>
+          <RadioPanel
+            status={player.status()}
+            blocked={player.status()?.priority.blocking ?? false}
+          />
+        </Show>
+
         <Show when={page() === 'alerts'}>
           <AlertsPanel priority={player.status()?.priority} />
         </Show>
@@ -169,8 +193,8 @@ function NavButton(props: NavButtonProps) {
       type="button"
       class={
         props.active
-          ? 'flex items-center gap-2 rounded-xl bg-white/[0.09] px-3.5 py-2 text-xs font-semibold text-white shadow-sm shadow-black/20'
-          : 'flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-500 transition hover:bg-white/[0.045] hover:text-slate-300'
+          ? 'flex shrink-0 items-center gap-2 rounded-xl bg-white/[0.09] px-3.5 py-2 text-xs font-semibold text-white shadow-sm shadow-black/20'
+          : 'flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-500 transition hover:bg-white/[0.045] hover:text-slate-300'
       }
       aria-current={props.active ? 'page' : undefined}
       onClick={props.onClick}
