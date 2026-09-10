@@ -5,7 +5,7 @@ import type { MeterBuffer } from '../../realtime/meter-buffer';
 import { MeterCanvas } from './MeterCanvas';
 
 interface MixerPanelProps {
-  status?: PlayerStatus;
+  status: PlayerStatus | undefined;
   buffer: MeterBuffer;
 }
 
@@ -22,7 +22,8 @@ function levelFromPercent(percent: number, muted: boolean): AudioLevel {
 }
 
 export const MixerPanel: Component<MixerPanelProps> = (props) => {
-  const music = () => levelFromPercent(props.status?.audio_levels.music_bus ?? 0, props.status?.muted ?? false);
+  const music = () =>
+    levelFromPercent(props.status?.audio_levels.music_bus ?? 0, props.status?.muted ?? false);
   const master = () =>
     props.status?.audio_levels.hardware ??
     props.status?.audio_levels.physical ??
@@ -75,7 +76,13 @@ const ChannelLevel: Component<ChannelLevelProps> = (props) => {
     <div class="rounded-2xl border border-white/[0.055] bg-black/15 p-3">
       <div class="flex items-center justify-between gap-2">
         <span class="text-[11px] font-medium text-slate-400">{props.label}</span>
-        <span class={props.level.muted ? 'size-1.5 rounded-full bg-red-400' : 'size-1.5 rounded-full bg-emerald-400/70'} />
+        <span
+          class={
+            props.level.muted
+              ? 'size-1.5 rounded-full bg-red-400'
+              : 'size-1.5 rounded-full bg-emerald-400/70'
+          }
+        />
       </div>
       <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
         <div
@@ -84,7 +91,9 @@ const ChannelLevel: Component<ChannelLevelProps> = (props) => {
         />
       </div>
       <div class="mt-2 flex items-end justify-between gap-1">
-        <span class="font-mono text-[10px] tabular-nums text-slate-600">{safeVolume().toFixed(0)}%</span>
+        <span class="font-mono text-[10px] tabular-nums text-slate-600">
+          {safeVolume().toFixed(0)}%
+        </span>
         <span class="font-mono text-xs font-medium tabular-nums text-slate-300">
           {props.level.db <= -59.95 ? '−∞' : props.level.db.toFixed(1)}
         </span>

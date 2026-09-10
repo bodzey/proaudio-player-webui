@@ -3,7 +3,7 @@ import { For, Show, type Component } from 'solid-js';
 import type { ActiveSource } from '../../api/types';
 
 interface SourcesPanelProps {
-  sources?: ActiveSource[];
+  sources: ActiveSource[] | undefined;
 }
 
 export const SourcesPanel: Component<SourcesPanelProps> = (props) => (

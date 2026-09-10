@@ -3,7 +3,7 @@ import { Show, type Component } from 'solid-js';
 import type { PriorityState } from '../api/types';
 
 interface PriorityBannerProps {
-  priority?: PriorityState;
+  priority: PriorityState | undefined;
 }
 
 export const PriorityBanner: Component<PriorityBannerProps> = (props) => (

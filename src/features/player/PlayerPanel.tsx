@@ -6,13 +6,14 @@ import {
   onMount,
   Show,
   type Component,
+  type JSX,
 } from 'solid-js';
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
 
 interface PlayerPanelProps {
-  status?: PlayerStatus;
-  pendingAction?: PlayerAction;
+  status: PlayerStatus | undefined;
+  pendingAction: PlayerAction | undefined;
   onAction: (action: PlayerAction) => void;
   onVolume: (percent: number) => void;
   onMute: (muted: boolean) => void;
@@ -43,8 +44,8 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const [volumeDraft, setVolumeDraft] = createSignal(props.status?.volume ?? 0);
   let positionAnchor = props.status?.player.position_seconds ?? 0;
   let positionAnchorAt = performance.now();
-  let volumeTimer: ReturnType<typeof setTimeout> | undefined;
-  let clockTimer: ReturnType<typeof setInterval> | undefined;
+  let volumeTimer: number | undefined;
+  let clockTimer: number | undefined;
 
   createEffect(() => {
     const player = props.status?.player;
@@ -61,15 +62,15 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   });
 
   onMount(() => {
-    clockTimer = setInterval(() => setClock(performance.now()), 250);
+    clockTimer = window.setInterval(() => setClock(performance.now()), 250);
   });
 
   onCleanup(() => {
     if (clockTimer !== undefined) {
-      clearInterval(clockTimer);
+      window.clearInterval(clockTimer);
     }
     if (volumeTimer !== undefined) {
-      clearTimeout(volumeTimer);
+      window.clearTimeout(volumeTimer);
     }
   });
 
@@ -99,9 +100,9 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   const sendVolume = (value: number) => {
     if (volumeTimer !== undefined) {
-      clearTimeout(volumeTimer);
+      window.clearTimeout(volumeTimer);
     }
-    volumeTimer = setTimeout(() => props.onVolume(value), 70);
+    volumeTimer = window.setTimeout(() => props.onVolume(value), 70);
   };
 
   return (
@@ -122,14 +123,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               </div>
             }
           >
-            {(url) => (
-              <img
-                src={url()}
-                alt=""
-                class="absolute inset-0 size-full object-cover"
-                referrerpolicy="no-referrer"
-              />
-            )}
+            {(url) => <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />}
           </Show>
           <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
           <div class="absolute bottom-4 left-4 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl">
@@ -258,7 +252,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 onChange={(event) => {
                   const value = Number(event.currentTarget.value);
                   if (volumeTimer !== undefined) {
-                    clearTimeout(volumeTimer);
+                    window.clearTimeout(volumeTimer);
                     volumeTimer = undefined;
                   }
                   props.onVolume(value);
@@ -287,7 +281,7 @@ interface TransportButtonProps {
   pending: boolean;
   primary?: boolean;
   onClick: (action: PlayerAction) => void;
-  children: unknown;
+  children: JSX.Element;
 }
 
 const TransportButton: Component<TransportButtonProps> = (props) => (

@@ -105,7 +105,7 @@ export function App() {
 function RuntimeItem(props: { label: string; value: string }) {
   return (
     <div class="rounded-2xl border border-white/[0.055] bg-black/15 px-3 py-3">
-      <div class="text-[9px] font-medium tracking-[0.12em] text-slate-650 uppercase">{props.label}</div>
+      <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">{props.label}</div>
       <div class="mt-1.5 truncate font-mono text-[11px] text-slate-400">{props.value}</div>
     </div>
   );
