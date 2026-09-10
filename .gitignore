@@ -4,6 +4,7 @@ coverage/
 .cache/
 .vite/
 *.tsbuildinfo
+.eslintcache
 
 .env
 .env.*
