@@ -82,13 +82,16 @@ export function createPlayerState() {
             queuedVolume = undefined;
             await api.setVolume(next);
           }
-          await refresh();
+          setError(undefined);
         } catch (cause) {
           queuedVolume = undefined;
           setError(errorMessage(cause));
           await refresh();
         } finally {
           volumeWorker = undefined;
+          if (queuedVolume !== undefined) {
+            void setVolume(queuedVolume);
+          }
         }
       })();
     }
