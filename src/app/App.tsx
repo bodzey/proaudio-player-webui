@@ -156,6 +156,8 @@ export function App() {
                 status={player.status()}
                 buffer={meterBuffer}
                 meterLive={meterState() === 'live'}
+                onMusicVolume={(percent) => void player.setVolume(percent)}
+                onMusicMute={(muted) => void player.setMute(muted)}
               />
 
               <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
