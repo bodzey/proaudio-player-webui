@@ -19,6 +19,8 @@ export interface PlayerControls {
   prev: boolean;
 }
 
+export type PlayerAction = keyof PlayerControls;
+
 export interface PlayerView {
   source: string;
   backend: string;
@@ -35,14 +37,61 @@ export interface PlayerView {
   controls: PlayerControls;
 }
 
+export interface PriorityState {
+  mode: string;
+  active: boolean;
+  blocking: boolean;
+  duck_only_during_announcement: boolean;
+  minute_silence_active: boolean;
+  matched_uids: number[];
+  last_success_at: string | null;
+  last_change_at: string | null;
+  last_error: string | null;
+}
+
+export interface ActiveSource {
+  key: string;
+  active: boolean;
+  type: string;
+  application: string;
+  media: string;
+}
+
+export interface AudioLevel {
+  name?: string;
+  volume: number;
+  db: number;
+  muted: boolean;
+  backend?: string;
+  card?: number;
+  card_name?: string;
+  control?: string;
+  db_min?: number;
+  db_max?: number;
+  db_reference?: number;
+}
+
+export interface AudioLevels {
+  music_bus: number;
+  physical: AudioLevel | null;
+  hardware: AudioLevel | null;
+  alert_bus: AudioLevel | null;
+}
+
+export interface MixerState {
+  music: AudioLevel;
+  alert: AudioLevel;
+  master: AudioLevel;
+}
+
 export interface PlayerStatus {
   name: string;
   volume: number;
   muted: boolean;
-  priority: JsonObject;
+  priority: PriorityState;
   mpd: JsonObject;
-  sources: JsonObject[];
-  audio_levels: JsonObject;
+  sources: ActiveSource[];
+  audio_levels: AudioLevels;
   player: PlayerView;
 }
 

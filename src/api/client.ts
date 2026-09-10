@@ -3,6 +3,8 @@ import type {
   CapabilitiesResponse,
   HealthResponse,
   JsonObject,
+  MixerState,
+  PlayerAction,
   PlayerStatus,
 } from './types';
 
@@ -38,7 +40,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
         message = payload.error;
       }
     } catch {
-      // The status code remains authoritative when the body is not JSON.
+      // HTTP status remains authoritative when the response body is not JSON.
     }
     throw new ApiError(response.status, message);
   }
@@ -59,8 +61,9 @@ export const api = {
   health: () => request<HealthResponse>('/health'),
   capabilities: () => request<CapabilitiesResponse>('/capabilities'),
   status: () => request<PlayerStatus>('/status'),
+  mixer: () => request<MixerState>('/audio/mixer'),
 
-  playerAction: (action: keyof PlayerStatus['player']['controls']) =>
+  playerAction: (action: PlayerAction) =>
     request<JsonObject>('/player', {
       method: 'POST',
       ...jsonBody({ action }),
@@ -76,5 +79,11 @@ export const api = {
     request<{ muted: boolean }>('/mute', {
       method: 'POST',
       ...jsonBody({ muted }),
+    }),
+
+  setMixer: (target: 'master' | 'music' | 'alert', db: number, muted?: boolean) =>
+    request<MixerState>('/audio/mixer', {
+      method: 'POST',
+      ...jsonBody({ target, db, muted }),
     }),
 };
