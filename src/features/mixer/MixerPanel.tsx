@@ -9,13 +9,24 @@ import {
 } from 'solid-js';
 
 import { api } from '../../api/client';
-import type { AudioLevel, PlayerStatus } from '../../api/types';
+import type { AudioLevel, MixerState, PlayerStatus } from '../../api/types';
 import type { MeterBuffer, MeterBus } from '../../realtime/meter-buffer';
 import { MeterCanvas } from './MeterCanvas';
 
 type MixerTarget = 'master' | 'music' | 'alert';
 
+const MIN_DB = -60;
+const MAX_DB = 0;
 const FADER_MARKS = [0, -6, -12, -24, -36, -48, -60] as const;
+const FADER_SCALE = [
+  { db: 0, position: 0 },
+  { db: -6, position: 0.16 },
+  { db: -12, position: 0.3 },
+  { db: -24, position: 0.52 },
+  { db: -36, position: 0.7 },
+  { db: -48, position: 0.85 },
+  { db: -60, position: 1 },
+] as const;
 
 interface MixerPanelProps {
   status: PlayerStatus | undefined;
@@ -28,12 +39,48 @@ interface MixerRequest {
   muted?: boolean | undefined;
 }
 
+function clampDb(db: number): number {
+  return Math.min(MAX_DB, Math.max(MIN_DB, db));
+}
+
+function roundDb(db: number): number {
+  return Math.round(clampDb(db) * 10) / 10;
+}
+
 function percentToDb(percent: number): number {
-  return percent <= 0 ? -60 : Math.max(-60, 20 * Math.log10(percent / 100));
+  return percent <= 0 ? MIN_DB : Math.max(MIN_DB, 20 * Math.log10(percent / 100));
 }
 
 function dbToPercent(db: number): number {
-  return db <= -60 ? 0 : Math.min(100, Math.max(0, 100 * 10 ** (db / 20)));
+  return db <= MIN_DB ? 0 : Math.min(100, Math.max(0, 100 * 10 ** (db / 20)));
+}
+
+function dbToFaderPosition(db: number): number {
+  const value = clampDb(db);
+  for (let index = 0; index < FADER_SCALE.length - 1; index += 1) {
+    const upper = FADER_SCALE[index]!;
+    const lower = FADER_SCALE[index + 1]!;
+    if (value <= upper.db && value >= lower.db) {
+      const span = upper.db - lower.db;
+      const amount = span === 0 ? 0 : (upper.db - value) / span;
+      return upper.position + amount * (lower.position - upper.position);
+    }
+  }
+  return value >= MAX_DB ? 0 : 1;
+}
+
+function faderPositionToDb(position: number): number {
+  const value = Math.min(1, Math.max(0, position));
+  for (let index = 0; index < FADER_SCALE.length - 1; index += 1) {
+    const upper = FADER_SCALE[index]!;
+    const lower = FADER_SCALE[index + 1]!;
+    if (value >= upper.position && value <= lower.position) {
+      const span = lower.position - upper.position;
+      const amount = span === 0 ? 0 : (value - upper.position) / span;
+      return roundDb(upper.db + amount * (lower.db - upper.db));
+    }
+  }
+  return value <= 0 ? MAX_DB : MIN_DB;
 }
 
 function levelFromPercent(percent: number, muted: boolean): AudioLevel {
@@ -75,8 +122,23 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     return running.has(target);
   };
 
+  const applyOptimistic = (target: MixerTarget, db: number, muted?: boolean) => {
+    const current = mixer();
+    if (!current) return;
+    const previous = current[target];
+    const nextLevel: AudioLevel = {
+      ...previous,
+      db,
+      volume: dbToPercent(db),
+      muted: muted ?? previous.muted,
+    };
+    mutate({ ...current, [target]: nextLevel } satisfies MixerState);
+  };
+
   const queueSet = (target: MixerTarget, db: number, muted?: boolean) => {
-    queued[target] = muted === undefined ? { db } : { db, muted };
+    const normalizedDb = roundDb(db);
+    applyOptimistic(target, normalizedDb, muted);
+    queued[target] = muted === undefined ? { db: normalizedDb } : { db: normalizedDb, muted };
     if (running.has(target)) return;
 
     running.add(target);
@@ -178,8 +240,9 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </Show>
 
       <p class="mt-4 text-[10px] leading-4 text-slate-600">
-        Peak/RMS вимірюються з monitor-потоків аудіошин. Master лишається доступним під час
-        пріоритетного оповіщення; Music та Alert підкоряються backend policy.
+        Peak/RMS вимірюються з monitor-потоків аудіошин. Фейдери мають підвищену роздільність
+        біля 0 dB і безперервне pointer-керування. Master лишається доступним під час пріоритетного
+        оповіщення; Music та Alert підкоряються backend policy.
       </p>
     </section>
   );
@@ -198,13 +261,14 @@ interface MixerStripProps {
 }
 
 const MixerStrip: Component<MixerStripProps> = (props) => {
-  const [draft, setDraft] = createSignal(props.level.db);
+  const [draft, setDraft] = createSignal(roundDb(props.level.db));
   const [dragging, setDragging] = createSignal(false);
+  let track!: HTMLDivElement;
   let updateTimer: number | undefined;
 
   createEffect(() => {
     if (!dragging() && !props.pending) {
-      setDraft(props.level.db);
+      setDraft(roundDb(props.level.db));
     }
   });
 
@@ -217,7 +281,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
     updateTimer = window.setTimeout(() => {
       updateTimer = undefined;
       props.onSet(props.target, db);
-    }, 70);
+    }, 45);
   };
 
   const commit = (db: number) => {
@@ -225,11 +289,62 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
       window.clearTimeout(updateTimer);
       updateTimer = undefined;
     }
-    props.onSet(props.target, db);
+    props.onSet(props.target, roundDb(db));
+  };
+
+  const valueFromPointer = (clientY: number): number => {
+    const rect = track.getBoundingClientRect();
+    if (rect.height <= 0) return draft();
+    return faderPositionToDb((clientY - rect.top) / rect.height);
+  };
+
+  const updateFromPointer = (clientY: number, send: boolean) => {
+    const value = valueFromPointer(clientY);
+    setDraft(value);
+    if (send) schedule(value);
+    return value;
+  };
+
+  const setKeyboardValue = (value: number) => {
+    const next = roundDb(value);
+    setDraft(next);
+    commit(next);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const fineStep = event.shiftKey ? 0.1 : 0.5;
+    let next: number | undefined;
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight':
+        next = draft() + fineStep;
+        break;
+      case 'ArrowDown':
+      case 'ArrowLeft':
+        next = draft() - fineStep;
+        break;
+      case 'PageUp':
+        next = draft() + 3;
+        break;
+      case 'PageDown':
+        next = draft() - 3;
+        break;
+      case 'Home':
+        next = MAX_DB;
+        break;
+      case 'End':
+        next = MIN_DB;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    setKeyboardValue(next);
   };
 
   const bus = (): MeterBus => props.target;
-  const displayDb = () => (draft() <= -59.95 ? '−∞' : draft().toFixed(1));
+  const displayDb = () => (draft() <= MIN_DB ? '−∞' : draft().toFixed(1));
+  const thumbTop = () => `${dbToFaderPosition(draft()) * 100}%`;
 
   return (
     <div
@@ -248,33 +363,74 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
 
       <div class="mt-4 flex items-center justify-center gap-2">
         <MeterCanvas buffer={props.buffer} bus={bus()} />
-        <div class="mixer-fader-shell relative h-56 w-14 shrink-0">
-          <div class="pointer-events-none absolute inset-y-2 left-0 flex flex-col justify-between font-mono text-[7px] text-slate-700">
-            <For each={FADER_MARKS}>{(mark) => <span>{mark}</span>}</For>
-          </div>
-          <input
-            class="mixer-fader"
-            type="range"
-            min="-60"
-            max="0"
-            step="0.5"
-            value={draft()}
-            disabled={props.blocked}
+        <div class="relative h-56 w-16 shrink-0 select-none">
+          <For each={FADER_MARKS}>
+            {(mark) => (
+              <div
+                class="pointer-events-none absolute inset-x-0 flex -translate-y-1/2 items-center"
+                style={{ top: `${dbToFaderPosition(mark) * 100}%` }}
+              >
+                <span class="w-6 pr-1 text-right font-mono text-[7px] tabular-nums text-slate-700">
+                  {mark}
+                </span>
+                <span class="h-px flex-1 bg-white/[0.07]" />
+              </div>
+            )}
+          </For>
+
+          <div
+            ref={track}
+            class={
+              props.blocked
+                ? 'absolute inset-y-0 left-7 right-0 cursor-not-allowed touch-none opacity-45'
+                : 'absolute inset-y-0 left-7 right-0 cursor-ns-resize touch-none outline-none'
+            }
+            role="slider"
+            tabIndex={props.blocked ? -1 : 0}
             aria-label={`${props.label} level`}
-            onPointerDown={() => setDragging(true)}
-            onPointerCancel={() => setDragging(false)}
-            onInput={(event) => {
-              const value = Number(event.currentTarget.value);
-              setDraft(value);
-              schedule(value);
+            aria-valuemin={MIN_DB}
+            aria-valuemax={MAX_DB}
+            aria-valuenow={draft()}
+            aria-valuetext={displayDb() === '−∞' ? 'minus infinity dB' : `${displayDb()} dB`}
+            aria-disabled={props.blocked}
+            onKeyDown={handleKeyDown}
+            onDblClick={() => !props.blocked && setKeyboardValue(0)}
+            onPointerDown={(event) => {
+              if (props.blocked) return;
+              event.preventDefault();
+              track.setPointerCapture(event.pointerId);
+              setDragging(true);
+              updateFromPointer(event.clientY, true);
             }}
-            onChange={(event) => {
-              const value = Number(event.currentTarget.value);
-              setDraft(value);
+            onPointerMove={(event) => {
+              if (!dragging()) return;
+              event.preventDefault();
+              updateFromPointer(event.clientY, true);
+            }}
+            onPointerUp={(event) => {
+              if (!dragging()) return;
+              event.preventDefault();
+              const value = updateFromPointer(event.clientY, false);
               commit(value);
               setDragging(false);
+              if (track.hasPointerCapture(event.pointerId)) {
+                track.releasePointerCapture(event.pointerId);
+              }
             }}
-          />
+            onPointerCancel={() => {
+              if (!dragging()) return;
+              commit(draft());
+              setDragging(false);
+            }}
+          >
+            <div class="pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 rounded-full border border-white/[0.06] bg-[#090c11] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]" />
+            <div
+              class="pointer-events-none absolute left-1/2 h-7 w-9 -translate-x-1/2 -translate-y-1/2 rounded-[5px] border border-white/25 bg-[linear-gradient(180deg,#d9e1eb,#7c8998)] shadow-[0_5px_12px_rgba(0,0,0,0.45)] transition-shadow"
+              style={{ top: thumbTop() }}
+            >
+              <span class="absolute top-1/2 left-1/2 h-px w-5 -translate-x-1/2 -translate-y-1/2 bg-slate-800/90" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -283,7 +439,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
           {displayDb()} <span class="text-[9px] font-normal text-slate-600">dB</span>
         </div>
         <div class="mt-1 font-mono text-[9px] tabular-nums text-slate-700">
-          {dbToPercent(draft()).toFixed(0)}%
+          {dbToPercent(draft()).toFixed(1)}%
         </div>
       </div>
 
