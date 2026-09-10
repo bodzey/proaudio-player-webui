@@ -84,6 +84,60 @@ export interface MixerState {
   master: AudioLevel;
 }
 
+export interface AlertProviderSettings {
+  endpoint: string;
+  location_uid: number;
+  location_type: string;
+  poll_interval_seconds: number;
+  request_timeout_seconds: number;
+  rate_limit_backoff_seconds: number;
+  clear_confirmations: number;
+  token_configured: boolean;
+}
+
+export interface AlertProviderUpdate {
+  endpoint: string;
+  location_uid: number;
+  location_type: string;
+  poll_interval_seconds: number;
+  request_timeout_seconds: number;
+  rate_limit_backoff_seconds: number;
+  clear_confirmations: number;
+  token?: string;
+}
+
+export interface AlertProviderTestResponse {
+  ok: boolean;
+  active: boolean;
+  state: string;
+  location_uid: number;
+}
+
+export interface AudioSettings {
+  duck_db: number;
+  duck_fade_seconds: number;
+  restore_fade_seconds: number;
+  alert_volume_percent: number;
+  default_restore_volume_percent: number;
+  minute_silence_volume_percent: number;
+  alert_repeat_interval_minutes: number;
+  duck_only_during_announcement: boolean;
+  sample_rate_mode: string;
+  sample_rate: number;
+  allowed_sample_rates: number[];
+}
+
+export interface AudioSettingsUpdate {
+  duck_db: number;
+  duck_fade_seconds: number;
+  restore_fade_seconds: number;
+  alert_volume_percent: number;
+  default_restore_volume_percent: number;
+  minute_silence_volume_percent: number;
+  alert_repeat_interval_minutes: number;
+  duck_only_during_announcement: boolean;
+}
+
 export interface PlayerStatus {
   name: string;
   volume: number;

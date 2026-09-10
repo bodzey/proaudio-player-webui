@@ -1,17 +1,21 @@
-import { createResource, Show } from 'solid-js';
+import { Show, createResource, createSignal } from 'solid-js';
 
 import { api } from '../api/client';
 import { ConnectionBadge } from '../components/ConnectionBadge';
 import { PriorityBanner } from '../components/PriorityBanner';
+import { AlertsPanel } from '../features/alerts/AlertsPanel';
 import { MixerPanel } from '../features/mixer/MixerPanel';
 import { PlayerPanel } from '../features/player/PlayerPanel';
 import { SourcesPanel } from '../features/sources/SourcesPanel';
 import { MeterBuffer } from '../realtime/meter-buffer';
 import { createPlayerState } from '../state/player';
 
+type AppPage = 'player' | 'alerts';
+
 export function App() {
   const player = createPlayerState();
   const [capabilities] = createResource(api.capabilities);
+  const [page, setPage] = createSignal<AppPage>('player');
   const meterBuffer = new MeterBuffer();
 
   return (
@@ -22,7 +26,14 @@ export function App() {
         <header class="mb-5 flex items-center justify-between gap-4">
           <div class="flex min-w-0 items-center gap-3.5">
             <div class="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.045] shadow-lg shadow-black/20">
-              <svg viewBox="0 0 24 24" class="size-5 text-slate-200" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <svg
+                viewBox="0 0 24 24"
+                class="size-5 text-slate-200"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              >
                 <path d="M4 15V9M8 18V6M12 20V4M16 17V7M20 14v-4" />
               </svg>
             </div>
@@ -48,6 +59,37 @@ export function App() {
           </div>
         </header>
 
+        <nav
+          class="mb-5 flex w-fit max-w-full gap-1 rounded-2xl border border-white/[0.07] bg-[#0d1118]/90 p-1"
+          aria-label="Основні розділи"
+        >
+          <NavButton active={page() === 'player'} onClick={() => setPage('player')}>
+            <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
+              <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
+            </svg>
+            Плеєр
+          </NavButton>
+          <NavButton active={page() === 'alerts'} onClick={() => setPage('alerts')}>
+            <svg
+              viewBox="0 0 24 24"
+              class="size-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+              <path d="M10 21h4" />
+            </svg>
+            Оповіщення
+            <Show when={player.status()?.priority.active}>
+              <span class="size-1.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.65)]" />
+            </Show>
+          </NavButton>
+        </nav>
+
         <Show when={player.error()}>
           {(message) => (
             <div class="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.055] px-4 py-3.5 text-sm text-amber-100/80">
@@ -59,39 +101,52 @@ export function App() {
 
         <PriorityBanner priority={player.status()?.priority} />
 
-        <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
-          <div class="min-w-0 space-y-5">
-            <PlayerPanel
-              status={player.status()}
-              pendingAction={player.pendingAction()}
-              onAction={(action) => void player.playerAction(action)}
-              onVolume={(percent) => void player.setVolume(percent)}
-              onMute={(muted) => void player.setMute(muted)}
-            />
+        <Show when={page() === 'player'}>
+          <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
+            <div class="min-w-0 space-y-5">
+              <PlayerPanel
+                status={player.status()}
+                pendingAction={player.pendingAction()}
+                onAction={(action) => void player.playerAction(action)}
+                onVolume={(percent) => void player.setVolume(percent)}
+                onMute={(muted) => void player.setMute(muted)}
+              />
 
-            <SourcesPanel sources={player.status()?.sources} />
-          </div>
+              <SourcesPanel sources={player.status()?.sources} />
+            </div>
 
-          <div class="min-w-0 space-y-5">
-            <MixerPanel status={player.status()} buffer={meterBuffer} />
+            <div class="min-w-0 space-y-5">
+              <MixerPanel status={player.status()} buffer={meterBuffer} />
 
-            <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
-              <div class="flex items-center justify-between gap-4">
-                <div>
-                  <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Runtime</p>
-                  <h2 class="mt-1.5 text-sm font-semibold text-slate-200">Realtime control plane</h2>
+              <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+                      Runtime
+                    </p>
+                    <h2 class="mt-1.5 text-sm font-semibold text-slate-200">
+                      Realtime control plane
+                    </h2>
+                  </div>
+                  <span class="size-2 rounded-full bg-emerald-400/70 shadow-[0_0_12px_rgba(52,211,153,0.35)]" />
                 </div>
-                <span class="size-2 rounded-full bg-emerald-400/70 shadow-[0_0_12px_rgba(52,211,153,0.35)]" />
-              </div>
 
-              <div class="mt-5 grid grid-cols-3 gap-2.5">
-                <RuntimeItem label="State" value={(capabilities()?.events ?? 'SSE').toUpperCase()} />
-                <RuntimeItem label="Meters" value="WS next" />
-                <RuntimeItem label="Render" value="Canvas" />
-              </div>
-            </section>
+                <div class="mt-5 grid grid-cols-3 gap-2.5">
+                  <RuntimeItem
+                    label="State"
+                    value={(capabilities()?.events ?? 'SSE').toUpperCase()}
+                  />
+                  <RuntimeItem label="Meters" value="WS next" />
+                  <RuntimeItem label="Render" value="Canvas" />
+                </div>
+              </section>
+            </div>
           </div>
-        </div>
+        </Show>
+
+        <Show when={page() === 'alerts'}>
+          <AlertsPanel priority={player.status()?.priority} />
+        </Show>
 
         <footer class="mt-8 flex flex-col gap-2 border-t border-white/[0.055] pt-4 text-[10px] tracking-[0.08em] text-slate-700 uppercase sm:flex-row sm:items-center sm:justify-between">
           <span>ProAudio Player · newui</span>
@@ -102,10 +157,35 @@ export function App() {
   );
 }
 
+interface NavButtonProps {
+  active: boolean;
+  onClick: () => void;
+  children: import('solid-js').JSX.Element;
+}
+
+function NavButton(props: NavButtonProps) {
+  return (
+    <button
+      type="button"
+      class={
+        props.active
+          ? 'flex items-center gap-2 rounded-xl bg-white/[0.09] px-3.5 py-2 text-xs font-semibold text-white shadow-sm shadow-black/20'
+          : 'flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-500 transition hover:bg-white/[0.045] hover:text-slate-300'
+      }
+      aria-current={props.active ? 'page' : undefined}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </button>
+  );
+}
+
 function RuntimeItem(props: { label: string; value: string }) {
   return (
     <div class="rounded-2xl border border-white/[0.055] bg-black/15 px-3 py-3">
-      <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">{props.label}</div>
+      <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">
+        {props.label}
+      </div>
       <div class="mt-1.5 truncate font-mono text-[11px] text-slate-400">{props.value}</div>
     </div>
   );

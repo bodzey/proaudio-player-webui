@@ -1,5 +1,10 @@
 import type {
+  AlertProviderSettings,
+  AlertProviderTestResponse,
+  AlertProviderUpdate,
   ApiErrorPayload,
+  AudioSettings,
+  AudioSettingsUpdate,
   CapabilitiesResponse,
   HealthResponse,
   JsonObject,
@@ -62,6 +67,8 @@ export const api = {
   capabilities: () => request<CapabilitiesResponse>('/capabilities'),
   status: () => request<PlayerStatus>('/status'),
   mixer: () => request<MixerState>('/audio/mixer'),
+  alertSettings: () => request<AlertProviderSettings>('/settings/alerts'),
+  audioSettings: () => request<AudioSettings>('/settings/audio'),
 
   playerAction: (action: PlayerAction) =>
     request<JsonObject>('/player', {
@@ -85,5 +92,23 @@ export const api = {
     request<MixerState>('/audio/mixer', {
       method: 'POST',
       ...jsonBody({ target, db, muted }),
+    }),
+
+  setAlertSettings: (settings: AlertProviderUpdate) =>
+    request<AlertProviderSettings>('/settings/alerts', {
+      method: 'PUT',
+      ...jsonBody(settings),
+    }),
+
+  testAlertSettings: (settings: AlertProviderUpdate) =>
+    request<AlertProviderTestResponse>('/settings/alerts/test', {
+      method: 'POST',
+      ...jsonBody(settings),
+    }),
+
+  setAudioSettings: (settings: AudioSettingsUpdate) =>
+    request<AudioSettings>('/settings/audio', {
+      method: 'PUT',
+      ...jsonBody(settings),
     }),
 };
