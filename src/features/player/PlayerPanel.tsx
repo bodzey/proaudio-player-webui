@@ -10,6 +10,8 @@ import {
 } from 'solid-js';
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
+import { StationArtwork } from '../radio/StationArtwork';
+import { findRadioStation } from '../radio/stations';
 
 interface PlayerPanelProps {
   status: PlayerStatus | undefined;
@@ -20,9 +22,7 @@ interface PlayerPanelProps {
 }
 
 function formatClock(seconds: number | null): string {
-  if (seconds === null || !Number.isFinite(seconds)) {
-    return '—:—';
-  }
+  if (seconds === null || !Number.isFinite(seconds)) return '—:—';
   const safe = Math.max(0, Math.floor(seconds));
   const hours = Math.floor(safe / 3600);
   const minutes = Math.floor((safe % 3600) / 60);
@@ -33,10 +33,16 @@ function formatClock(seconds: number | null): string {
 }
 
 function percentToDb(percent: number): string {
-  if (percent <= 0) {
-    return '−∞ dB';
-  }
+  if (percent <= 0) return '−∞ dB';
   return `${(20 * Math.log10(percent / 100)).toFixed(1)} dB`;
+}
+
+function normalizedText(value: string): string {
+  return value.trim().toLocaleLowerCase('uk-UA').replace(/\s+/g, ' ');
+}
+
+function sameText(left: string, right: string): boolean {
+  return Boolean(left && right && normalizedText(left) === normalizedText(right));
 }
 
 export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
@@ -56,9 +62,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   createEffect(() => {
     const volume = props.status?.volume;
-    if (volume !== undefined) {
-      setVolumeDraft(volume);
-    }
+    if (volume !== undefined) setVolumeDraft(volume);
   });
 
   onMount(() => {
@@ -66,22 +70,43 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   });
 
   onCleanup(() => {
-    if (clockTimer !== undefined) {
-      window.clearInterval(clockTimer);
+    if (clockTimer !== undefined) window.clearInterval(clockTimer);
+    if (volumeTimer !== undefined) window.clearTimeout(volumeTimer);
+  });
+
+  const isRadio = () =>
+    props.status?.player.source === 'Інтернет-радіо' || props.status?.mpd.is_stream === true;
+  const streamUrl = () => props.status?.mpd.stream_url ?? null;
+  const station = createMemo(() => findRadioStation(streamUrl()));
+  const stationName = createMemo(() =>
+    isRadio()
+      ? station()?.name || props.status?.mpd.station || 'Інтернет-радіо'
+      : '',
+  );
+
+  const radioMetadata = createMemo(() => {
+    if (!isRadio()) return { title: '', artist: '' };
+    const knownStation = stationName();
+    let title = props.status?.player.title?.trim() ?? '';
+    let artist = props.status?.player.artist?.trim() ?? '';
+
+    if (sameText(title, knownStation)) title = '';
+    if (sameText(artist, knownStation)) artist = '';
+
+    if (title && !artist) {
+      const separator = title.indexOf(' - ');
+      if (separator > 0 && separator < title.length - 3) {
+        artist = title.slice(0, separator).trim();
+        title = title.slice(separator + 3).trim();
+      }
     }
-    if (volumeTimer !== undefined) {
-      window.clearTimeout(volumeTimer);
-    }
+    return { title, artist };
   });
 
   const position = createMemo(() => {
     const player = props.status?.player;
-    if (!player || player.position_seconds === null) {
-      return null;
-    }
-    if (player.state !== 'playing') {
-      return player.position_seconds;
-    }
+    if (!player || player.position_seconds === null) return null;
+    if (player.state !== 'playing') return player.position_seconds;
     const estimated = positionAnchor + Math.max(0, clock() - positionAnchorAt) / 1000;
     return player.duration_seconds === null ? estimated : Math.min(player.duration_seconds, estimated);
   });
@@ -99,9 +124,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const disabledByPriority = () => props.status?.priority.blocking === true;
 
   const sendVolume = (value: number) => {
-    if (volumeTimer !== undefined) {
-      window.clearTimeout(volumeTimer);
-    }
+    if (volumeTimer !== undefined) window.clearTimeout(volumeTimer);
     volumeTimer = window.setTimeout(() => props.onVolume(value), 70);
   };
 
@@ -110,20 +133,31 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
       <div class="grid min-h-[330px] lg:grid-cols-[310px_minmax(0,1fr)]">
         <div class="relative aspect-square overflow-hidden bg-[#0b0f15] lg:aspect-auto">
           <Show
-            when={props.status?.player.art_url}
+            when={isRadio()}
             fallback={
-              <div class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(93,129,255,0.15),transparent_45%),linear-gradient(145deg,#101722,#090c11)]">
-                <div class="flex size-28 items-center justify-center rounded-[30px] border border-white/10 bg-white/[0.04] shadow-2xl">
-                  <svg viewBox="0 0 24 24" class="size-12 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.4">
-                    <path d="M9 18V5l10-2v13" />
-                    <circle cx="6" cy="18" r="3" />
-                    <circle cx="16" cy="16" r="3" />
-                  </svg>
-                </div>
-              </div>
+              <Show
+                when={props.status?.player.art_url}
+                fallback={
+                  <div class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(93,129,255,0.15),transparent_45%),linear-gradient(145deg,#101722,#090c11)]">
+                    <div class="flex size-28 items-center justify-center rounded-[30px] border border-white/10 bg-white/[0.04] shadow-2xl">
+                      <svg viewBox="0 0 24 24" class="size-12 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.4">
+                        <path d="M9 18V5l10-2v13" />
+                        <circle cx="6" cy="18" r="3" />
+                        <circle cx="16" cy="16" r="3" />
+                      </svg>
+                    </div>
+                  </div>
+                }
+              >
+                {(url) => <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />}
+              </Show>
             }
           >
-            {(url) => <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />}
+            <StationArtwork
+              station={station()}
+              fallbackName={stationName()}
+              class="absolute inset-0 size-full"
+            />
           </Show>
           <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
           <div class="absolute bottom-4 left-4 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl">
@@ -133,16 +167,37 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
         <div class="flex min-w-0 flex-col p-5 sm:p-7 lg:p-8">
           <div class="flex items-start justify-between gap-4">
-            <div class="min-w-0">
-              <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-                Now playing
-              </p>
-              <h2 class="mt-3 truncate text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
-                {props.status?.player.title || 'Немає активного потоку'}
-              </h2>
-              <p class="mt-2 truncate text-sm text-slate-400 sm:text-base">
-                {props.status?.player.artist || props.status?.player.album || 'ProAudio Player'}
-              </p>
+            <div class="min-w-0 flex-1">
+              <Show
+                when={isRadio()}
+                fallback={
+                  <>
+                    <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+                      Now playing
+                    </p>
+                    <h2 class="mt-3 truncate text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+                      {props.status?.player.title || 'Немає активного потоку'}
+                    </h2>
+                    <p class="mt-2 truncate text-sm text-slate-400 sm:text-base">
+                      {props.status?.player.artist || props.status?.player.album || 'ProAudio Player'}
+                    </p>
+                  </>
+                }
+              >
+                <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+                  Live radio
+                </p>
+                <div class="mt-2 flex min-w-0 items-center gap-2 text-sm font-semibold text-cyan-200/80">
+                  <span class="size-2 shrink-0 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]" />
+                  <span class="truncate">{stationName()}</span>
+                </div>
+                <h2 class="mt-3 line-clamp-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+                  {radioMetadata().title || 'Ефір наживо'}
+                </h2>
+                <p class="mt-2 truncate text-sm text-slate-400 sm:text-base">
+                  {radioMetadata().artist || 'Метадані поточного треку не передаються станцією'}
+                </p>
+              </Show>
             </div>
             <div class="shrink-0 rounded-xl border border-white/[0.06] bg-black/15 px-3 py-2 text-right">
               <div class="text-[10px] tracking-[0.15em] text-slate-600 uppercase">Backend</div>
@@ -153,16 +208,28 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
           </div>
 
           <div class="mt-auto pt-8">
-            <div class="h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-              <div
-                class="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 transition-[width] duration-300 ease-linear"
-                style={{ width: `${progress()}%` }}
-              />
-            </div>
-            <div class="mt-2.5 flex justify-between font-mono text-[11px] text-slate-500">
-              <span>{formatClock(position())}</span>
-              <span>{formatClock(props.status?.player.duration_seconds ?? null)}</span>
-            </div>
+            <Show
+              when={!isRadio()}
+              fallback={
+                <div class="flex items-center gap-3">
+                  <span class="font-mono text-[10px] font-semibold tracking-[0.16em] text-red-300/75 uppercase">
+                    Live
+                  </span>
+                  <div class="h-px flex-1 bg-gradient-to-r from-red-400/45 via-white/10 to-transparent" />
+                </div>
+              }
+            >
+              <div class="h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+                <div
+                  class="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 transition-[width] duration-300 ease-linear"
+                  style={{ width: `${progress()}%` }}
+                />
+              </div>
+              <div class="mt-2.5 flex justify-between font-mono text-[11px] text-slate-500">
+                <span>{formatClock(position())}</span>
+                <span>{formatClock(props.status?.player.duration_seconds ?? null)}</span>
+              </div>
+            </Show>
 
             <div class="mt-6 flex items-center justify-center gap-2 sm:gap-3">
               <TransportButton
@@ -279,7 +346,7 @@ interface TransportButtonProps {
   action: PlayerAction;
   disabled: boolean;
   pending: boolean;
-  primary?: boolean;
+  primary?: boolean | undefined;
   onClick: (action: PlayerAction) => void;
   children: JSX.Element;
 }

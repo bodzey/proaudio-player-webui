@@ -1,23 +1,43 @@
-import { Show, createResource, createSignal } from 'solid-js';
+import { Show, createEffect, createResource, createSignal, onCleanup } from 'solid-js';
 
 import { api } from '../api/client';
+import { subscribeToMeterEvents } from '../api/meters';
 import { ConnectionBadge } from '../components/ConnectionBadge';
 import { PriorityBanner } from '../components/PriorityBanner';
 import { AlertsPanel } from '../features/alerts/AlertsPanel';
 import { MixerPanel } from '../features/mixer/MixerPanel';
+import { OutputsPanel } from '../features/outputs/OutputsPanel';
 import { PlayerPanel } from '../features/player/PlayerPanel';
 import { RadioPanel } from '../features/radio/RadioPanel';
-import { SourcesPanel } from '../features/sources/SourcesPanel';
 import { MeterBuffer } from '../realtime/meter-buffer';
 import { createPlayerState } from '../state/player';
 
 type AppPage = 'player' | 'radio' | 'alerts';
+type MeterState = 'idle' | 'connecting' | 'live' | 'reconnecting';
 
 export function App() {
   const player = createPlayerState();
   const [capabilities] = createResource(api.capabilities);
   const [page, setPage] = createSignal<AppPage>('player');
+  const [meterState, setMeterState] = createSignal<MeterState>('idle');
   const meterBuffer = new MeterBuffer();
+
+  createEffect(() => {
+    if (page() !== 'player') {
+      meterBuffer.reset();
+      setMeterState('idle');
+      return;
+    }
+
+    setMeterState('connecting');
+    const disconnect = subscribeToMeterEvents({
+      buffer: meterBuffer,
+      onOpen: () => setMeterState('live'),
+      onError: () => setMeterState('reconnecting'),
+    });
+
+    onCleanup(disconnect);
+  });
 
   return (
     <main class="min-h-screen bg-[#090c11] text-slate-100">
@@ -119,7 +139,7 @@ export function App() {
         <PriorityBanner priority={player.status()?.priority} />
 
         <Show when={page() === 'player'}>
-          <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
+          <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
             <div class="min-w-0 space-y-5">
               <PlayerPanel
                 status={player.status()}
@@ -128,12 +148,15 @@ export function App() {
                 onVolume={(percent) => void player.setVolume(percent)}
                 onMute={(muted) => void player.setMute(muted)}
               />
-
-              <SourcesPanel sources={player.status()?.sources} />
+              <OutputsPanel blocked={player.status()?.priority.blocking ?? false} />
             </div>
 
             <div class="min-w-0 space-y-5">
-              <MixerPanel status={player.status()} buffer={meterBuffer} />
+              <MixerPanel
+                status={player.status()}
+                buffer={meterBuffer}
+                meterLive={meterState() === 'live'}
+              />
 
               <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
                 <div class="flex items-center justify-between gap-4">
@@ -147,13 +170,15 @@ export function App() {
                   </div>
                   <span class="size-2 rounded-full bg-emerald-400/70 shadow-[0_0_12px_rgba(52,211,153,0.35)]" />
                 </div>
-
                 <div class="mt-5 grid grid-cols-3 gap-2.5">
                   <RuntimeItem
                     label="State"
                     value={(capabilities()?.events ?? 'SSE').toUpperCase()}
                   />
-                  <RuntimeItem label="Meters" value="WS next" />
+                  <RuntimeItem
+                    label="Meters"
+                    value={meterState() === 'live' ? '25 Hz' : 'retry'}
+                  />
                   <RuntimeItem label="Render" value="Canvas" />
                 </div>
               </section>

@@ -1,15 +1,31 @@
-export interface MeterSnapshot {
-  sequence: number;
+export type MeterBus = 'master' | 'music' | 'alert';
+
+export interface StereoMeterSnapshot {
   peak: readonly [number, number];
   rms: readonly [number, number];
   clip: readonly [boolean, boolean];
+  available: boolean;
 }
 
-const SILENCE: MeterSnapshot = {
-  sequence: 0,
+export interface MeterSnapshot {
+  sequence: number;
+  master: StereoMeterSnapshot;
+  music: StereoMeterSnapshot;
+  alert: StereoMeterSnapshot;
+}
+
+const SILENT_CHANNEL: StereoMeterSnapshot = {
   peak: [-60, -60],
   rms: [-60, -60],
   clip: [false, false],
+  available: false,
+};
+
+const SILENCE: MeterSnapshot = {
+  sequence: 0,
+  master: SILENT_CHANNEL,
+  music: SILENT_CHANNEL,
+  alert: SILENT_CHANNEL,
 };
 
 export class MeterBuffer {
@@ -19,8 +35,12 @@ export class MeterBuffer {
     this.snapshot = snapshot;
   }
 
-  read(): MeterSnapshot {
-    return this.snapshot;
+  read(bus: MeterBus): StereoMeterSnapshot {
+    return this.snapshot[bus];
+  }
+
+  sequence(): number {
+    return this.snapshot.sequence;
   }
 
   reset(): void {

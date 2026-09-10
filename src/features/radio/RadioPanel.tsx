@@ -2,98 +2,8 @@ import { For, Show, createSignal, type Component } from 'solid-js';
 
 import { api } from '../../api/client';
 import type { PlayerStatus } from '../../api/types';
-
-interface RadioStation {
-  id: string;
-  name: string;
-  genre: string;
-  description: string;
-  quality: string;
-  url: string;
-}
-
-const STATIONS: RadioStation[] = [
-  {
-    id: 'hitfm',
-    name: 'Хіт FM',
-    genre: 'Hits / Pop',
-    description: 'Популярні українські та світові хіти',
-    quality: 'HD',
-    url: 'https://online.hitfm.ua/HitFM_HD',
-  },
-  {
-    id: 'kissfm',
-    name: 'KISS FM',
-    genre: 'Dance / Electronic',
-    description: 'Електронна та танцювальна музика',
-    quality: 'HD',
-    url: 'https://online.kissfm.ua/KissFM_HD',
-  },
-  {
-    id: 'radioroks',
-    name: 'Radio ROKS',
-    genre: 'Rock',
-    description: 'Класичний і сучасний рок',
-    quality: 'HD',
-    url: 'https://online.radioroks.ua/RadioROKS_HD',
-  },
-  {
-    id: 'relax',
-    name: 'Radio Relax',
-    genre: 'Relax / Lounge',
-    description: 'Спокійна музика та soft pop',
-    quality: 'HD',
-    url: 'https://online.radiorelax.ua/RadioRelax_HD',
-  },
-  {
-    id: 'nrj',
-    name: 'NRJ Ukraine',
-    genre: 'Hits / Dance',
-    description: 'Сучасна поп- і танцювальна музика',
-    quality: '320 kbps',
-    url: 'https://cast.mediaonline.net.ua/nrj320',
-  },
-  {
-    id: 'radionv',
-    name: 'Radio NV',
-    genre: 'News / Talk',
-    description: 'Новини, аналітика та розмовні програми',
-    quality: 'MP3',
-    url: 'https://online-radio.nv.ua/radionv.mp3',
-  },
-  {
-    id: 'ur1',
-    name: 'Українське Радіо',
-    genre: 'News / Public',
-    description: 'Перший канал Суспільного Радіо',
-    quality: 'MP3',
-    url: 'https://radio.ukr.radio/ur1-mp3',
-  },
-  {
-    id: 'promin',
-    name: 'Радіо Промінь',
-    genre: 'Ukrainian / Pop',
-    description: 'Українська музика та молодіжні програми',
-    quality: 'MP3',
-    url: 'https://radio.ukr.radio/ur2-mp3',
-  },
-  {
-    id: 'jazz',
-    name: 'Radio Jazz',
-    genre: 'Jazz',
-    description: 'Jazz, soul, funk та суміжні жанри',
-    quality: 'HD',
-    url: 'https://online.radiojazz.ua/RadioJazz_HD',
-  },
-  {
-    id: 'melodia',
-    name: 'Мелодія FM',
-    genre: 'Pop / Retro',
-    description: 'Відомі хіти різних років',
-    quality: 'HD',
-    url: 'https://online.melodiafm.ua/MelodiaFM_HD',
-  },
-];
+import { StationArtwork } from './StationArtwork';
+import { RADIO_STATIONS, isSameRadioStream } from './stations';
 
 interface RadioPanelProps {
   status: PlayerStatus | undefined;
@@ -107,10 +17,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
     null,
   );
 
-  const currentStreamUrl = () => {
-    const value = props.status?.mpd?.stream_url;
-    return typeof value === 'string' ? value : null;
-  };
+  const currentStreamUrl = () => props.status?.mpd.stream_url ?? null;
 
   const play = async (url: string, name: string) => {
     const trimmed = url.trim();
@@ -143,8 +50,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
               Популярні радіостанції
             </h2>
             <p class="mt-2 max-w-2xl text-xs leading-5 text-slate-500">
-              Прямі потоки запускаються через локальний MPD-плеєр. Інші джерела ProAudio Player
-              залишаються незалежними від цього списку.
+              Прямі потоки запускаються через локальний MPD-плеєр. Метадані ефіру, якщо їх
+              передає станція, автоматично з’являються у Now Playing.
             </p>
           </div>
           <Show when={currentStreamUrl()}>
@@ -155,9 +62,9 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
         </div>
 
         <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <For each={STATIONS}>
+          <For each={RADIO_STATIONS}>
             {(station) => {
-              const active = () => currentStreamUrl() === station.url;
+              const active = () => isSameRadioStream(currentStreamUrl(), station.url);
               const pending = () => pendingUrl() === station.url;
 
               return (
@@ -165,42 +72,40 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                   type="button"
                   class={
                     active()
-                      ? 'group rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.055] p-4 text-left shadow-[0_16px_45px_-34px_rgba(52,211,153,0.7)] transition'
-                      : 'group rounded-2xl border border-white/[0.065] bg-black/15 p-4 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
+                      ? 'group overflow-hidden rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.055] text-left shadow-[0_16px_45px_-34px_rgba(52,211,153,0.7)] transition'
+                      : 'group overflow-hidden rounded-2xl border border-white/[0.065] bg-black/15 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
                   }
                   disabled={props.blocked || pendingUrl() !== null}
                   onClick={() => void play(station.url, station.name)}
                 >
-                  <div class="flex items-start justify-between gap-3">
-                    <div class="flex min-w-0 items-center gap-3">
-                      <div class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.035] text-sm font-bold text-slate-300">
-                        {station.name.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div class="min-w-0">
-                        <div class="truncate text-sm font-semibold text-slate-100">{station.name}</div>
-                        <div class="mt-0.5 truncate text-[10px] font-medium tracking-[0.08em] text-slate-600 uppercase">
-                          {station.genre}
+                  <div class="grid grid-cols-[92px_minmax(0,1fr)]">
+                    <StationArtwork station={station} compact class="aspect-square" />
+                    <div class="min-w-0 p-4">
+                      <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                          <div class="truncate text-sm font-semibold text-slate-100">{station.name}</div>
+                          <div class="mt-0.5 truncate text-[10px] font-medium tracking-[0.08em] text-slate-600 uppercase">
+                            {station.genre}
+                          </div>
                         </div>
+                        <span
+                          class={
+                            active()
+                              ? 'mt-1 size-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]'
+                              : 'mt-1 size-2 shrink-0 rounded-full bg-slate-700 transition group-hover:bg-slate-500'
+                          }
+                        />
+                      </div>
+                      <p class="mt-3 line-clamp-2 text-[11px] leading-5 text-slate-500">
+                        {station.description}
+                      </p>
+                      <div class="mt-2 flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-slate-600">{station.quality}</span>
+                        <span class="text-[10px] font-semibold tracking-[0.08em] text-slate-500 uppercase">
+                          {pending() ? 'Підключення…' : active() ? 'В ефірі' : 'Слухати'}
+                        </span>
                       </div>
                     </div>
-                    <span
-                      class={
-                        active()
-                          ? 'mt-1 size-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]'
-                          : 'mt-1 size-2 shrink-0 rounded-full bg-slate-700 transition group-hover:bg-slate-500'
-                      }
-                    />
-                  </div>
-
-                  <p class="mt-4 min-h-10 text-[11px] leading-5 text-slate-500">
-                    {station.description}
-                  </p>
-
-                  <div class="mt-3 flex items-center justify-between border-t border-white/[0.05] pt-3">
-                    <span class="font-mono text-[10px] text-slate-600">{station.quality}</span>
-                    <span class="text-[10px] font-semibold tracking-[0.08em] text-slate-500 uppercase">
-                      {pending() ? 'Підключення…' : active() ? 'В ефірі' : 'Слухати'}
-                    </span>
                   </div>
                 </button>
               );

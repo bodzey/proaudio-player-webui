@@ -37,6 +37,17 @@ export interface PlayerView {
   controls: PlayerControls;
 }
 
+export interface MpdStatus extends JsonObject {
+  available?: boolean | undefined;
+  state?: string | undefined;
+  title?: string | undefined;
+  artist?: string | undefined;
+  album?: string | undefined;
+  station?: string | undefined;
+  is_stream?: boolean | undefined;
+  stream_url?: string | null | undefined;
+}
+
 export interface PriorityState {
   mode: string;
   active: boolean;
@@ -58,17 +69,17 @@ export interface ActiveSource {
 }
 
 export interface AudioLevel {
-  name?: string;
+  name?: string | undefined;
   volume: number;
   db: number;
   muted: boolean;
-  backend?: string;
-  card?: number;
-  card_name?: string;
-  control?: string;
-  db_min?: number;
-  db_max?: number;
-  db_reference?: number;
+  backend?: string | undefined;
+  card?: number | undefined;
+  card_name?: string | undefined;
+  control?: string | undefined;
+  db_min?: number | undefined;
+  db_max?: number | undefined;
+  db_reference?: number | undefined;
 }
 
 export interface AudioLevels {
@@ -82,6 +93,26 @@ export interface MixerState {
   music: AudioLevel;
   alert: AudioLevel;
   master: AudioLevel;
+}
+
+export interface AudioOutput {
+  id: string;
+  name: string;
+  state: string;
+  device_class: string;
+  alsa_card: number | null;
+  selected: boolean;
+  available: boolean;
+}
+
+export interface AudioOutputsResponse {
+  items: AudioOutput[];
+}
+
+export interface AudioOutputSelectionResponse {
+  selected: AudioOutput;
+  applying: boolean;
+  applied: boolean;
 }
 
 export interface AlertProviderSettings {
@@ -103,7 +134,7 @@ export interface AlertProviderUpdate {
   request_timeout_seconds: number;
   rate_limit_backoff_seconds: number;
   clear_confirmations: number;
-  token?: string;
+  token?: string | undefined;
 }
 
 export interface AlertProviderTestResponse {
@@ -143,12 +174,12 @@ export interface PlayerStatus {
   volume: number;
   muted: boolean;
   priority: PriorityState;
-  mpd: JsonObject;
+  mpd: MpdStatus;
   sources: ActiveSource[];
   audio_levels: AudioLevels;
   player: PlayerView;
 }
 
 export interface ApiErrorPayload {
-  error?: string;
+  error?: string | undefined;
 }

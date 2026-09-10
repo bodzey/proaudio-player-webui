@@ -1,28 +1,36 @@
 import { onCleanup, onMount, type Component } from 'solid-js';
 
-import type { MeterBuffer } from '../../realtime/meter-buffer';
+import type { MeterBuffer, MeterBus } from '../../realtime/meter-buffer';
 
 interface MeterCanvasProps {
   buffer: MeterBuffer;
+  bus: MeterBus;
 }
 
 const MIN_DB = -60;
 const MAX_DB = 0;
-const MARKS = [-60, -48, -36, -24, -18, -12, -6, 0] as const;
+const SEGMENTS = 30;
+const PEAK_HOLD_MS = 900;
+const PEAK_DECAY_DB_PER_SECOND = 22;
 
 function clampDb(value: number): number {
   return Math.min(MAX_DB, Math.max(MIN_DB, value));
 }
 
+function normalized(db: number): number {
+  return (clampDb(db) - MIN_DB) / (MAX_DB - MIN_DB);
+}
+
 export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
   let canvas!: HTMLCanvasElement;
   let animationFrame = 0;
+  const heldPeak = [MIN_DB, MIN_DB];
+  const heldUntil = [0, 0];
+  let lastFrameAt = performance.now();
 
   onMount(() => {
     const context = canvas.getContext('2d', { alpha: false });
-    if (!context) {
-      return;
-    }
+    if (!context) return;
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -36,63 +44,66 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
     observer.observe(canvas);
     resize();
 
-    const draw = () => {
+    const draw = (now: number) => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
-      const meterTop = 12;
-      const meterBottom = height - 28;
-      const meterHeight = Math.max(1, meterBottom - meterTop);
-      const labelWidth = 34;
-      const gap = 8;
-      const channelWidth = Math.max(8, (width - labelWidth - gap * 3) / 2);
-      const leftX = labelWidth + gap;
-      const rightX = leftX + channelWidth + gap;
-      const snapshot = props.buffer.read();
+      const snapshot = props.buffer.read(props.bus);
+      const dt = Math.min(0.1, Math.max(0, now - lastFrameAt) / 1000);
+      lastFrameAt = now;
 
-      const yForDb = (db: number) => {
-        const normalized = (clampDb(db) - MIN_DB) / (MAX_DB - MIN_DB);
-        return meterBottom - normalized * meterHeight;
-      };
-
-      context.fillStyle = '#0a0d12';
+      context.fillStyle = '#090c11';
       context.fillRect(0, 0, width, height);
 
-      context.font = '10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
-      context.textAlign = 'right';
-      context.textBaseline = 'middle';
+      const labelHeight = 18;
+      const meterTop = 6;
+      const meterBottom = height - labelHeight;
+      const meterHeight = Math.max(1, meterBottom - meterTop);
+      const gap = 5;
+      const barWidth = Math.max(5, (width - gap * 3) / 2);
+      const xs = [gap, gap * 2 + barWidth];
+      const segmentGap = 2;
+      const segmentHeight = Math.max(2, (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS);
 
-      for (const mark of MARKS) {
-        const y = yForDb(mark);
-        context.fillStyle = '#6b7280';
-        context.fillText(String(mark), labelWidth - 4, y);
+      for (let channel = 0; channel < 2; channel += 1) {
+        const peak = snapshot.available ? clampDb(snapshot.peak[channel] ?? MIN_DB) : MIN_DB;
+        const rms = snapshot.available ? clampDb(snapshot.rms[channel] ?? MIN_DB) : MIN_DB;
 
-        context.strokeStyle = '#1f2937';
-        context.beginPath();
-        context.moveTo(labelWidth, y);
-        context.lineTo(width, y);
-        context.stroke();
+        if (peak >= heldPeak[channel]!) {
+          heldPeak[channel] = peak;
+          heldUntil[channel] = now + PEAK_HOLD_MS;
+        } else if (now > heldUntil[channel]!) {
+          heldPeak[channel] = Math.max(peak, heldPeak[channel]! - PEAK_DECAY_DB_PER_SECOND * dt);
+        }
+
+        for (let segment = 0; segment < SEGMENTS; segment += 1) {
+          const segmentDb = MIN_DB + ((segment + 1) / SEGMENTS) * (MAX_DB - MIN_DB);
+          const y = meterBottom - (segment + 1) * segmentHeight - segment * segmentGap;
+          const active = segmentDb <= rms;
+          if (!active) {
+            context.fillStyle = '#18202b';
+          } else if (segmentDb >= -3) {
+            context.fillStyle = '#ef4444';
+          } else if (segmentDb >= -12) {
+            context.fillStyle = '#eab308';
+          } else {
+            context.fillStyle = '#22c55e';
+          }
+          context.fillRect(xs[channel]!, y, barWidth, segmentHeight);
+        }
+
+        if (snapshot.available) {
+          const peakY = meterBottom - normalized(heldPeak[channel]!) * meterHeight;
+          context.fillStyle = snapshot.clip[channel] ? '#f87171' : '#e2e8f0';
+          context.fillRect(xs[channel]!, peakY, barWidth, 2);
+        }
       }
 
-      const drawChannel = (x: number, peak: number, rms: number, clipped: boolean) => {
-        context.fillStyle = '#151a22';
-        context.fillRect(x, meterTop, channelWidth, meterHeight);
-
-        const rmsY = yForDb(rms);
-        context.fillStyle = '#1f8f5f';
-        context.fillRect(x, rmsY, channelWidth, meterBottom - rmsY);
-
-        const peakY = yForDb(peak);
-        context.fillStyle = clipped ? '#ef4444' : '#9bd36a';
-        context.fillRect(x, peakY, channelWidth, 2);
-      };
-
-      drawChannel(leftX, snapshot.peak[0], snapshot.rms[0], snapshot.clip[0]);
-      drawChannel(rightX, snapshot.peak[1], snapshot.rms[1], snapshot.clip[1]);
-
-      context.fillStyle = '#9ca3af';
+      context.font = '9px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
       context.textAlign = 'center';
-      context.fillText('L', leftX + channelWidth / 2, height - 12);
-      context.fillText('R', rightX + channelWidth / 2, height - 12);
+      context.textBaseline = 'bottom';
+      context.fillStyle = snapshot.available ? '#64748b' : '#334155';
+      context.fillText('L', xs[0]! + barWidth / 2, height - 2);
+      context.fillText('R', xs[1]! + barWidth / 2, height - 2);
 
       animationFrame = requestAnimationFrame(draw);
     };
@@ -108,8 +119,8 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
   return (
     <canvas
       ref={canvas}
-      class="h-72 w-full rounded-xl border border-white/10 bg-[#0a0d12]"
-      aria-label="Стерео індикатор рівня"
+      class="h-56 w-11 rounded-lg border border-white/[0.07] bg-[#090c11]"
+      aria-label={`${props.bus} stereo signal meter`}
     />
   );
 };

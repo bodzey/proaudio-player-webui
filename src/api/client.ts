@@ -3,6 +3,8 @@ import type {
   AlertProviderTestResponse,
   AlertProviderUpdate,
   ApiErrorPayload,
+  AudioOutputSelectionResponse,
+  AudioOutputsResponse,
   AudioSettings,
   AudioSettingsUpdate,
   CapabilitiesResponse,
@@ -41,9 +43,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let message = `HTTP ${response.status}`;
     try {
       const payload = (await response.json()) as ApiErrorPayload;
-      if (payload.error) {
-        message = payload.error;
-      }
+      if (payload.error) message = payload.error;
     } catch {
       // HTTP status remains authoritative when the response body is not JSON.
     }
@@ -56,9 +56,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 function jsonBody(value: unknown): Pick<RequestInit, 'body' | 'headers'> {
   return {
     body: JSON.stringify(value),
-    headers: {
-      'content-type': 'application/json',
-    },
+    headers: { 'content-type': 'application/json' },
   };
 }
 
@@ -67,6 +65,7 @@ export const api = {
   capabilities: () => request<CapabilitiesResponse>('/capabilities'),
   status: () => request<PlayerStatus>('/status'),
   mixer: () => request<MixerState>('/audio/mixer'),
+  audioOutputs: () => request<AudioOutputsResponse>('/audio/outputs'),
   alertSettings: () => request<AlertProviderSettings>('/settings/alerts'),
   audioSettings: () => request<AudioSettings>('/settings/audio'),
 
@@ -91,7 +90,13 @@ export const api = {
   setMixer: (target: 'master' | 'music' | 'alert', db: number, muted?: boolean) =>
     request<MixerState>('/audio/mixer', {
       method: 'POST',
-      ...jsonBody({ target, db, muted }),
+      ...jsonBody(muted === undefined ? { target, db } : { target, db, muted }),
+    }),
+
+  selectAudioOutput: (id: string) =>
+    request<AudioOutputSelectionResponse>('/audio/outputs', {
+      method: 'POST',
+      ...jsonBody({ id }),
     }),
 
   playStream: (url: string) =>
