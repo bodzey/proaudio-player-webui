@@ -232,7 +232,9 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
           />
           <StatusItem
             label="UID у тривозі"
-            value={props.priority?.matched_uids?.length ? props.priority.matched_uids.join(', ') : '—'}
+            value={
+              props.priority?.matched_uids?.length ? props.priority.matched_uids.join(', ') : '—'
+            }
           />
         </div>
 
@@ -296,7 +298,9 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
             </div>
 
             <form
-              ref={providerForm}
+              ref={(element) => {
+                providerForm = element;
+              }}
               class="mt-6 grid gap-4 md:grid-cols-2"
               onSubmit={(event) => {
                 event.preventDefault();
@@ -409,11 +413,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 />
               </label>
 
-              <div class="flex flex-col gap-3 border-t border-white/[0.055] pt-5 md:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-                <span
-                  class={`min-h-5 text-xs ${messageClass(providerMessage())}`}
-                  role="status"
-                >
+              <div class="flex flex-col gap-3 border-t border-white/[0.055] pt-5 sm:flex-row sm:items-center sm:justify-between md:col-span-2">
+                <span class={`min-h-5 text-xs ${messageClass(providerMessage())}`} role="status">
                   {providerMessage()?.text ?? ''}
                 </span>
                 <div class="flex gap-2.5">
@@ -450,13 +451,14 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 Поведінка звуку під час тривоги
               </h2>
               <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
-                Ці параметри керують ducking, рівнем системних повідомлень і відновленням
-                музики.
+                Ці параметри керують ducking, рівнем системних повідомлень і відновленням музики.
               </p>
             </div>
 
             <form
-              ref={audioForm}
+              ref={(element) => {
+                audioForm = element;
+              }}
               class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
               onSubmit={(event) => {
                 event.preventDefault();
@@ -575,13 +577,13 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                     Приглушувати лише під час сповіщення про тривогу та відбій
                   </b>
                   <span class="mt-1 block text-[10px] leading-4 text-slate-600">
-                    Після аудіофайлу музика повертається до попереднього рівня, навіть якщо
-                    тривога триває.
+                    Після аудіофайлу музика повертається до попереднього рівня, навіть якщо тривога
+                    триває.
                   </span>
                 </span>
               </label>
 
-              <div class="flex flex-col gap-3 border-t border-white/[0.055] pt-5 md:col-span-2 xl:col-span-3 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex flex-col gap-3 border-t border-white/[0.055] pt-5 sm:flex-row sm:items-center sm:justify-between md:col-span-2 xl:col-span-3">
                 <span class={`min-h-5 text-xs ${messageClass(audioMessage())}`} role="status">
                   {audioMessage()?.text ?? ''}
                 </span>
@@ -611,7 +613,7 @@ const StatusItem: Component<StatusItemProps> = (props) => (
     <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">
       {props.label}
     </div>
-    <div class="mt-1.5 break-words font-mono text-[11px] text-slate-400">{props.value}</div>
+    <div class="mt-1.5 font-mono text-[11px] break-words text-slate-400">{props.value}</div>
   </div>
 );
 

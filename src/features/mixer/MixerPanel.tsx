@@ -113,7 +113,10 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     if (target === 'alert') {
       return props.status?.audio_levels.alert_bus ?? levelFromPercent(0, false);
     }
-    return levelFromPercent(props.status?.audio_levels.music_bus ?? 0, props.status?.muted ?? false);
+    return levelFromPercent(
+      props.status?.audio_levels.music_bus ?? 0,
+      props.status?.muted ?? false,
+    );
   };
 
   const level = (target: MixerTarget): AudioLevel => mixer()?.[target] ?? fallback(target);
@@ -167,9 +170,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)] sm:p-6">
       <div class="mb-5 flex items-start justify-between gap-4">
         <div>
-          <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-            Mixer
-          </p>
+          <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Console</h2>
           <p class="mt-1.5 text-[10px] leading-4 text-slate-600">
             Реальні Peak/RMS рівні та атенюація шин у dB.
@@ -240,8 +241,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </Show>
 
       <p class="mt-4 text-[10px] leading-4 text-slate-600">
-        Peak/RMS вимірюються з monitor-потоків аудіошин. Фейдери мають підвищену роздільність
-        біля 0 dB і безперервне pointer-керування. Master лишається доступним під час пріоритетного
+        Peak/RMS вимірюються з monitor-потоків аудіошин. Фейдери мають підвищену роздільність біля 0
+        dB і безперервне pointer-керування. Master лишається доступним під час пріоритетного
         оповіщення; Music та Alert підкоряються backend policy.
       </p>
     </section>
@@ -261,7 +262,7 @@ interface MixerStripProps {
 }
 
 const MixerStrip: Component<MixerStripProps> = (props) => {
-  const [draft, setDraft] = createSignal(roundDb(props.level.db));
+  const [draft, setDraft] = createSignal(0);
   const [dragging, setDragging] = createSignal(false);
   let track!: HTMLDivElement;
   let updateTimer: number | undefined;
@@ -370,7 +371,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
                 class="pointer-events-none absolute inset-x-0 flex -translate-y-1/2 items-center"
                 style={{ top: `${dbToFaderPosition(mark) * 100}%` }}
               >
-                <span class="w-6 pr-1 text-right font-mono text-[7px] tabular-nums text-slate-700">
+                <span class="w-6 pr-1 text-right font-mono text-[7px] text-slate-700 tabular-nums">
                   {mark}
                 </span>
                 <span class="h-px flex-1 bg-white/[0.07]" />
@@ -379,11 +380,13 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
           </For>
 
           <div
-            ref={track}
+            ref={(element) => {
+              track = element;
+            }}
             class={
               props.blocked
-                ? 'absolute inset-y-0 left-7 right-0 cursor-not-allowed touch-none opacity-45'
-                : 'absolute inset-y-0 left-7 right-0 cursor-ns-resize touch-none outline-none'
+                ? 'absolute inset-y-0 right-0 left-7 cursor-not-allowed touch-none opacity-45'
+                : 'absolute inset-y-0 right-0 left-7 cursor-ns-resize touch-none outline-none'
             }
             role="slider"
             tabIndex={props.blocked ? -1 : 0}
@@ -435,10 +438,10 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
       </div>
 
       <div class="mt-3 text-center">
-        <div class="font-mono text-sm font-semibold tabular-nums text-slate-100">
+        <div class="font-mono text-sm font-semibold text-slate-100 tabular-nums">
           {displayDb()} <span class="text-[9px] font-normal text-slate-600">dB</span>
         </div>
-        <div class="mt-1 font-mono text-[9px] tabular-nums text-slate-700">
+        <div class="mt-1 font-mono text-[9px] text-slate-700 tabular-nums">
           {dbToPercent(draft()).toFixed(1)}%
         </div>
       </div>

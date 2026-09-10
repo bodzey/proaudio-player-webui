@@ -50,8 +50,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
               Популярні радіостанції
             </h2>
             <p class="mt-2 max-w-2xl text-xs leading-5 text-slate-500">
-              Прямі потоки запускаються через локальний MPD-плеєр. Метадані ефіру, якщо їх
-              передає станція, автоматично з’являються у Now Playing.
+              Прямі потоки запускаються через локальний MPD-плеєр. Метадані ефіру, якщо їх передає
+              станція, автоматично з’являються у Now Playing.
             </p>
           </div>
           <Show when={currentStreamUrl()}>
@@ -83,7 +83,9 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                     <div class="min-w-0 p-4">
                       <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
-                          <div class="truncate text-sm font-semibold text-slate-100">{station.name}</div>
+                          <div class="truncate text-sm font-semibold text-slate-100">
+                            {station.name}
+                          </div>
                           <div class="mt-0.5 truncate text-[10px] font-medium tracking-[0.08em] text-slate-600 uppercase">
                             {station.genre}
                           </div>
@@ -142,7 +144,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
             onInput={(event) => setCustomUrl(event.currentTarget.value)}
             placeholder="https://example.org/radio.mp3"
             spellcheck={false}
-            class="min-w-0 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-4 py-3 font-mono text-xs text-slate-200 outline-none transition placeholder:text-slate-700 focus:border-sky-400/30 focus:ring-2 focus:ring-sky-400/10"
+            class="min-w-0 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-4 py-3 font-mono text-xs text-slate-200 transition outline-none placeholder:text-slate-700 focus:border-sky-400/30 focus:ring-2 focus:ring-sky-400/10"
           />
           <button
             type="submit"

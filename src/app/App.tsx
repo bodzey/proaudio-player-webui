@@ -175,10 +175,7 @@ export function App() {
                     label="State"
                     value={(capabilities()?.events ?? 'SSE').toUpperCase()}
                   />
-                  <RuntimeItem
-                    label="Meters"
-                    value={meterState() === 'live' ? '25 Hz' : 'retry'}
-                  />
+                  <RuntimeItem label="Meters" value={meterState() === 'live' ? '25 Hz' : 'retry'} />
                   <RuntimeItem label="Render" value="Canvas" />
                 </div>
               </section>
@@ -222,7 +219,7 @@ function NavButton(props: NavButtonProps) {
           : 'flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-500 transition hover:bg-white/[0.045] hover:text-slate-300'
       }
       aria-current={props.active ? 'page' : undefined}
-      onClick={props.onClick}
+      onClick={() => props.onClick()}
     >
       {props.children}
     </button>

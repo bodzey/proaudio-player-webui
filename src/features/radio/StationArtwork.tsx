@@ -13,8 +13,7 @@ export const StationArtwork: Component<StationArtworkProps> = (props) => {
   const name = () => props.station?.name ?? props.fallbackName ?? 'Internet Radio';
   const shortName = () => props.station?.shortName ?? name().slice(0, 8).toUpperCase();
   const background = () =>
-    props.station?.artwork ??
-    'linear-gradient(145deg, #0f172a 0%, #1e293b 52%, #020617 100%)';
+    props.station?.artwork ?? 'linear-gradient(145deg, #0f172a 0%, #1e293b 52%, #020617 100%)';
 
   return (
     <div

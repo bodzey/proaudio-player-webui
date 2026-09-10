@@ -47,8 +47,8 @@ function sameText(left: string, right: string): boolean {
 
 export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const [clock, setClock] = createSignal(performance.now());
-  const [volumeDraft, setVolumeDraft] = createSignal(props.status?.volume ?? 0);
-  let positionAnchor = props.status?.player.position_seconds ?? 0;
+  const [volumeDraft, setVolumeDraft] = createSignal(0);
+  let positionAnchor = 0;
   let positionAnchorAt = performance.now();
   let volumeTimer: number | undefined;
   let clockTimer: number | undefined;
@@ -79,9 +79,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const streamUrl = () => props.status?.mpd.stream_url ?? null;
   const station = createMemo(() => findRadioStation(streamUrl()));
   const stationName = createMemo(() =>
-    isRadio()
-      ? station()?.name || props.status?.mpd.station || 'Інтернет-радіо'
-      : '',
+    isRadio() ? station()?.name || props.status?.mpd.station || 'Інтернет-радіо' : '',
   );
 
   const radioMetadata = createMemo(() => {
@@ -108,7 +106,9 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
     if (!player || player.position_seconds === null) return null;
     if (player.state !== 'playing') return player.position_seconds;
     const estimated = positionAnchor + Math.max(0, clock() - positionAnchorAt) / 1000;
-    return player.duration_seconds === null ? estimated : Math.min(player.duration_seconds, estimated);
+    return player.duration_seconds === null
+      ? estimated
+      : Math.min(player.duration_seconds, estimated);
   });
 
   const progress = createMemo(() => {
@@ -140,7 +140,13 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 fallback={
                   <div class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(93,129,255,0.15),transparent_45%),linear-gradient(145deg,#101722,#090c11)]">
                     <div class="flex size-28 items-center justify-center rounded-[30px] border border-white/10 bg-white/[0.04] shadow-2xl">
-                      <svg viewBox="0 0 24 24" class="size-12 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.4">
+                      <svg
+                        viewBox="0 0 24 24"
+                        class="size-12 text-slate-500"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                      >
                         <path d="M9 18V5l10-2v13" />
                         <circle cx="6" cy="18" r="3" />
                         <circle cx="16" cy="16" r="3" />
@@ -149,7 +155,9 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   </div>
                 }
               >
-                {(url) => <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />}
+                {(url) => (
+                  <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />
+                )}
               </Show>
             }
           >
@@ -179,7 +187,9 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                       {props.status?.player.title || 'Немає активного потоку'}
                     </h2>
                     <p class="mt-2 truncate text-sm text-slate-400 sm:text-base">
-                      {props.status?.player.artist || props.status?.player.album || 'ProAudio Player'}
+                      {props.status?.player.artist ||
+                        props.status?.player.album ||
+                        'ProAudio Player'}
                     </p>
                   </>
                 }
@@ -292,7 +302,15 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 disabled={disabledByPriority()}
                 onClick={() => props.onMute(!props.status?.muted)}
               >
-                <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <path d="M11 5 6 9H3v6h3l5 4V5Z" />
                   <Show when={!props.status?.muted && volumeDraft() > 0}>
                     <path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a7.5 7.5 0 0 1 0 11" />
@@ -326,10 +344,10 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 }}
               />
               <div class="min-w-20 text-right">
-                <div class="font-mono text-sm font-semibold tabular-nums text-slate-100">
+                <div class="font-mono text-sm font-semibold text-slate-100 tabular-nums">
                   {volumeDraft().toFixed(1)}%
                 </div>
-                <div class="mt-0.5 font-mono text-[10px] tabular-nums text-slate-600">
+                <div class="mt-0.5 font-mono text-[10px] text-slate-600 tabular-nums">
                   {percentToDb(volumeDraft())}
                 </div>
               </div>

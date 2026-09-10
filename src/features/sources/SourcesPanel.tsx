@@ -13,7 +13,7 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
         <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Sources</p>
         <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Audio sessions</h2>
       </div>
-      <span class="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-1 font-mono text-[10px] tabular-nums text-slate-500">
+      <span class="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-1 font-mono text-[10px] text-slate-500 tabular-nums">
         {props.sources?.length ?? 0} live
       </span>
     </div>
@@ -44,7 +44,14 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
                       : 'flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-slate-600'
                   }
                 >
-                  <svg viewBox="0 0 24 24" class="size-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="size-4.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                  >
                     <path d="M5 15v-3M9 18V9M13 16V6M17 19V11M21 15v-5" />
                   </svg>
                 </div>

@@ -1,4 +1,12 @@
-import { For, Show, createResource, createSignal, onCleanup, onMount, type Component } from 'solid-js';
+import {
+  For,
+  Show,
+  createResource,
+  createSignal,
+  onCleanup,
+  onMount,
+  type Component,
+} from 'solid-js';
 
 import { api } from '../../api/client';
 
@@ -130,9 +138,16 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
                     />
                     <div class="min-w-0 flex-1">
                       <div class="flex min-h-4 items-start justify-between gap-2">
-                        <span class="truncate text-sm font-semibold text-slate-200">{output.name}</span>
+                        <span class="truncate text-sm font-semibold text-slate-200">
+                          {output.name}
+                        </span>
                         <span class="shrink-0 text-[9px] font-semibold tracking-[0.1em] uppercase">
-                          <Show when={isPending()} fallback={output.selected ? <span class="text-cyan-300/80">Active</span> : null}>
+                          <Show
+                            when={isPending()}
+                            fallback={
+                              output.selected ? <span class="text-cyan-300/80">Active</span> : null
+                            }
+                          >
                             <span class="text-cyan-200/55">Switching</span>
                           </Show>
                         </span>
@@ -161,7 +176,11 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
         </p>
       </Show>
 
-      <Show when={error() ?? (!hasSnapshot() && outputs.error ? errorMessage(outputs.error) : undefined)}>
+      <Show
+        when={
+          error() ?? (!hasSnapshot() && outputs.error ? errorMessage(outputs.error) : undefined)
+        }
+      >
         {(message) => (
           <div class="mt-4 rounded-xl border border-red-400/15 bg-red-400/[0.045] px-3.5 py-2.5 text-xs text-red-200/70">
             {message()}

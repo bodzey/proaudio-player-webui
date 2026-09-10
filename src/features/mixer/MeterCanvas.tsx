@@ -118,7 +118,9 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
 
   return (
     <canvas
-      ref={canvas}
+      ref={(element) => {
+        canvas = element;
+      }}
       class="h-56 w-11 rounded-lg border border-white/[0.07] bg-[#090c11]"
       aria-label={`${props.bus} stereo signal meter`}
     />
