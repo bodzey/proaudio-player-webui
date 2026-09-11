@@ -33,8 +33,9 @@ function formatClock(seconds: number | null): string {
 }
 
 function percentToDb(percent: number): string {
-  if (percent <= 0) return '−∞ dB';
-  return `${(20 * Math.log10(percent / 100)).toFixed(1)} dB`;
+  const safePercent = Math.min(100, Math.max(0, percent));
+  if (safePercent <= 0) return '−∞ dB';
+  return `${(60 * Math.log10(safePercent / 100)).toFixed(1)} dB`;
 }
 
 function normalizedText(value: string): string {
@@ -322,6 +323,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 value={volumeDraft()}
                 disabled={disabledByPriority()}
                 aria-label="Гучність музики"
+                aria-valuetext={percentToDb(volumeDraft())}
                 onInput={(event) => {
                   const value = Number(event.currentTarget.value);
                   setVolumeDraft(value);

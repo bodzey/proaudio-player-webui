@@ -18,7 +18,6 @@ type DirectTarget = Exclude<MixerTarget, 'music'>;
 
 const MIN_DB = -60;
 const MAX_DB = 0;
-const FADER_HEIGHT_PX = 256;
 const CONTROL_INTERVAL_MS = 32;
 const FADER_MARKS = [0, -6, -12, -24, -36, -48, -60] as const;
 const FADER_SCALE = [
@@ -52,12 +51,17 @@ function roundDb(db: number): number {
   return Math.round(clampDb(db) * 10) / 10;
 }
 
+// PulseAudio/PipeWire-Pulse exposes UI percent as pa_volume_t / PA_VOLUME_NORM.
+// Its software gain uses a cubic mapping, so dB = 60 * log10(percent / 100).
 function percentToDb(percent: number): number {
-  return percent <= 0 ? MIN_DB : Math.max(MIN_DB, 20 * Math.log10(percent / 100));
+  const safePercent = Math.min(100, Math.max(0, percent));
+  return safePercent <= 0
+    ? MIN_DB
+    : Math.max(MIN_DB, 60 * Math.log10(safePercent / 100));
 }
 
 function dbToPercent(db: number): number {
-  return db <= MIN_DB ? 0 : Math.min(100, Math.max(0, 100 * 10 ** (db / 20)));
+  return db <= MIN_DB ? 0 : Math.min(100, Math.max(0, 100 * 10 ** (db / 60)));
 }
 
 function dbToFaderPosition(db: number): number {
@@ -462,8 +466,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
 
   const bus = (): MeterBus => props.target;
   const displayDb = () => (draft() <= MIN_DB ? '−∞' : draft().toFixed(1));
-  const thumbTransform = () =>
-    `translate3d(-50%, ${dbToFaderPosition(draft()) * FADER_HEIGHT_PX}px, 0) translateY(-50%)`;
+  const thumbPosition = () => `${dbToFaderPosition(draft()) * 100}%`;
 
   return (
     <div
@@ -552,8 +555,8 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
           >
             <div class="pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 rounded-full border border-white/[0.06] bg-[#090c11] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]" />
             <div
-              class="pointer-events-none absolute top-0 left-1/2 h-7 w-9 rounded-[5px] border border-white/25 bg-[linear-gradient(180deg,#d9e1eb,#7c8998)] shadow-[0_5px_12px_rgba(0,0,0,0.45)] will-change-transform"
-              style={{ transform: thumbTransform() }}
+              class="pointer-events-none absolute left-1/2 h-7 w-9 rounded-[5px] border border-white/25 bg-[linear-gradient(180deg,#d9e1eb,#7c8998)] shadow-[0_5px_12px_rgba(0,0,0,0.45)] will-change-transform"
+              style={{ top: thumbPosition(), transform: 'translate(-50%, -50%)' }}
             >
               <span class="absolute top-1/2 left-1/2 h-px w-5 -translate-x-1/2 -translate-y-1/2 bg-slate-800/90" />
             </div>
