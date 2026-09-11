@@ -178,7 +178,7 @@ export interface AudioSettingsUpdate {
   duck_db: number;
   duck_fade_seconds: number;
   restore_fade_seconds: number;
-  alert_volume_percent: number;
+  alert_volume_percent?: number | undefined;
   default_restore_volume_percent: number;
   minute_silence_volume_percent: number;
   alert_repeat_interval_minutes: number;
