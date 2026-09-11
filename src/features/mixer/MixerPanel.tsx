@@ -128,13 +128,12 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
   );
   const queued: Partial<Record<DirectTarget, DirectRequest>> = {};
   const running = new Set<DirectTarget>();
-  let lastStatusSignature: string | undefined;
 
   const statusLevel = (target: MixerTarget): AudioLevel => {
     if (target === 'master') {
       return (
+        props.status?.audio_levels.master ??
         props.status?.audio_levels.physical ??
-        props.status?.audio_levels.hardware ??
         levelFromPercent(100, false)
       );
     }
@@ -149,6 +148,12 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
 
   const authoritativeLevel = (target: MixerTarget): AudioLevel => {
     if (target === 'music') return statusLevel(target);
+    if (target === 'master' && props.status?.audio_levels.master) {
+      return props.status.audio_levels.master;
+    }
+    if (target === 'alert' && props.status?.audio_levels.alert_bus) {
+      return props.status.audio_levels.alert_bus;
+    }
     return mixerState()?.[target] ?? statusLevel(target);
   };
 
@@ -156,25 +161,6 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     if (target === 'music') return authoritativeLevel(target);
     return overrides()[target] ?? authoritativeLevel(target);
   };
-
-  createEffect(() => {
-    const levels = props.status?.audio_levels;
-    if (!levels) return;
-    const signature = [
-      levels.physical?.name ?? '',
-      levels.physical?.db ?? '',
-      levels.physical?.muted ?? '',
-      levels.hardware?.card ?? '',
-      levels.hardware?.control ?? '',
-      levels.hardware?.db ?? '',
-      levels.hardware?.muted ?? '',
-      levels.alert_bus?.db ?? '',
-      levels.alert_bus?.muted ?? '',
-    ].join('|');
-    if (signature === lastStatusSignature) return;
-    lastStatusSignature = signature;
-    void refetchMixerState();
-  });
 
   createEffect(() => {
     const current = overrides();
