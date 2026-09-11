@@ -140,10 +140,11 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     if (target === 'alert') {
       return props.status?.audio_levels.alert_bus ?? levelFromPercent(100, false);
     }
-    return levelFromPercent(
-      props.status?.audio_levels.music_bus ?? props.status?.volume ?? 0,
-      props.status?.muted ?? false,
-    );
+    const statusPercent = props.status?.audio_levels.music_bus ?? props.status?.volume;
+    if (statusPercent !== undefined) {
+      return levelFromPercent(statusPercent, props.status?.muted ?? false);
+    }
+    return mixerState()?.music ?? levelFromPercent(100, false);
   };
 
   const authoritativeLevel = (target: MixerTarget): AudioLevel => {
@@ -226,8 +227,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
 
   const setLevel = (target: MixerTarget, db: number, muted?: boolean) => {
     if (target === 'music') {
-      if (muted === true) {
-        props.onMusicMute(true);
+      if (muted !== undefined) {
+        props.onMusicMute(muted);
       } else {
         props.onMusicVolume(dbToPercent(db));
       }
