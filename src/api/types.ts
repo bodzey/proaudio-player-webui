@@ -78,13 +78,17 @@ export interface AudioLevel {
   card?: number | undefined;
   card_name?: string | undefined;
   control?: string | undefined;
-  db_min?: number | undefined;
-  db_max?: number | undefined;
-  db_reference?: number | undefined;
+  hardware_db?: number | null | undefined;
+  db_min?: number | null | undefined;
+  db_max?: number | null | undefined;
+  db_reference?: number | null | undefined;
+  raw_min?: number | null | undefined;
+  raw_max?: number | null | undefined;
 }
 
 export interface AudioLevels {
   music_bus: number;
+  master: AudioLevel | null;
   physical: AudioLevel | null;
   hardware: AudioLevel | null;
   alert_bus: AudioLevel | null;
@@ -96,6 +100,16 @@ export interface MixerState {
   master: AudioLevel;
 }
 
+export interface AudioOutputCapabilities {
+  sample_format: string | null;
+  sample_rate: number | null;
+  channels: number | null;
+  channel_map: string[];
+  alsa_device: number | null;
+  device_api: string | null;
+  device_bus: string | null;
+}
+
 export interface AudioOutput {
   id: string;
   name: string;
@@ -104,6 +118,7 @@ export interface AudioOutput {
   alsa_card: number | null;
   selected: boolean;
   available: boolean;
+  capabilities: AudioOutputCapabilities;
 }
 
 export interface AudioOutputsResponse {
