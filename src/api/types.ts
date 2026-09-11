@@ -74,6 +74,7 @@ export interface AudioLevel {
   db: number;
   muted: boolean;
   backend?: string | undefined;
+  transport_backend?: string | undefined;
   card?: number | undefined;
   card_name?: string | undefined;
   control?: string | undefined;

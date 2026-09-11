@@ -1,4 +1,12 @@
-import { For, Show, createEffect, createSignal, onCleanup, type Component } from 'solid-js';
+import {
+  For,
+  Show,
+  createEffect,
+  createResource,
+  createSignal,
+  onCleanup,
+  type Component,
+} from 'solid-js';
 
 import { api } from '../../api/client';
 import type { AudioLevel, PlayerStatus } from '../../api/types';
@@ -32,7 +40,8 @@ interface MixerPanelProps {
 }
 
 interface DirectRequest {
-  percent: number;
+  db: number;
+  muted?: boolean;
 }
 
 function clampDb(db: number): number {
@@ -95,12 +104,27 @@ function levelsMatch(left: AudioLevel, right: AudioLevel): boolean {
   return Math.abs(left.db - right.db) <= 0.2 && left.muted === right.muted;
 }
 
+function masterDetail(level: AudioLevel): string {
+  const details: string[] = [];
+  if (level.backend) details.push(level.backend);
+  if (level.transport_backend && level.transport_backend !== level.backend) {
+    details.push(level.transport_backend);
+  }
+  const output = level.control ?? level.name ?? level.card_name;
+  if (output) details.push(output);
+  return details.length > 0 ? details.join(' · ') : 'Output gain';
+}
+
 export const MixerPanel: Component<MixerPanelProps> = (props) => {
   const [error, setError] = createSignal<string>();
   const [pendingVersion, setPendingVersion] = createSignal(0);
   const [overrides, setOverrides] = createSignal<Partial<Record<DirectTarget, AudioLevel>>>({});
+  const [mixerState, { mutate: mutateMixerState, refetch: refetchMixerState }] = createResource(
+    api.mixer,
+  );
   const queued: Partial<Record<DirectTarget, DirectRequest>> = {};
   const running = new Set<DirectTarget>();
+  let lastStatusSignature: string | undefined;
 
   const statusLevel = (target: MixerTarget): AudioLevel => {
     if (target === 'master') {
@@ -119,10 +143,34 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     );
   };
 
-  const level = (target: MixerTarget): AudioLevel => {
+  const authoritativeLevel = (target: MixerTarget): AudioLevel => {
     if (target === 'music') return statusLevel(target);
-    return overrides()[target] ?? statusLevel(target);
+    return mixerState()?.[target] ?? statusLevel(target);
   };
+
+  const level = (target: MixerTarget): AudioLevel => {
+    if (target === 'music') return authoritativeLevel(target);
+    return overrides()[target] ?? authoritativeLevel(target);
+  };
+
+  createEffect(() => {
+    const levels = props.status?.audio_levels;
+    if (!levels) return;
+    const signature = [
+      levels.physical?.name ?? '',
+      levels.physical?.db ?? '',
+      levels.physical?.muted ?? '',
+      levels.hardware?.card ?? '',
+      levels.hardware?.control ?? '',
+      levels.hardware?.db ?? '',
+      levels.hardware?.muted ?? '',
+      levels.alert_bus?.db ?? '',
+      levels.alert_bus?.muted ?? '',
+    ].join('|');
+    if (signature === lastStatusSignature) return;
+    lastStatusSignature = signature;
+    void refetchMixerState();
+  });
 
   createEffect(() => {
     const current = overrides();
@@ -130,7 +178,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     const next = { ...current };
     for (const target of ['master', 'alert'] as const) {
       const local = current[target];
-      if (local && levelsMatch(local, statusLevel(target))) {
+      if (local && levelsMatch(local, authoritativeLevel(target))) {
         delete next[target];
         changed = true;
       }
@@ -145,15 +193,15 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
 
   const queueDirect = (target: DirectTarget, db: number, muted?: boolean) => {
     const current = level(target);
-    const percent = muted === true ? 0 : dbToPercent(db);
+    const safeDb = roundDb(db);
     const optimistic: AudioLevel = {
       ...current,
-      volume: percent,
-      db: percentToDb(percent),
-      muted: percent <= 0,
+      volume: dbToPercent(safeDb),
+      db: safeDb,
+      muted: muted ?? safeDb <= MIN_DB,
     };
     setOverrides((value) => ({ ...value, [target]: optimistic }));
-    queued[target] = { percent };
+    queued[target] = muted === undefined ? { db: safeDb } : { db: safeDb, muted };
     if (running.has(target)) return;
 
     running.add(target);
@@ -163,9 +211,10 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         while (queued[target]) {
           const request = queued[target]!;
           delete queued[target];
-          const confirmed = await api.setAudioLevel(target, request.percent);
+          const confirmed = await api.setMixer(target, request.db, request.muted);
+          mutateMixerState(confirmed);
           if (!queued[target]) {
-            setOverrides((value) => ({ ...value, [target]: confirmed }));
+            setOverrides((value) => ({ ...value, [target]: confirmed[target] }));
           }
         }
         setError(undefined);
@@ -177,6 +226,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
           return next;
         });
         setError(errorMessage(cause));
+        void refetchMixerState();
       } finally {
         running.delete(target);
         setPendingVersion((value) => value + 1);
@@ -234,7 +284,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             meterLive={props.meterLive}
             blocked={false}
             pending={pending('master')}
-            detail={level('master').name ?? level('master').card_name ?? 'Physical output'}
+            detail={masterDetail(level('master'))}
             onSet={setLevel}
           />
           <MixerStrip
@@ -271,9 +321,10 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </Show>
 
       <p class="mt-4 text-[10px] leading-4 text-slate-600">
-        Фейдери відправляють абсолютний лінійний gain, а не відносні від’ємні dB-команди. MUSIC і
-        регулятор плеєра використовують один спільний стан, тому їх положення синхронізуються
-        відразу. Shift під час захоплення вмикає точне керування.
+        MASTER і ALERT надсилають абсолютну атенюацію через native mixer API. MASTER використовує
+        активний OutputGain backend і не прив’язаний до конкретного ALSA або PipeWire регулятора.
+        MUSIC і регулятор плеєра використовують спільний стан. Shift під час захоплення вмикає точне
+        керування.
       </p>
     </section>
   );
