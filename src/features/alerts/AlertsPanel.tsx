@@ -65,7 +65,6 @@ function audioPayload(form: HTMLFormElement): AudioSettingsUpdate {
   const data = new FormData(form);
   return {
     duck_db: formNumber(data, 'duck_db'),
-    alert_volume_percent: formNumber(data, 'alert_volume_percent'),
     minute_silence_volume_percent: formNumber(data, 'minute_silence_volume_percent'),
     default_restore_volume_percent: formNumber(data, 'default_restore_volume_percent'),
     duck_fade_seconds: formNumber(data, 'duck_fade_seconds'),
@@ -451,7 +450,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 Поведінка звуку під час тривоги
               </h2>
               <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
-                Ці параметри керують ducking, рівнем системних повідомлень і відновленням музики.
+                Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT
+                задається одним фейдером у мікшері та зберігається автоматично.
               </p>
             </div>
 
@@ -476,20 +476,6 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                   step="1"
                   required
                   value={settings.duck_db}
-                />
-              </label>
-
-              <label class={LABEL_CLASS}>
-                Гучність повідомлень тривоги, %
-                <input
-                  class={INPUT_CLASS}
-                  name="alert_volume_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="1"
-                  required
-                  value={settings.alert_volume_percent}
                 />
               </label>
 
