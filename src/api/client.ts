@@ -13,10 +13,11 @@ import type {
   JsonObject,
   MixerState,
   PlayerAction,
-  PlayerStatus,
 } from './types';
+import { parsePlayerStatus } from './validation';
 
 const API_BASE = '/api/v1';
+const DEFAULT_TIMEOUT_MS = 15_000;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -28,17 +29,45 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(
+  path: string,
+  init?: RequestInit,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+): Promise<T> {
   const headers = new Headers(init?.headers);
   if (init?.body && !headers.has('content-type')) {
     headers.set('content-type', 'application/json');
   }
   headers.set('accept', 'application/json');
 
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers,
-  });
+  const controller = new AbortController();
+  const relayAbort = () => controller.abort(init?.signal?.reason);
+  if (init?.signal?.aborted) {
+    relayAbort();
+  } else {
+    init?.signal?.addEventListener('abort', relayAbort, { once: true });
+  }
+  const timer = window.setTimeout(() => controller.abort('timeout'), timeoutMs);
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (cause) {
+    if (init?.signal?.aborted) {
+      throw new ApiError(0, 'Запит скасовано');
+    }
+    if (controller.signal.aborted && !init?.signal?.aborted) {
+      throw new ApiError(0, 'Сервер не відповів вчасно');
+    }
+    if (cause instanceof Error && cause.name === 'AbortError') throw cause;
+    throw new ApiError(0, 'Немає зв’язку з плеєром');
+  } finally {
+    window.clearTimeout(timer);
+    init?.signal?.removeEventListener('abort', relayAbort);
+  }
 
   if (!response.ok) {
     let message = `HTTP ${response.status}`;
@@ -51,7 +80,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(response.status, message);
   }
 
-  return (await response.json()) as T;
+  try {
+    return (await response.json()) as T;
+  } catch {
+    throw new ApiError(response.status, 'Сервер повернув некоректну відповідь');
+  }
 }
 
 function jsonBody(value: unknown): Pick<RequestInit, 'body' | 'headers'> {
@@ -64,7 +97,11 @@ function jsonBody(value: unknown): Pick<RequestInit, 'body' | 'headers'> {
 export const api = {
   health: () => request<HealthResponse>('/health'),
   capabilities: () => request<CapabilitiesResponse>('/capabilities'),
-  status: () => request<PlayerStatus>('/status'),
+  status: async () => {
+    const status = parsePlayerStatus(await request<unknown>('/status'));
+    if (!status) throw new ApiError(502, 'Сервер повернув некоректний стан плеєра');
+    return status;
+  },
   mixer: () => request<MixerState>('/audio/mixer'),
   audioOutputs: () => request<AudioOutputsResponse>('/audio/outputs'),
   alertSettings: () => request<AlertProviderSettings>('/settings/alerts'),
@@ -119,10 +156,14 @@ export const api = {
     }),
 
   testAlertSettings: (settings: AlertProviderUpdate) =>
-    request<AlertProviderTestResponse>('/settings/alerts/test', {
-      method: 'POST',
-      ...jsonBody(settings),
-    }),
+    request<AlertProviderTestResponse>(
+      '/settings/alerts/test',
+      {
+        method: 'POST',
+        ...jsonBody(settings),
+      },
+      125_000,
+    ),
 
   setAudioSettings: (settings: AudioSettingsUpdate) =>
     request<AudioSettings>('/settings/audio', {

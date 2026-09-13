@@ -108,18 +108,23 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   async function loadSettings(): Promise<void> {
     setLoading(true);
     setLoadError(undefined);
-    try {
-      const [nextProvider, nextAudio] = await Promise.all([
-        api.alertSettings(),
-        api.audioSettings(),
-      ]);
-      setProvider(nextProvider);
-      setAudio(nextAudio);
-    } catch (error) {
-      setLoadError(errorText(error));
-    } finally {
-      setLoading(false);
+    const [providerResult, audioResult] = await Promise.allSettled([
+      api.alertSettings(),
+      api.audioSettings(),
+    ]);
+    const errors: string[] = [];
+    if (providerResult.status === 'fulfilled') {
+      setProvider(providerResult.value);
+    } else {
+      errors.push(`API тривог: ${errorText(providerResult.reason)}`);
     }
+    if (audioResult.status === 'fulfilled') {
+      setAudio(audioResult.value);
+    } else {
+      errors.push(`аудіопараметри: ${errorText(audioResult.reason)}`);
+    }
+    setLoadError(errors.length > 0 ? errors.join('; ') : undefined);
+    setLoading(false);
   }
 
   async function saveProvider(): Promise<void> {
@@ -301,119 +306,133 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 providerForm = element;
               }}
               class="mt-6 grid gap-4 md:grid-cols-2"
+              aria-busy={providerBusy() !== null}
               onSubmit={(event) => {
                 event.preventDefault();
                 void saveProvider();
               }}
             >
-              <label class={`${LABEL_CLASS} md:col-span-2`}>
-                Шаблон адреси API
-                <input
-                  class={INPUT_CLASS}
-                  name="endpoint"
-                  type="text"
-                  inputmode="url"
-                  spellcheck={false}
-                  required
-                  value={settings.endpoint}
-                />
-                <span class={HELP_CLASS}>
-                  Адреса повинна містити <code class="font-mono text-slate-500">{'{uid}'}</code>.
-                </span>
-              </label>
+              <fieldset class="contents" disabled={providerBusy() !== null}>
+                <label class={`${LABEL_CLASS} md:col-span-2`}>
+                  Шаблон адреси API
+                  <input
+                    class={INPUT_CLASS}
+                    name="endpoint"
+                    type="text"
+                    inputmode="url"
+                    spellcheck={false}
+                    required
+                    maxlength="2048"
+                    value={settings.endpoint}
+                  />
+                  <span class={HELP_CLASS}>
+                    Адреса повинна містити <code class="font-mono text-slate-500">{'{uid}'}</code>.
+                  </span>
+                </label>
 
-              <label class={LABEL_CLASS}>
-                UID локації
-                <input
-                  class={INPUT_CLASS}
-                  name="location_uid"
-                  type="number"
-                  min="1"
-                  step="1"
-                  required
-                  value={settings.location_uid}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  UID локації
+                  <input
+                    class={INPUT_CLASS}
+                    name="location_uid"
+                    type="number"
+                    min="1"
+                    max="4294967295"
+                    step="1"
+                    required
+                    value={settings.location_uid}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Тип локації
-                <select class={INPUT_CLASS} name="location_type" value={settings.location_type}>
-                  <option value="hromada">Територіальна громада</option>
-                  <option value="city">Місто</option>
-                  <option value="raion">Район</option>
-                  <option value="oblast">Область</option>
-                  <option value="standalone">Окрема територія</option>
-                </select>
-              </label>
+                <label class={LABEL_CLASS}>
+                  Тип локації
+                  <select class={INPUT_CLASS} name="location_type" value={settings.location_type}>
+                    <option value="hromada">Територіальна громада</option>
+                    <option value="city">Місто</option>
+                    <option value="raion">Район</option>
+                    <option value="oblast">Область</option>
+                    <option value="standalone">Окрема територія</option>
+                  </select>
+                </label>
 
-              <label class={`${LABEL_CLASS} md:col-span-2`}>
-                Новий API-токен
-                <input
-                  class={INPUT_CLASS}
-                  name="token"
-                  type="password"
-                  autocomplete="new-password"
-                  placeholder="Залиште порожнім, щоб не змінювати"
-                />
-                <span class={HELP_CLASS}>
-                  Збережений токен ніколи не передається назад у браузер.
-                </span>
-              </label>
+                <label class={`${LABEL_CLASS} md:col-span-2`}>
+                  Новий API-токен
+                  <input
+                    class={INPUT_CLASS}
+                    name="token"
+                    type="password"
+                    autocomplete="new-password"
+                    maxlength="4096"
+                    placeholder="Залиште порожнім, щоб не змінювати"
+                  />
+                  <span class={HELP_CLASS}>
+                    Збережений токен ніколи не передається назад у браузер.
+                  </span>
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Інтервал опитування, с
-                <input
-                  class={INPUT_CLASS}
-                  name="poll_interval_seconds"
-                  type="number"
-                  min="8"
-                  step="1"
-                  required
-                  value={settings.poll_interval_seconds}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Інтервал опитування, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="poll_interval_seconds"
+                    type="number"
+                    min="8"
+                    max="3600"
+                    step="1"
+                    required
+                    value={settings.poll_interval_seconds}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Очікування відповіді, с
-                <input
-                  class={INPUT_CLASS}
-                  name="request_timeout_seconds"
-                  type="number"
-                  min="1"
-                  step="1"
-                  required
-                  value={settings.request_timeout_seconds}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Очікування відповіді, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="request_timeout_seconds"
+                    type="number"
+                    min="0.1"
+                    max="120"
+                    step="0.1"
+                    required
+                    value={settings.request_timeout_seconds}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Пауза після HTTP 429, с
-                <input
-                  class={INPUT_CLASS}
-                  name="rate_limit_backoff_seconds"
-                  type="number"
-                  min="60"
-                  step="1"
-                  required
-                  value={settings.rate_limit_backoff_seconds}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Пауза після HTTP 429, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="rate_limit_backoff_seconds"
+                    type="number"
+                    min="60"
+                    max="86400"
+                    step="1"
+                    required
+                    value={settings.rate_limit_backoff_seconds}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Підтверджень відбою
-                <input
-                  class={INPUT_CLASS}
-                  name="clear_confirmations"
-                  type="number"
-                  min="1"
-                  step="1"
-                  required
-                  value={settings.clear_confirmations}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Підтверджень відбою
+                  <input
+                    class={INPUT_CLASS}
+                    name="clear_confirmations"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+                    value={settings.clear_confirmations}
+                  />
+                </label>
+              </fieldset>
 
               <div class="flex flex-col gap-3 border-t border-white/[0.055] pt-5 sm:flex-row sm:items-center sm:justify-between md:col-span-2">
-                <span class={`min-h-5 text-xs ${messageClass(providerMessage())}`} role="status">
+                <span
+                  class={`min-h-5 text-xs ${messageClass(providerMessage())}`}
+                  role="status"
+                  aria-live="polite"
+                >
                   {providerMessage()?.text ?? ''}
                 </span>
                 <div class="flex gap-2.5">
@@ -450,9 +469,23 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 Поведінка звуку під час тривоги
               </h2>
               <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
-                Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT
-                задається одним фейдером у мікшері та зберігається автоматично.
+                Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT задається
+                одним фейдером у мікшері та зберігається автоматично.
               </p>
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-2" aria-label="Домен обробки аудіо">
+              <span class="rounded-lg border border-white/[0.07] bg-black/20 px-2.5 py-1.5 font-mono text-[11px] text-slate-400">
+                {settings.sample_rate_mode === 'fixed'
+                  ? 'Фіксований домен'
+                  : settings.sample_rate_mode}
+              </span>
+              <span class="rounded-lg border border-white/[0.07] bg-black/20 px-2.5 py-1.5 font-mono text-[11px] text-slate-400">
+                {(settings.sample_rate / 1000).toFixed(1)} kHz · stereo
+              </span>
+              <span class="rounded-lg border border-white/[0.07] bg-black/20 px-2.5 py-1.5 font-mono text-[11px] text-slate-500">
+                100% = 0.00 dB
+              </span>
             </div>
 
             <form
@@ -460,117 +493,123 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 audioForm = element;
               }}
               class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+              aria-busy={audioBusy()}
               onSubmit={(event) => {
                 event.preventDefault();
                 void saveAudio();
               }}
             >
-              <label class={LABEL_CLASS}>
-                Стишення музики, dB
-                <input
-                  class={INPUT_CLASS}
-                  name="duck_db"
-                  type="number"
-                  min="-60"
-                  max="0"
-                  step="1"
-                  required
-                  value={settings.duck_db}
-                />
-              </label>
+              <fieldset class="contents" disabled={audioBusy()}>
+                <label class={LABEL_CLASS}>
+                  Стишення музики, dB
+                  <input
+                    class={INPUT_CLASS}
+                    name="duck_db"
+                    type="number"
+                    min="-60"
+                    max="0"
+                    step="0.1"
+                    required
+                    value={settings.duck_db}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Гучність хвилини мовчання, %
-                <input
-                  class={INPUT_CLASS}
-                  name="minute_silence_volume_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="1"
-                  required
-                  value={settings.minute_silence_volume_percent}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Гучність хвилини мовчання, %
+                  <input
+                    class={INPUT_CLASS}
+                    name="minute_silence_volume_percent"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="1"
+                    required
+                    value={settings.minute_silence_volume_percent}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Рівень відновлення без знімка, %
-                <input
-                  class={INPUT_CLASS}
-                  name="default_restore_volume_percent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="1"
-                  required
-                  value={settings.default_restore_volume_percent}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Рівень відновлення без знімка, %
+                  <input
+                    class={INPUT_CLASS}
+                    name="default_restore_volume_percent"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="1"
+                    required
+                    value={settings.default_restore_volume_percent}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Час стишення, с
-                <input
-                  class={INPUT_CLASS}
-                  name="duck_fade_seconds"
-                  type="number"
-                  min="0"
-                  max="30"
-                  step="0.1"
-                  required
-                  value={settings.duck_fade_seconds}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Час стишення, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="duck_fade_seconds"
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="0.1"
+                    required
+                    value={settings.duck_fade_seconds}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Час відновлення, с
-                <input
-                  class={INPUT_CLASS}
-                  name="restore_fade_seconds"
-                  type="number"
-                  min="0"
-                  max="30"
-                  step="0.1"
-                  required
-                  value={settings.restore_fade_seconds}
-                />
-              </label>
+                <label class={LABEL_CLASS}>
+                  Час відновлення, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="restore_fade_seconds"
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="0.1"
+                    required
+                    value={settings.restore_fade_seconds}
+                  />
+                </label>
 
-              <label class={LABEL_CLASS}>
-                Повторення активної тривоги
-                <select
-                  class={INPUT_CLASS}
-                  name="alert_repeat_interval_minutes"
-                  value={settings.alert_repeat_interval_minutes}
-                >
-                  <option value="0">Не повторювати</option>
-                  <option value="5">Кожні 5 хвилин</option>
-                  <option value="10">Кожні 10 хвилин</option>
-                  <option value="15">Кожні 15 хвилин</option>
-                  <option value="30">Кожні 30 хвилин</option>
-                  <option value="60">Щогодини</option>
-                </select>
-              </label>
+                <label class={LABEL_CLASS}>
+                  Повторення активної тривоги, хв
+                  <input
+                    class={INPUT_CLASS}
+                    name="alert_repeat_interval_minutes"
+                    type="number"
+                    min="0"
+                    max="1440"
+                    step="1"
+                    required
+                    value={settings.alert_repeat_interval_minutes}
+                  />
+                  <span class={HELP_CLASS}>0 — не повторювати.</span>
+                </label>
 
-              <label class="flex cursor-pointer gap-3 rounded-2xl border border-white/[0.065] bg-black/15 p-4 md:col-span-2 xl:col-span-2">
-                <input
-                  class="mt-0.5 size-4 accent-sky-400"
-                  name="duck_only_during_announcement"
-                  type="checkbox"
-                  checked={settings.duck_only_during_announcement}
-                />
-                <span>
-                  <b class="block text-xs font-semibold text-slate-300">
-                    Приглушувати лише під час сповіщення про тривогу та відбій
-                  </b>
-                  <span class="mt-1 block text-[10px] leading-4 text-slate-600">
-                    Після аудіофайлу музика повертається до попереднього рівня, навіть якщо тривога
-                    триває.
+                <label class="flex cursor-pointer gap-3 rounded-2xl border border-white/[0.065] bg-black/15 p-4 md:col-span-2 xl:col-span-2">
+                  <input
+                    class="mt-0.5 size-4 accent-sky-400"
+                    name="duck_only_during_announcement"
+                    type="checkbox"
+                    checked={settings.duck_only_during_announcement}
+                  />
+                  <span>
+                    <b class="block text-xs font-semibold text-slate-300">
+                      Приглушувати лише під час сповіщення про тривогу та відбій
+                    </b>
+                    <span class="mt-1 block text-[10px] leading-4 text-slate-600">
+                      Після аудіофайлу музика повертається до попереднього рівня, навіть якщо
+                      тривога триває.
+                    </span>
                   </span>
-                </span>
-              </label>
+                </label>
+              </fieldset>
 
               <div class="flex flex-col gap-3 border-t border-white/[0.055] pt-5 sm:flex-row sm:items-center sm:justify-between md:col-span-2 xl:col-span-3">
-                <span class={`min-h-5 text-xs ${messageClass(audioMessage())}`} role="status">
+                <span
+                  class={`min-h-5 text-xs ${messageClass(audioMessage())}`}
+                  role="status"
+                  aria-live="polite"
+                >
                   {audioMessage()?.text ?? ''}
                 </span>
                 <button

@@ -17,6 +17,11 @@ const PEAK_RELEASE_SECONDS = 0.16;
 const PEAK_HOLD_MS = 900;
 const PEAK_DECAY_DB_PER_SECOND = 18;
 const CLIP_HOLD_MS = 1500;
+const BUS_LABELS: Record<MeterBus, string> = {
+  master: 'MASTER',
+  music: 'MUSIC',
+  alert: 'ALERT',
+};
 
 function clampDb(value: number): number {
   return Math.min(MAX_DB, Math.max(MIN_DB, value));
@@ -82,15 +87,10 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       const barWidth = Math.max(5, (width - gap * 3) / 2);
       const xs = [gap, gap * 2 + barWidth];
       const segmentGap = 2;
-      const segmentHeight = Math.max(
-        2,
-        (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS,
-      );
+      const segmentHeight = Math.max(2, (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS);
 
       for (let channel = 0; channel < 2; channel += 1) {
-        const targetPeak = snapshot.available
-          ? clampDb(snapshot.peak[channel] ?? MIN_DB)
-          : MIN_DB;
+        const targetPeak = snapshot.available ? clampDb(snapshot.peak[channel] ?? MIN_DB) : MIN_DB;
         const targetRms = snapshot.available ? clampDb(snapshot.rms[channel] ?? MIN_DB) : MIN_DB;
 
         displayedPeak[channel] = smoothDb(
@@ -170,7 +170,8 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         canvas = element;
       }}
       class="h-64 w-11 rounded-lg border border-white/[0.07] bg-[#090c11]"
-      aria-label={`${props.bus} stereo signal meter`}
+      aria-label={`Стереорівень ${BUS_LABELS[props.bus]}`}
+      role="img"
     />
   );
 };

@@ -1,7 +1,9 @@
 {
   "name": "ProAudio Player",
   "short_name": "ProAudio",
-  "description": "Realtime control interface for ProAudio Player",
+  "description": "Панель керування мережевим аудіоплеєром ProAudio Player",
+  "id": "/",
+  "lang": "uk",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0d12",

@@ -4,7 +4,8 @@ Realtime browser control surface for ProAudio Player.
 
 This repository contains only the frontend client. Player logic, protocol integrations, alerts, source arbitration, audio routing and the HTTP control backend live in `proaudio-player-native`.
 
-The new UI is developed on the `newui` branch and targets the versioned `/api/v1` contract from `proaudio-player-native/dev`.
+The universal audio UI is developed on `feature/universal-audio-backend` and targets the
+versioned `/api/v1` contract from the matching `proaudio-player-native` feature branch.
 
 ## Stack
 
@@ -14,13 +15,14 @@ The new UI is developed on the `newui` branch and targets the versioned `/api/v1
 - Tailwind CSS 4 for layout and design tokens.
 - Server-Sent Events for player/state updates.
 - Canvas 2D for high-frequency level-meter rendering.
-- WebSocket is reserved for the dedicated meter stream when the native backend exposes that capability.
+- Server-Sent Events carry the dedicated 25 Hz stereo meter stream without pushing samples through the reactive component tree.
 
 The production player does **not** need Node.js. Vite produces static assets in `dist/`, which are served by the native daemon from `/usr/share/proaudio-player/webui`.
 
 ## Development requirements
 
-Use Node.js 22 LTS. Vite 8 requires Node 22.12+ on the Node 22 line, and the lint toolchain is also standardized on Node 22.
+Use Node.js 22 LTS for the reproducible development and CI baseline. The package also accepts Node 24,
+which keeps Buildroot host-tool builds compatible with the next LTS line.
 
 ```bash
 nvm install 22
@@ -43,8 +45,8 @@ Open this repository from WSL, not through the Windows filesystem:
 
 ```bash
 cd ~/dev/proaudio-player-webui
-git switch newui
-npm install
+git switch feature/universal-audio-backend
+npm ci
 code .
 ```
 
@@ -70,6 +72,7 @@ Open `http://127.0.0.1:5173`.
 
 ```bash
 npm run typecheck
+npm run test
 npm run lint
 npm run format:check
 npm run build
@@ -97,7 +100,7 @@ src/
 High-frequency meter samples must not be pushed through Solid signals on every frame. The intended path is:
 
 ```text
-PipeWire -> Rust meter collector -> WebSocket -> MeterBuffer
+PipeWire -> Rust meter collector -> SSE -> MeterBuffer
                                                -> requestAnimationFrame
                                                -> Canvas 2D
 ```
@@ -113,7 +116,7 @@ The frontend must remain optional. A player without this repository must continu
 
 ## Current backend contract
 
-The native `dev` backend currently exposes:
+The matching native feature branch exposes:
 
 - `GET /api/v1/health`
 - `GET /api/v1/capabilities`
@@ -121,4 +124,7 @@ The native `dev` backend currently exposes:
 - `GET /api/v1/events`
 - player, volume, mixer, output, library, playlist, queue and alert-setting resources below `/api/v1`
 
-The meter WebSocket endpoint is intentionally not assumed to exist yet. Its protocol will be added in lockstep with `proaudio-player-native/dev`.
+The frontend validates realtime status frames before committing them to UI state. Meter frames use
+`GET /api/v1/meters`; REST polling keeps the last-known state fresh while the main SSE connection
+reconnects. MUSIC, ALERT and logical MASTER remain separate controls, and the UI never substitutes
+the physical DAC sink for an unavailable MASTER state.

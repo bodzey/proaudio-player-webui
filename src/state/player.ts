@@ -11,8 +11,10 @@ function errorMessage(error: unknown): string {
 }
 
 function clampVolume(value: number): number {
-  return Math.min(100, Math.max(0, value));
+  return Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
 }
+
+type MusicCommand = { kind: 'volume'; percent: number } | { kind: 'mute'; muted: boolean };
 
 export function createPlayerState() {
   const [status, setStatus] = createSignal<PlayerStatus>();
@@ -21,17 +23,22 @@ export function createPlayerState() {
   const [pendingAction, setPendingAction] = createSignal<PlayerAction>();
 
   let unsubscribe: (() => void) | undefined;
-  let volumeWorker: Promise<void> | undefined;
-  let queuedVolume: number | undefined;
+  let fallbackTimer: number | undefined;
+  let musicWorker: Promise<void> | undefined;
+  const musicQueue: MusicCommand[] = [];
 
-  async function refresh(): Promise<void> {
+  async function refresh(reportFailure = true): Promise<void> {
     try {
       setStatus(await api.status());
-      setConnection('online');
-      setError(undefined);
+      if (reportFailure) {
+        setConnection('online');
+        setError(undefined);
+      } else if (connection() === 'offline') {
+        setConnection('reconnecting');
+      }
     } catch (cause) {
       setConnection('offline');
-      setError(errorMessage(cause));
+      if (reportFailure) setError(errorMessage(cause));
     }
   }
 
@@ -43,7 +50,8 @@ export function createPlayerState() {
     setPendingAction(action);
     try {
       await api.playerAction(action);
-      await refresh();
+      await refresh(false);
+      setError(undefined);
     } catch (cause) {
       setError(errorMessage(cause));
     } finally {
@@ -69,44 +77,68 @@ export function createPlayerState() {
     });
   }
 
+  function optimisticMute(muted: boolean): void {
+    setStatus((current) => (current ? { ...current, muted } : current));
+  }
+
+  function startMusicWorker(): void {
+    if (musicWorker || musicQueue.length === 0) return;
+    musicWorker = (async () => {
+      try {
+        while (musicQueue.length > 0) {
+          const next = musicQueue.shift()!;
+          if (next.kind === 'volume') {
+            await api.setVolume(next.percent);
+          } else {
+            await api.setMute(next.muted);
+          }
+        }
+        setError(undefined);
+      } catch (cause) {
+        musicQueue.length = 0;
+        const message = errorMessage(cause);
+        await refresh(false);
+        setError(message);
+      } finally {
+        musicWorker = undefined;
+        startMusicWorker();
+      }
+    })();
+  }
+
+  function enqueueMusic(command: MusicCommand): Promise<void> {
+    const last = musicQueue.at(-1);
+    if (command.kind === 'volume' && last?.kind === 'volume') {
+      musicQueue[musicQueue.length - 1] = command;
+    } else {
+      musicQueue.push(command);
+    }
+
+    startMusicWorker();
+    return musicWorker!;
+  }
+
   function setVolume(percent: number): Promise<void> {
     const safe = clampVolume(percent);
     optimisticVolume(safe);
-    queuedVolume = safe;
-
-    if (!volumeWorker) {
-      volumeWorker = (async () => {
-        try {
-          while (queuedVolume !== undefined) {
-            const next = queuedVolume;
-            queuedVolume = undefined;
-            await api.setVolume(next);
-          }
-          setError(undefined);
-        } catch (cause) {
-          queuedVolume = undefined;
-          setError(errorMessage(cause));
-          await refresh();
-        } finally {
-          volumeWorker = undefined;
-          if (queuedVolume !== undefined) {
-            void setVolume(queuedVolume);
-          }
-        }
-      })();
-    }
-
-    return volumeWorker;
+    return enqueueMusic({ kind: 'volume', percent: safe });
   }
 
-  async function setMute(muted: boolean): Promise<void> {
-    try {
-      await api.setMute(muted);
-      setStatus((current) => (current ? { ...current, muted } : current));
-      setError(undefined);
-    } catch (cause) {
-      setError(errorMessage(cause));
+  function setMute(muted: boolean): Promise<void> {
+    optimisticMute(muted);
+    return enqueueMusic({ kind: 'mute', muted });
+  }
+
+  function stopFallbackPolling(): void {
+    if (fallbackTimer !== undefined) {
+      window.clearInterval(fallbackTimer);
+      fallbackTimer = undefined;
     }
+  }
+
+  function startFallbackPolling(): void {
+    if (fallbackTimer !== undefined) return;
+    fallbackTimer = window.setInterval(() => void refresh(false), 5000);
   }
 
   onMount(() => {
@@ -115,7 +147,7 @@ export function createPlayerState() {
     unsubscribe = subscribeToStatusEvents({
       onStatus: (next) => {
         setStatus((current) => {
-          if (!current || (!volumeWorker && queuedVolume === undefined)) {
+          if (!current || (!musicWorker && musicQueue.length === 0)) {
             return next;
           }
           return {
@@ -128,14 +160,16 @@ export function createPlayerState() {
             },
           };
         });
+        stopFallbackPolling();
         setConnection('online');
-        setError(undefined);
       },
       onOpen: () => {
+        stopFallbackPolling();
         setConnection('online');
       },
       onError: (cause) => {
         setConnection((current) => (current === 'online' ? 'reconnecting' : 'offline'));
+        startFallbackPolling();
         if (cause instanceof Error) {
           setError(errorMessage(cause));
         }
@@ -144,6 +178,7 @@ export function createPlayerState() {
   });
 
   onCleanup(() => {
+    stopFallbackPolling();
     unsubscribe?.();
   });
 

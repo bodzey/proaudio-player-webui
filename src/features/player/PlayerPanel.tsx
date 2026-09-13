@@ -10,6 +10,7 @@ import {
 } from 'solid-js';
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
+import { formatDb, percentToDb } from '../../audio/scale';
 import { StationArtwork } from '../radio/StationArtwork';
 import { findRadioStation } from '../radio/stations';
 
@@ -19,6 +20,7 @@ interface PlayerPanelProps {
   onAction: (action: PlayerAction) => void;
   onVolume: (percent: number) => void;
   onMute: (muted: boolean) => void;
+  disabled: boolean;
 }
 
 function formatClock(seconds: number | null): string {
@@ -30,12 +32,6 @@ function formatClock(seconds: number | null): string {
   return hours > 0
     ? `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
     : `${minutes}:${String(secs).padStart(2, '0')}`;
-}
-
-function percentToDb(percent: number): string {
-  const safePercent = Math.min(100, Math.max(0, percent));
-  if (safePercent <= 0) return '−∞ dB';
-  return `${(60 * Math.log10(safePercent / 100)).toFixed(1)} dB`;
 }
 
 function normalizedText(value: string): string {
@@ -120,10 +116,13 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
     return Math.min(100, Math.max(0, player?.progress ?? 0));
   });
 
-  const disabledByPriority = () => props.status?.priority.blocking === true;
+  const controlsDisabled = () => props.disabled || props.status?.priority.blocking === true;
 
   return (
-    <section class="overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#11161e] shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)]">
+    <section
+      class="overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#11161e] shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)]"
+      aria-busy={props.status === undefined}
+    >
       <div class="grid min-h-[330px] lg:grid-cols-[310px_minmax(0,1fr)]">
         <div class="relative aspect-square overflow-hidden bg-[#0b0f15] lg:aspect-auto">
           <Show
@@ -140,6 +139,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                         fill="none"
                         stroke="currentColor"
                         stroke-width="1.4"
+                        aria-hidden="true"
                       >
                         <path d="M9 18V5l10-2v13" />
                         <circle cx="6" cy="18" r="3" />
@@ -163,7 +163,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
           </Show>
           <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
           <div class="absolute bottom-4 left-4 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl">
-            {props.status?.player.source ?? 'No source'}
+            {props.status?.player.source ?? 'Без джерела'}
           </div>
         </div>
 
@@ -175,7 +175,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 fallback={
                   <>
                     <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-                      Now playing
+                      Зараз відтворюється
                     </p>
                     <h2 class="mt-3 truncate text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
                       {props.status?.player.title || 'Немає активного потоку'}
@@ -189,7 +189,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 }
               >
                 <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-                  Live radio
+                  Радіоефір
                 </p>
                 <div class="mt-2 flex min-w-0 items-center gap-2 text-sm font-semibold text-cyan-200/80">
                   <span class="size-2 shrink-0 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]" />
@@ -204,7 +204,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               </Show>
             </div>
             <div class="shrink-0 rounded-xl border border-white/[0.06] bg-black/15 px-3 py-2 text-right">
-              <div class="text-[10px] tracking-[0.15em] text-slate-600 uppercase">Backend</div>
+              <div class="text-[10px] tracking-[0.15em] text-slate-500 uppercase">Backend</div>
               <div class="mt-1 font-mono text-xs text-slate-400">
                 {props.status?.player.backend ?? 'none'}
               </div>
@@ -217,7 +217,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               fallback={
                 <div class="flex items-center gap-3">
                   <span class="font-mono text-[10px] font-semibold tracking-[0.16em] text-red-300/75 uppercase">
-                    Live
+                    Наживо
                   </span>
                   <div class="h-px flex-1 bg-gradient-to-r from-red-400/45 via-white/10 to-transparent" />
                 </div>
@@ -239,7 +239,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               <TransportButton
                 label="Попередній"
                 action="prev"
-                disabled={disabledByPriority() || !props.status?.player.controls.prev}
+                disabled={controlsDisabled() || !props.status?.player.controls.prev}
                 pending={props.pendingAction === 'prev'}
                 onClick={props.onAction}
               >
@@ -248,7 +248,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               <TransportButton
                 label="Стоп"
                 action="stop"
-                disabled={disabledByPriority() || !props.status?.player.controls.stop}
+                disabled={controlsDisabled() || !props.status?.player.controls.stop}
                 pending={props.pendingAction === 'stop'}
                 onClick={props.onAction}
               >
@@ -259,7 +259,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 label={props.status?.player.state === 'playing' ? 'Пауза' : 'Відтворити'}
                 action={props.status?.player.state === 'playing' ? 'pause' : 'play'}
                 disabled={
-                  disabledByPriority() ||
+                  controlsDisabled() ||
                   (props.status?.player.state === 'playing'
                     ? !props.status?.player.controls.pause
                     : !props.status?.player.controls.play)
@@ -280,7 +280,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               <TransportButton
                 label="Наступний"
                 action="next"
-                disabled={disabledByPriority() || !props.status?.player.controls.next}
+                disabled={controlsDisabled() || !props.status?.player.controls.next}
                 pending={props.pendingAction === 'next'}
                 onClick={props.onAction}
               >
@@ -293,7 +293,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 type="button"
                 class="flex size-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
                 aria-label={props.status?.muted ? 'Увімкнути звук' : 'Вимкнути звук'}
-                disabled={disabledByPriority()}
+                disabled={controlsDisabled()}
                 onClick={() => props.onMute(!props.status?.muted)}
               >
                 <svg
@@ -321,9 +321,10 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 max="100"
                 step="0.1"
                 value={volumeDraft()}
-                disabled={disabledByPriority()}
+                disabled={controlsDisabled()}
                 aria-label="Гучність музики"
-                aria-valuetext={percentToDb(volumeDraft())}
+                aria-valuetext={formatDb(percentToDb(volumeDraft()))}
+                style={{ '--volume-percent': `${volumeDraft()}%` }}
                 onInput={(event) => {
                   const value = Number(event.currentTarget.value);
                   setVolumeDraft(value);
@@ -335,7 +336,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   {volumeDraft().toFixed(1)}%
                 </div>
                 <div class="mt-0.5 font-mono text-[10px] text-slate-600 tabular-nums">
-                  {percentToDb(volumeDraft())}
+                  {formatDb(percentToDb(volumeDraft()))}
                 </div>
               </div>
             </div>

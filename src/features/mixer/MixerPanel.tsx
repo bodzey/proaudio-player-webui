@@ -10,14 +10,13 @@ import {
 
 import { api } from '../../api/client';
 import type { AudioLevel, PlayerStatus } from '../../api/types';
+import { MAX_DB, MIN_DB, clampDb, dbToPercent, percentToDb, roundDb } from '../../audio/scale';
 import type { MeterBuffer, MeterBus } from '../../realtime/meter-buffer';
 import { MeterCanvas } from './MeterCanvas';
 
 type MixerTarget = 'master' | 'music' | 'alert';
 type DirectTarget = Exclude<MixerTarget, 'music'>;
 
-const MIN_DB = -60;
-const MAX_DB = 0;
 const CONTROL_INTERVAL_MS = 32;
 const FADER_MARKS = [0, -6, -12, -24, -36, -48, -60] as const;
 const FADER_SCALE = [
@@ -36,32 +35,12 @@ interface MixerPanelProps {
   meterLive: boolean;
   onMusicVolume: (percent: number) => void;
   onMusicMute: (muted: boolean) => void;
+  disabled: boolean;
 }
 
 interface DirectRequest {
   db: number;
   muted?: boolean;
-}
-
-function clampDb(db: number): number {
-  return Math.min(MAX_DB, Math.max(MIN_DB, db));
-}
-
-function roundDb(db: number): number {
-  return Math.round(clampDb(db) * 10) / 10;
-}
-
-// PulseAudio/PipeWire-Pulse exposes UI percent as pa_volume_t / PA_VOLUME_NORM.
-// Its software gain uses a cubic mapping, so dB = 60 * log10(percent / 100).
-function percentToDb(percent: number): number {
-  const safePercent = Math.min(100, Math.max(0, percent));
-  return safePercent <= 0
-    ? MIN_DB
-    : Math.max(MIN_DB, 60 * Math.log10(safePercent / 100));
-}
-
-function dbToPercent(db: number): number {
-  return db <= MIN_DB ? 0 : Math.min(100, Math.max(0, 100 * 10 ** (db / 60)));
 }
 
 function dbToFaderPosition(db: number): number {
@@ -108,7 +87,8 @@ function levelsMatch(left: AudioLevel, right: AudioLevel): boolean {
   return Math.abs(left.db - right.db) <= 0.2 && left.muted === right.muted;
 }
 
-function masterDetail(level: AudioLevel): string {
+function masterDetail(level: AudioLevel | undefined): string {
+  if (!level) return 'Очікування стану MASTER';
   const details: string[] = [];
   if (level.backend) details.push(level.backend);
   if (level.transport_backend && level.transport_backend !== level.backend) {
@@ -129,25 +109,21 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
   const queued: Partial<Record<DirectTarget, DirectRequest>> = {};
   const running = new Set<DirectTarget>();
 
-  const statusLevel = (target: MixerTarget): AudioLevel => {
+  const statusLevel = (target: MixerTarget): AudioLevel | undefined => {
     if (target === 'master') {
-      return (
-        props.status?.audio_levels.master ??
-        props.status?.audio_levels.physical ??
-        levelFromPercent(100, false)
-      );
+      return props.status?.audio_levels.master ?? mixerState()?.master;
     }
     if (target === 'alert') {
-      return props.status?.audio_levels.alert_bus ?? levelFromPercent(100, false);
+      return props.status?.audio_levels.alert_bus ?? mixerState()?.alert;
     }
     const statusPercent = props.status?.audio_levels.music_bus ?? props.status?.volume;
     if (statusPercent !== undefined) {
       return levelFromPercent(statusPercent, props.status?.muted ?? false);
     }
-    return mixerState()?.music ?? levelFromPercent(100, false);
+    return mixerState()?.music;
   };
 
-  const authoritativeLevel = (target: MixerTarget): AudioLevel => {
+  const authoritativeLevel = (target: MixerTarget): AudioLevel | undefined => {
     if (target === 'music') return statusLevel(target);
     if (target === 'master' && props.status?.audio_levels.master) {
       return props.status.audio_levels.master;
@@ -158,7 +134,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     return mixerState()?.[target] ?? statusLevel(target);
   };
 
-  const level = (target: MixerTarget): AudioLevel => {
+  const level = (target: MixerTarget): AudioLevel | undefined => {
     if (target === 'music') return authoritativeLevel(target);
     return overrides()[target] ?? authoritativeLevel(target);
   };
@@ -169,7 +145,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     const next = { ...current };
     for (const target of ['master', 'alert'] as const) {
       const local = current[target];
-      if (local && levelsMatch(local, authoritativeLevel(target))) {
+      const authoritative = authoritativeLevel(target);
+      if (local && authoritative && levelsMatch(local, authoritative)) {
         delete next[target];
         changed = true;
       }
@@ -184,6 +161,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
 
   const queueDirect = (target: DirectTarget, db: number, muted?: boolean) => {
     const current = level(target);
+    if (!current || props.disabled) return;
     const safeDb = roundDb(db);
     const optimistic: AudioLevel = {
       ...current,
@@ -242,8 +220,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       <div class="mb-5 flex items-start justify-between gap-4">
         <div>
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
-          <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Console</h2>
-          <p class="mt-1.5 text-[10px] leading-4 text-slate-600">
+          <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Мікшер</h2>
+          <p class="mt-1.5 text-xs leading-5 text-slate-500">
             Реальні Peak/RMS рівні та абсолютна атенюація шин у dB.
           </p>
         </div>
@@ -261,47 +239,61 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
                 : 'size-1.5 rounded-full bg-amber-300/60'
             }
           />
-          {props.meterLive ? '25 Hz live' : 'Meter offline'}
+          {props.meterLive ? '25 Hz наживо' : 'Метри недоступні'}
         </div>
       </div>
 
-      <div class="overflow-x-auto pb-1">
+      <div class="overflow-x-auto pb-1" aria-label="Канали мікшера">
         <div class="grid min-w-[420px] grid-cols-3 gap-2.5">
-          <MixerStrip
-            target="master"
-            label="MASTER"
-            level={level('master')}
-            buffer={props.buffer}
-            meterLive={props.meterLive}
-            blocked={false}
-            pending={pending('master')}
-            detail={masterDetail(level('master'))}
-            onSet={setLevel}
-          />
           <MixerStrip
             target="music"
             label="MUSIC"
-            level={level('music')}
+            level={level('music') ?? levelFromPercent(0, true)}
             buffer={props.buffer}
             meterLive={props.meterLive}
-            blocked={props.status?.priority.blocking === true}
+            blocked={
+              props.disabled ||
+              level('music') === undefined ||
+              props.status?.priority.blocking === true
+            }
             pending={false}
-            detail="Music bus"
+            detail="Музична шина"
             onSet={setLevel}
           />
           <MixerStrip
             target="alert"
             label="ALERT"
-            level={level('alert')}
+            level={level('alert') ?? levelFromPercent(0, true)}
             buffer={props.buffer}
             meterLive={props.meterLive}
-            blocked={props.status?.priority.blocking === true}
+            blocked={
+              props.disabled ||
+              level('alert') === undefined ||
+              props.status?.priority.blocking === true
+            }
             pending={pending('alert')}
-            detail="Priority bus"
+            detail="Шина оповіщень"
+            onSet={setLevel}
+          />
+          <MixerStrip
+            target="master"
+            label="MASTER"
+            level={level('master') ?? levelFromPercent(0, true)}
+            buffer={props.buffer}
+            meterLive={props.meterLive}
+            blocked={props.disabled || level('master') === undefined}
+            pending={pending('master')}
+            detail={masterDetail(level('master'))}
             onSet={setLevel}
           />
         </div>
       </div>
+
+      <Show when={mixerState.loading && !props.status}>
+        <p class="mt-3 text-xs text-slate-500" role="status">
+          Завантаження стану мікшера…
+        </p>
+      </Show>
 
       <Show when={error()}>
         {(message) => (
@@ -311,11 +303,10 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         )}
       </Show>
 
-      <p class="mt-4 text-[10px] leading-4 text-slate-600">
-        MASTER і ALERT надсилають абсолютну атенюацію через native mixer API. MASTER використовує
-        активний OutputGain backend і не прив’язаний до конкретного ALSA або PipeWire регулятора.
-        MUSIC і регулятор плеєра використовують спільний стан. Shift під час захоплення вмикає точне
-        керування.
+      <p class="mt-4 text-xs leading-5 text-slate-500">
+        MUSIC + ALERT → MASTER → вибраний фізичний вихід. MASTER не прив’язаний до конкретного DAC,
+        а MUSIC і регулятор плеєра використовують спільний стан. Shift під час перетягування вмикає
+        точне керування.
       </p>
     </section>
   );
@@ -346,7 +337,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
   let dragSensitivity = 1;
 
   createEffect(() => {
-    if (!dragging() && !props.pending && !props.level.muted) {
+    if (!dragging() && !props.pending) {
       setDraft(roundDb(props.level.db));
     }
   });
@@ -466,7 +457,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
       <div class="text-center text-[10px] font-bold tracking-[0.16em] text-slate-300">
         {props.label}
       </div>
-      <div class="mt-1 truncate text-center font-mono text-[8px] text-slate-700">
+      <div class="mt-1 truncate text-center font-mono text-[10px] text-slate-500">
         {props.detail}
       </div>
 
@@ -479,7 +470,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
                 class="pointer-events-none absolute inset-x-0 flex -translate-y-1/2 items-center"
                 style={{ top: `${dbToFaderPosition(mark) * 100}%` }}
               >
-                <span class="w-6 pr-1 text-right font-mono text-[7px] text-slate-700 tabular-nums">
+                <span class="w-6 pr-1 text-right font-mono text-[9px] text-slate-500 tabular-nums">
                   {mark}
                 </span>
                 <span class="h-px flex-1 bg-white/[0.07]" />
@@ -500,11 +491,13 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             }
             role="slider"
             tabIndex={props.blocked ? -1 : 0}
-            aria-label={`${props.label} level`}
+            aria-label={`Рівень ${props.label}`}
             aria-valuemin={MIN_DB}
             aria-valuemax={MAX_DB}
             aria-valuenow={draft()}
-            aria-valuetext={displayDb() === '−∞' ? 'minus infinity dB' : `${displayDb()} dB`}
+            aria-valuetext={`${props.level.muted ? 'Вимкнено, ' : ''}${
+              displayDb() === '−∞' ? 'мінус нескінченність dB' : `${displayDb()} dB`
+            }`}
             aria-disabled={props.blocked}
             onKeyDown={handleKeyDown}
             onDblClick={() => !props.blocked && setKeyboardValue(0)}
@@ -539,6 +532,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
               commit(draft());
               setDragging(false);
             }}
+            onLostPointerCapture={() => setDragging(false)}
           >
             <div class="pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 rounded-full border border-white/[0.06] bg-[#090c11] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]" />
             <div
@@ -553,9 +547,9 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
 
       <div class="mt-3 text-center">
         <div class="font-mono text-sm font-semibold text-slate-100 tabular-nums">
-          {displayDb()} <span class="text-[9px] font-normal text-slate-600">dB</span>
+          {displayDb()} <span class="text-[10px] font-normal text-slate-500">dB</span>
         </div>
-        <div class="mt-1 font-mono text-[9px] text-slate-700 tabular-nums">
+        <div class="mt-1 font-mono text-[10px] text-slate-500 tabular-nums">
           {dbToPercent(draft()).toFixed(1)}%
         </div>
       </div>
@@ -565,15 +559,15 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
         disabled={props.blocked}
         class={
           props.level.muted
-            ? 'mt-3 w-full rounded-lg border border-red-400/25 bg-red-400/[0.12] px-2 py-2 text-[9px] font-bold tracking-[0.12em] text-red-200 uppercase transition'
-            : 'mt-3 w-full rounded-lg border border-white/[0.07] bg-white/[0.025] px-2 py-2 text-[9px] font-bold tracking-[0.12em] text-slate-500 uppercase transition hover:bg-white/[0.06] hover:text-slate-300'
+            ? 'mt-3 w-full rounded-lg border border-red-400/25 bg-red-400/[0.12] px-2 py-2 text-[10px] font-bold tracking-[0.12em] text-red-200 uppercase transition'
+            : 'mt-3 w-full rounded-lg border border-white/[0.07] bg-white/[0.025] px-2 py-2 text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase transition hover:bg-white/[0.06] hover:text-slate-200'
         }
         onClick={() => props.onSet(props.target, draft(), !props.level.muted)}
       >
-        {props.level.muted ? 'UNMUTE' : 'MUTE'}
+        {props.level.muted ? 'Увімкнути' : 'Вимкнути'}
       </button>
-      <div class="mt-2 h-2 text-center text-[8px] tracking-[0.08em] text-slate-700 uppercase">
-        {props.pending ? 'sync' : props.meterLive ? 'live' : ''}
+      <div class="mt-2 h-3 text-center text-[9px] tracking-[0.08em] text-slate-500 uppercase">
+        {props.pending ? 'синхронізація' : props.meterLive ? 'наживо' : ''}
       </div>
     </div>
   );

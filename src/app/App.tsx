@@ -1,4 +1,4 @@
-import { Show, createEffect, createResource, createSignal, onCleanup } from 'solid-js';
+import { Show, createEffect, createResource, createSignal, onCleanup, onMount } from 'solid-js';
 
 import { api } from '../api/client';
 import { subscribeToMeterEvents } from '../api/meters';
@@ -9,11 +9,17 @@ import { MixerPanel } from '../features/mixer/MixerPanel';
 import { OutputsPanel } from '../features/outputs/OutputsPanel';
 import { PlayerPanel } from '../features/player/PlayerPanel';
 import { RadioPanel } from '../features/radio/RadioPanel';
+import { SourcesPanel } from '../features/sources/SourcesPanel';
 import { MeterBuffer } from '../realtime/meter-buffer';
 import { createPlayerState } from '../state/player';
 
 type AppPage = 'player' | 'radio' | 'alerts';
 type MeterState = 'idle' | 'connecting' | 'live' | 'reconnecting';
+
+function pageFromHash(): AppPage {
+  const candidate = window.location.hash.slice(1);
+  return candidate === 'radio' || candidate === 'alerts' ? candidate : 'player';
+}
 
 export function App() {
   const player = createPlayerState();
@@ -21,6 +27,21 @@ export function App() {
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
   const meterBuffer = new MeterBuffer();
+  const controlsUnavailable = () => !player.status() || player.connection() === 'offline';
+  const priorityBlocked = () => player.status()?.priority.blocking ?? false;
+
+  const navigate = (next: AppPage) => {
+    setPage(next);
+    const hash = `#${next}`;
+    if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+  };
+
+  onMount(() => {
+    const syncPage = () => setPage(pageFromHash());
+    syncPage();
+    window.addEventListener('popstate', syncPage);
+    onCleanup(() => window.removeEventListener('popstate', syncPage));
+  });
 
   createEffect(() => {
     if (page() !== 'player') {
@@ -54,6 +75,7 @@ export function App() {
                 stroke="currentColor"
                 stroke-width="1.6"
                 stroke-linecap="round"
+                aria-hidden="true"
               >
                 <path d="M4 15V9M8 18V6M12 20V4M16 17V7M20 14v-4" />
               </svg>
@@ -63,7 +85,7 @@ export function App() {
                 ProAudio Player
               </p>
               <h1 class="mt-0.5 truncate text-base font-semibold tracking-[-0.02em] text-white">
-                {player.status()?.name ?? 'Control surface'}
+                {player.status()?.name ?? 'Панель керування'}
               </h1>
             </div>
           </div>
@@ -71,7 +93,7 @@ export function App() {
           <div class="flex items-center gap-2.5">
             <Show when={capabilities()?.api_version}>
               {(version) => (
-                <span class="hidden rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-600 sm:block">
+                <span class="hidden rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-500 sm:block">
                   API {version()}
                 </span>
               )}
@@ -84,13 +106,13 @@ export function App() {
           class="mb-5 flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-white/[0.07] bg-[#0d1118]/90 p-1"
           aria-label="Основні розділи"
         >
-          <NavButton active={page() === 'player'} onClick={() => setPage('player')}>
+          <NavButton active={page() === 'player'} onClick={() => navigate('player')}>
             <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
               <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
             </svg>
             Плеєр
           </NavButton>
-          <NavButton active={page() === 'radio'} onClick={() => setPage('radio')}>
+          <NavButton active={page() === 'radio'} onClick={() => navigate('radio')}>
             <svg
               viewBox="0 0 24 24"
               class="size-4"
@@ -106,7 +128,7 @@ export function App() {
             </svg>
             Радіо
           </NavButton>
-          <NavButton active={page() === 'alerts'} onClick={() => setPage('alerts')}>
+          <NavButton active={page() === 'alerts'} onClick={() => navigate('alerts')}>
             <svg
               viewBox="0 0 24 24"
               class="size-4"
@@ -129,7 +151,11 @@ export function App() {
 
         <Show when={player.error()}>
           {(message) => (
-            <div class="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.055] px-4 py-3.5 text-sm text-amber-100/80">
+            <div
+              class="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.055] px-4 py-3.5 text-sm text-amber-100/80"
+              role="alert"
+              aria-live="assertive"
+            >
               <span class="mt-1 size-1.5 shrink-0 rounded-full bg-amber-300" />
               <span>{message()}</span>
             </div>
@@ -147,8 +173,9 @@ export function App() {
                 onAction={(action) => void player.playerAction(action)}
                 onVolume={(percent) => void player.setVolume(percent)}
                 onMute={(muted) => void player.setMute(muted)}
+                disabled={controlsUnavailable()}
               />
-              <OutputsPanel blocked={player.status()?.priority.blocking ?? false} />
+              <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
             </div>
 
             <div class="min-w-0 space-y-5">
@@ -158,29 +185,9 @@ export function App() {
                 meterLive={meterState() === 'live'}
                 onMusicVolume={(percent) => void player.setVolume(percent)}
                 onMusicMute={(muted) => void player.setMute(muted)}
+                disabled={controlsUnavailable()}
               />
-
-              <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-4">
-                  <div>
-                    <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-                      Runtime
-                    </p>
-                    <h2 class="mt-1.5 text-sm font-semibold text-slate-200">
-                      Realtime control plane
-                    </h2>
-                  </div>
-                  <span class="size-2 rounded-full bg-emerald-400/70 shadow-[0_0_12px_rgba(52,211,153,0.35)]" />
-                </div>
-                <div class="mt-5 grid grid-cols-3 gap-2.5">
-                  <RuntimeItem
-                    label="State"
-                    value={(capabilities()?.events ?? 'SSE').toUpperCase()}
-                  />
-                  <RuntimeItem label="Meters" value={meterState() === 'live' ? '25 Hz' : 'retry'} />
-                  <RuntimeItem label="Render" value="Canvas" />
-                </div>
-              </section>
+              <SourcesPanel sources={player.status()?.sources} />
             </div>
           </div>
         </Show>
@@ -188,7 +195,8 @@ export function App() {
         <Show when={page() === 'radio'}>
           <RadioPanel
             status={player.status()}
-            blocked={player.status()?.priority.blocking ?? false}
+            blocked={priorityBlocked()}
+            disabled={controlsUnavailable()}
           />
         </Show>
 
@@ -196,9 +204,9 @@ export function App() {
           <AlertsPanel priority={player.status()?.priority} />
         </Show>
 
-        <footer class="mt-8 flex flex-col gap-2 border-t border-white/[0.055] pt-4 text-[10px] tracking-[0.08em] text-slate-700 uppercase sm:flex-row sm:items-center sm:justify-between">
-          <span>ProAudio Player · newui</span>
-          <span>SolidJS · native /api/v1 · realtime first</span>
+        <footer class="mt-8 flex flex-col gap-2 border-t border-white/[0.055] pt-4 text-[10px] tracking-[0.08em] text-slate-500 uppercase sm:flex-row sm:items-center sm:justify-between">
+          <span>ProAudio Player</span>
+          <span>Native API {capabilities()?.api_version ?? '—'} · realtime</span>
         </footer>
       </div>
     </main>
@@ -225,16 +233,5 @@ function NavButton(props: NavButtonProps) {
     >
       {props.children}
     </button>
-  );
-}
-
-function RuntimeItem(props: { label: string; value: string }) {
-  return (
-    <div class="rounded-2xl border border-white/[0.055] bg-black/15 px-3 py-3">
-      <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">
-        {props.label}
-      </div>
-      <div class="mt-1.5 truncate font-mono text-[11px] text-slate-400">{props.value}</div>
-    </div>
   );
 }

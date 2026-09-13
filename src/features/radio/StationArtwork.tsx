@@ -28,7 +28,7 @@ export const StationArtwork: Component<StationArtworkProps> = (props) => {
       <div class="relative flex size-full flex-col justify-between p-5 sm:p-6">
         <div class="flex items-center gap-2 text-[9px] font-semibold tracking-[0.2em] text-white/55 uppercase">
           <span class="size-1.5 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.7)]" />
-          Live radio
+          Радіоефір
         </div>
         <div>
           <div

@@ -10,11 +10,13 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
   <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Sources</p>
-        <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Audio sessions</h2>
+        <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Джерела</p>
+        <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
+          Активні аудіосесії
+        </h2>
       </div>
       <span class="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-1 font-mono text-[10px] text-slate-500 tabular-nums">
-        {props.sources?.length ?? 0} live
+        {props.sources?.length ?? 0} наживо
       </span>
     </div>
 
@@ -23,7 +25,7 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
         when={(props.sources?.length ?? 0) > 0}
         fallback={
           <div class="flex min-h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.07] bg-black/10 px-5 text-center text-xs leading-5 text-slate-600">
-            Немає активних аудіосесій на music bus.
+            На музичній шині немає активних джерел.
           </div>
         }
       >
@@ -51,6 +53,7 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
                     stroke="currentColor"
                     stroke-width="1.7"
                     stroke-linecap="round"
+                    aria-hidden="true"
                   >
                     <path d="M5 15v-3M9 18V9M13 16V6M17 19V11M21 15v-5" />
                   </svg>
@@ -60,7 +63,7 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
                     <p class="truncate text-sm font-medium text-slate-200">{source.type}</p>
                     <Show when={source.active}>
                       <span class="rounded-md bg-cyan-300/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-[0.12em] text-cyan-300 uppercase">
-                        active
+                        активне
                       </span>
                     </Show>
                   </div>

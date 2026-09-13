@@ -1,4 +1,5 @@
 import type { PlayerStatus } from './types';
+import { parsePlayerStatus } from './validation';
 
 const STATUS_EVENTS_URL = '/api/v1/events';
 
@@ -14,7 +15,9 @@ export function subscribeToStatusEvents(handlers: StatusEventHandlers): () => vo
   source.addEventListener('status', (event) => {
     try {
       const message = event as MessageEvent<string>;
-      handlers.onStatus(JSON.parse(message.data) as PlayerStatus);
+      const status = parsePlayerStatus(JSON.parse(message.data) as unknown);
+      if (!status) throw new Error('Некоректний status event від сервера');
+      handlers.onStatus(status);
     } catch (error) {
       handlers.onError?.(error);
     }

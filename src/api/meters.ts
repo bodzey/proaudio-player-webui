@@ -54,7 +54,16 @@ function snapshot(value: unknown): MeterSnapshot | undefined {
   const master = channel(record.master);
   const music = channel(record.music);
   const alert = channel(record.alert);
-  if (!master || !music || !alert || typeof record.sequence !== 'number') return undefined;
+  if (
+    !master ||
+    !music ||
+    !alert ||
+    typeof record.sequence !== 'number' ||
+    !Number.isSafeInteger(record.sequence) ||
+    record.sequence < 0
+  ) {
+    return undefined;
+  }
   return {
     sequence: record.sequence,
     master,

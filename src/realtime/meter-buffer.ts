@@ -30,12 +30,20 @@ const SILENCE: MeterSnapshot = {
 
 export class MeterBuffer {
   private snapshot: MeterSnapshot = SILENCE;
+  private updatedAt = Number.NEGATIVE_INFINITY;
+
+  constructor(
+    private readonly now: () => number = () => performance.now(),
+    private readonly staleAfterMs = 500,
+  ) {}
 
   write(snapshot: MeterSnapshot): void {
     this.snapshot = snapshot;
+    this.updatedAt = this.now();
   }
 
   read(bus: MeterBus): StereoMeterSnapshot {
+    if (this.now() - this.updatedAt > this.staleAfterMs) return SILENT_CHANNEL;
     return this.snapshot[bus];
   }
 
@@ -45,5 +53,6 @@ export class MeterBuffer {
 
   reset(): void {
     this.snapshot = SILENCE;
+    this.updatedAt = Number.NEGATIVE_INFINITY;
   }
 }
