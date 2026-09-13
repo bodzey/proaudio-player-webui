@@ -1,13 +1,8 @@
 import { Show, createSignal, onMount, type Component } from 'solid-js';
 
 import { api } from '../../api/client';
-import type {
-  AlertProviderSettings,
-  AlertProviderUpdate,
-  AudioSettings,
-  AudioSettingsUpdate,
-  PriorityState,
-} from '../../api/types';
+import type { AlertProviderSettings, AudioSettings, PriorityState } from '../../api/types';
+import { audioPayload, providerPayload } from './form';
 
 interface AlertsPanelProps {
   priority: PriorityState | undefined;
@@ -28,50 +23,6 @@ const HELP_CLASS = 'mt-1.5 block text-[10px] leading-4 text-slate-600';
 
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : 'Невідома помилка';
-}
-
-function formString(data: FormData, name: string): string {
-  const value = data.get(name);
-  return typeof value === 'string' ? value.trim() : '';
-}
-
-function formNumber(data: FormData, name: string): number {
-  const value = Number(formString(data, name));
-  if (!Number.isFinite(value)) {
-    throw new Error(`Некоректне числове значення: ${name}`);
-  }
-  return value;
-}
-
-function providerPayload(form: HTMLFormElement): AlertProviderUpdate {
-  const data = new FormData(form);
-  const payload: AlertProviderUpdate = {
-    endpoint: formString(data, 'endpoint'),
-    location_uid: formNumber(data, 'location_uid'),
-    location_type: formString(data, 'location_type'),
-    poll_interval_seconds: formNumber(data, 'poll_interval_seconds'),
-    request_timeout_seconds: formNumber(data, 'request_timeout_seconds'),
-    rate_limit_backoff_seconds: formNumber(data, 'rate_limit_backoff_seconds'),
-    clear_confirmations: formNumber(data, 'clear_confirmations'),
-  };
-  const token = formString(data, 'token');
-  if (token) {
-    payload.token = token;
-  }
-  return payload;
-}
-
-function audioPayload(form: HTMLFormElement): AudioSettingsUpdate {
-  const data = new FormData(form);
-  return {
-    duck_db: formNumber(data, 'duck_db'),
-    minute_silence_volume_percent: formNumber(data, 'minute_silence_volume_percent'),
-    default_restore_volume_percent: formNumber(data, 'default_restore_volume_percent'),
-    duck_fade_seconds: formNumber(data, 'duck_fade_seconds'),
-    restore_fade_seconds: formNumber(data, 'restore_fade_seconds'),
-    alert_repeat_interval_minutes: formNumber(data, 'alert_repeat_interval_minutes'),
-    duck_only_during_announcement: data.get('duck_only_during_announcement') === 'on',
-  };
 }
 
 function formatTimestamp(value: string | null | undefined): string {
@@ -131,10 +82,19 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     if (!providerForm.reportValidity()) {
       return;
     }
+    let payload;
+    try {
+      // Snapshot successful controls before `busy` disables the fieldset.
+      // Disabled controls are intentionally omitted by the FormData algorithm.
+      payload = providerPayload(new FormData(providerForm));
+    } catch (error) {
+      setProviderMessage({ tone: 'error', text: errorText(error) });
+      return;
+    }
     setProviderBusy('save');
     setProviderMessage({ tone: 'neutral', text: 'Збереження…' });
     try {
-      const next = await api.setAlertSettings(providerPayload(providerForm));
+      const next = await api.setAlertSettings(payload);
       setProvider(next);
       const token = providerForm.elements.namedItem('token');
       if (token instanceof HTMLInputElement) {
@@ -152,10 +112,17 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     if (!providerForm.reportValidity()) {
       return;
     }
+    let payload;
+    try {
+      payload = providerPayload(new FormData(providerForm));
+    } catch (error) {
+      setProviderMessage({ tone: 'error', text: errorText(error) });
+      return;
+    }
     setProviderBusy('test');
     setProviderMessage({ tone: 'neutral', text: 'Перевірка API…' });
     try {
-      const result = await api.testAlertSettings(providerPayload(providerForm));
+      const result = await api.testAlertSettings(payload);
       setProviderMessage({
         tone: 'success',
         text: result.active
@@ -173,10 +140,17 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     if (!audioForm.reportValidity()) {
       return;
     }
+    let payload;
+    try {
+      payload = audioPayload(new FormData(audioForm));
+    } catch (error) {
+      setAudioMessage({ tone: 'error', text: errorText(error) });
+      return;
+    }
     setAudioBusy(true);
     setAudioMessage({ tone: 'neutral', text: 'Збереження…' });
     try {
-      const next = await api.setAudioSettings(audioPayload(audioForm));
+      const next = await api.setAudioSettings(payload);
       setAudio(next);
       setAudioMessage({ tone: 'success', text: 'Параметри оповіщень збережено.' });
     } catch (error) {
