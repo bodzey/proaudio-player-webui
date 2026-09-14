@@ -2,6 +2,9 @@ import type {
   AlertProviderSettings,
   AlertProviderTestResponse,
   AlertProviderUpdate,
+  AlertMediaFile,
+  AlertMediaKind,
+  AlertMediaResponse,
   ApiErrorPayload,
   AudioLevel,
   AudioOutputSelectionResponse,
@@ -106,6 +109,7 @@ export const api = {
   audioOutputs: () => request<AudioOutputsResponse>('/audio/outputs'),
   alertSettings: () => request<AlertProviderSettings>('/settings/alerts'),
   audioSettings: () => request<AudioSettings>('/settings/audio'),
+  alertMedia: () => request<AlertMediaResponse>('/settings/alerts/media'),
 
   playerAction: (action: PlayerAction) =>
     request<JsonObject>('/player', {
@@ -170,4 +174,18 @@ export const api = {
       method: 'PUT',
       ...jsonBody(settings),
     }),
+
+  setAlertMedia: (kind: AlertMediaKind, file: File) =>
+    request<AlertMediaFile>(
+      `/settings/alerts/media/${kind}`,
+      {
+        method: 'PUT',
+        headers: { 'content-type': 'audio/mpeg' },
+        body: file,
+      },
+      60_000,
+    ),
+
+  resetAlertMedia: (kind: AlertMediaKind) =>
+    request<AlertMediaFile>(`/settings/alerts/media/${kind}`, { method: 'DELETE' }),
 };

@@ -161,12 +161,18 @@ export interface AlertProviderTestResponse {
 }
 
 export interface AudioSettings {
+  notifications_enabled: boolean;
   duck_db: number;
   duck_fade_seconds: number;
   restore_fade_seconds: number;
   alert_volume_percent: number;
   default_restore_volume_percent: number;
   minute_silence_volume_percent: number;
+  minute_silence_enabled: boolean;
+  minute_silence_start_time: string;
+  minute_silence_timezone: string;
+  minute_silence_catch_up_seconds: number;
+  minute_silence_music_fade_seconds: number;
   alert_repeat_interval_minutes: number;
   duck_only_during_announcement: boolean;
   sample_rate_mode: string;
@@ -175,14 +181,39 @@ export interface AudioSettings {
 }
 
 export interface AudioSettingsUpdate {
+  notifications_enabled: boolean;
   duck_db: number;
   duck_fade_seconds: number;
   restore_fade_seconds: number;
   alert_volume_percent?: number | undefined;
   default_restore_volume_percent: number;
   minute_silence_volume_percent: number;
+  minute_silence_enabled: boolean;
+  minute_silence_start_time: string;
+  minute_silence_timezone: string;
+  minute_silence_catch_up_seconds: number;
+  minute_silence_music_fade_seconds: number;
   alert_repeat_interval_minutes: number;
   duck_only_during_announcement: boolean;
+}
+
+export type AlertMediaKind = 'alarm_start' | 'alarm_end' | 'minute_silence';
+
+export interface AlertMediaFile {
+  kind: AlertMediaKind;
+  label: string;
+  file_name: string;
+  configured: boolean;
+  size_bytes: number | null;
+  modified_unix_seconds: number | null;
+  max_size_bytes: number;
+  content_type: string;
+}
+
+export interface AlertMediaResponse {
+  items: AlertMediaFile[];
+  accepted_content_types: string[];
+  max_size_bytes: number;
 }
 
 export interface PlayerStatus {

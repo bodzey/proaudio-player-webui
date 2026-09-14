@@ -36,8 +36,14 @@ export function providerPayload(data: FormData): AlertProviderUpdate {
 
 export function audioPayload(data: FormData): AudioSettingsUpdate {
   return {
+    notifications_enabled: data.get('notifications_enabled') === 'on',
     duck_db: formNumber(data, 'duck_db'),
     minute_silence_volume_percent: formNumber(data, 'minute_silence_volume_percent'),
+    minute_silence_enabled: data.get('minute_silence_enabled') === 'on',
+    minute_silence_start_time: formString(data, 'minute_silence_start_time'),
+    minute_silence_timezone: formString(data, 'minute_silence_timezone'),
+    minute_silence_catch_up_seconds: formNumber(data, 'minute_silence_catch_up_seconds'),
+    minute_silence_music_fade_seconds: formNumber(data, 'minute_silence_music_fade_seconds'),
     default_restore_volume_percent: formNumber(data, 'default_restore_volume_percent'),
     duck_fade_seconds: formNumber(data, 'duck_fade_seconds'),
     restore_fade_seconds: formNumber(data, 'restore_fade_seconds'),

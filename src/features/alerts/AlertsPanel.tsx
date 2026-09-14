@@ -1,7 +1,14 @@
-import { Show, createSignal, onMount, type Component } from 'solid-js';
+import { For, Show, createSignal, onMount, type Component } from 'solid-js';
 
 import { api } from '../../api/client';
-import type { AlertProviderSettings, AudioSettings, PriorityState } from '../../api/types';
+import type {
+  AlertMediaFile,
+  AlertMediaKind,
+  AlertMediaResponse,
+  AlertProviderSettings,
+  AudioSettings,
+  PriorityState,
+} from '../../api/types';
 import { audioPayload, providerPayload } from './form';
 
 interface AlertsPanelProps {
@@ -33,6 +40,16 @@ function formatTimestamp(value: string | null | undefined): string {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString('uk-UA');
 }
 
+function formatMediaTimestamp(value: number | null): string {
+  return value === null ? '—' : new Date(value * 1000).toLocaleString('uk-UA');
+}
+
+function formatBytes(value: number | null): string {
+  if (value === null) return '—';
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(0)} KiB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MiB`;
+}
+
 function messageClass(message: FormMessage | undefined): string {
   if (message?.tone === 'error') {
     return 'text-red-300';
@@ -46,12 +63,17 @@ function messageClass(message: FormMessage | undefined): string {
 export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   const [provider, setProvider] = createSignal<AlertProviderSettings>();
   const [audio, setAudio] = createSignal<AudioSettings>();
+  const [media, setMedia] = createSignal<AlertMediaResponse>();
   const [loading, setLoading] = createSignal(true);
   const [loadError, setLoadError] = createSignal<string>();
   const [providerBusy, setProviderBusy] = createSignal<BusyAction>(null);
   const [audioBusy, setAudioBusy] = createSignal(false);
   const [providerMessage, setProviderMessage] = createSignal<FormMessage>();
   const [audioMessage, setAudioMessage] = createSignal<FormMessage>();
+  const [mediaBusy, setMediaBusy] = createSignal<AlertMediaKind>();
+  const [mediaMessages, setMediaMessages] = createSignal<
+    Partial<Record<AlertMediaKind, FormMessage>>
+  >({});
 
   let providerForm!: HTMLFormElement;
   let audioForm!: HTMLFormElement;
@@ -59,9 +81,10 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   async function loadSettings(): Promise<void> {
     setLoading(true);
     setLoadError(undefined);
-    const [providerResult, audioResult] = await Promise.allSettled([
+    const [providerResult, audioResult, mediaResult] = await Promise.allSettled([
       api.alertSettings(),
       api.audioSettings(),
+      api.alertMedia(),
     ]);
     const errors: string[] = [];
     if (providerResult.status === 'fulfilled') {
@@ -73,6 +96,11 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
       setAudio(audioResult.value);
     } else {
       errors.push(`аудіопараметри: ${errorText(audioResult.reason)}`);
+    }
+    if (mediaResult.status === 'fulfilled') {
+      setMedia(mediaResult.value);
+    } else {
+      errors.push(`файли сповіщень: ${errorText(mediaResult.reason)}`);
     }
     setLoadError(errors.length > 0 ? errors.join('; ') : undefined);
     setLoading(false);
@@ -160,6 +188,60 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     }
   }
 
+  function updateMediaFile(next: AlertMediaFile): void {
+    setMedia((current) =>
+      current
+        ? {
+            ...current,
+            items: current.items.map((item) => (item.kind === next.kind ? next : item)),
+          }
+        : current,
+    );
+  }
+
+  function setMediaMessage(kind: AlertMediaKind, message: FormMessage): void {
+    setMediaMessages((messages) => ({ ...messages, [kind]: message }));
+  }
+
+  async function uploadMedia(kind: AlertMediaKind, file: File): Promise<void> {
+    const maximum = media()?.max_size_bytes ?? 16 * 1024 * 1024;
+    if (!file.name.toLowerCase().endsWith('.mp3')) {
+      setMediaMessage(kind, { tone: 'error', text: 'Оберіть файл із розширенням .mp3.' });
+      return;
+    }
+    if (file.size > maximum) {
+      setMediaMessage(kind, {
+        tone: 'error',
+        text: `Файл завеликий. Максимум ${formatBytes(maximum)}.`,
+      });
+      return;
+    }
+    setMediaBusy(kind);
+    setMediaMessage(kind, { tone: 'neutral', text: 'Завантаження…' });
+    try {
+      updateMediaFile(await api.setAlertMedia(kind, file));
+      setMediaMessage(kind, { tone: 'success', text: 'Новий файл встановлено.' });
+    } catch (error) {
+      setMediaMessage(kind, { tone: 'error', text: errorText(error) });
+    } finally {
+      setMediaBusy(undefined);
+    }
+  }
+
+  async function resetMedia(kind: AlertMediaKind): Promise<void> {
+    if (!window.confirm('Відновити заводський файл цього сповіщення?')) return;
+    setMediaBusy(kind);
+    setMediaMessage(kind, { tone: 'neutral', text: 'Відновлення…' });
+    try {
+      updateMediaFile(await api.resetAlertMedia(kind));
+      setMediaMessage(kind, { tone: 'success', text: 'Заводський файл відновлено.' });
+    } catch (error) {
+      setMediaMessage(kind, { tone: 'error', text: errorText(error) });
+    } finally {
+      setMediaBusy(undefined);
+    }
+  }
+
   onMount(() => {
     void loadSettings();
   });
@@ -178,23 +260,29 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
           </div>
           <div
             class={
-              props.priority?.active
-                ? 'flex w-fit items-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.07] px-3 py-2 text-xs font-medium text-red-200'
-                : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
+              audio()?.notifications_enabled === false
+                ? 'flex w-fit items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-medium text-amber-200'
+                : props.priority?.active
+                  ? 'flex w-fit items-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.07] px-3 py-2 text-xs font-medium text-red-200'
+                  : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
             }
           >
             <span
               class={
-                props.priority?.active
-                  ? 'size-2 rounded-full bg-red-400'
-                  : 'size-2 rounded-full bg-emerald-400/70'
+                audio()?.notifications_enabled === false
+                  ? 'size-2 rounded-full bg-amber-400'
+                  : props.priority?.active
+                    ? 'size-2 rounded-full bg-red-400'
+                    : 'size-2 rounded-full bg-emerald-400/70'
               }
             />
-            {props.priority?.minute_silence_active
-              ? 'Хвилина мовчання'
-              : props.priority?.active
-                ? 'Тривога активна'
-                : 'Черговий режим'}
+            {audio()?.notifications_enabled === false
+              ? 'Сповіщення вимкнено'
+              : props.priority?.minute_silence_active
+                ? 'Хвилина мовчання'
+                : props.priority?.active
+                  ? 'Тривога активна'
+                  : 'Черговий режим'}
           </div>
         </div>
 
@@ -432,6 +520,100 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
         )}
       </Show>
 
+      <Show when={media()} keyed>
+        {(files) => (
+          <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+            <div>
+              <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+                Alert media
+              </p>
+              <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
+                Файли сповіщень
+              </h2>
+              <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
+                Власні MP3 зберігаються у користувацькому DATA-розділі та не губляться після
+                оновлення прошивки. Максимальний розмір одного файла —{' '}
+                {formatBytes(files.max_size_bytes)}.
+              </p>
+            </div>
+
+            <div class="mt-5 grid gap-3 lg:grid-cols-3">
+              <For each={files.items}>
+                {(item) => (
+                  <article class="flex flex-col rounded-2xl border border-white/[0.065] bg-black/15 p-4">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 class="text-sm font-semibold text-slate-200">{item.label}</h3>
+                        <p class="mt-1 font-mono text-[10px] text-slate-600">{item.file_name}</p>
+                      </div>
+                      <span
+                        class={
+                          item.configured
+                            ? 'rounded-lg border border-emerald-400/15 bg-emerald-400/[0.05] px-2 py-1 text-[9px] font-semibold text-emerald-200/75 uppercase'
+                            : 'rounded-lg border border-red-400/15 bg-red-400/[0.05] px-2 py-1 text-[9px] font-semibold text-red-200/75 uppercase'
+                        }
+                      >
+                        {item.configured ? 'Готово' : 'Відсутній'}
+                      </span>
+                    </div>
+
+                    <dl class="mt-4 grid grid-cols-2 gap-2 text-[10px]">
+                      <div>
+                        <dt class="text-slate-600">Розмір</dt>
+                        <dd class="mt-0.5 text-slate-400">{formatBytes(item.size_bytes)}</dd>
+                      </div>
+                      <div>
+                        <dt class="text-slate-600">Оновлено</dt>
+                        <dd class="mt-0.5 text-slate-400">
+                          {formatMediaTimestamp(item.modified_unix_seconds)}
+                        </dd>
+                      </div>
+                    </dl>
+
+                    <div class="mt-auto flex flex-wrap gap-2 pt-5">
+                      <label
+                        class={`cursor-pointer rounded-xl bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-white ${
+                          mediaBusy() ? 'pointer-events-none opacity-45' : ''
+                        }`}
+                      >
+                        {mediaBusy() === item.kind ? 'Завантаження…' : 'Обрати MP3'}
+                        <input
+                          class="sr-only"
+                          type="file"
+                          accept=".mp3,audio/mpeg,audio/mp3"
+                          disabled={mediaBusy() !== undefined}
+                          onChange={(event) => {
+                            const input = event.currentTarget;
+                            const file = input.files?.[0];
+                            input.value = '';
+                            if (file) void uploadMedia(item.kind, file);
+                          }}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        class="rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 py-2.5 text-xs font-semibold text-slate-300 transition hover:bg-white/[0.065] disabled:cursor-wait disabled:opacity-45"
+                        disabled={mediaBusy() !== undefined}
+                        onClick={() => void resetMedia(item.kind)}
+                      >
+                        Стандартний
+                      </button>
+                    </div>
+                    <span
+                      class={`mt-3 min-h-4 text-[10px] ${messageClass(mediaMessages()[item.kind])}`}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {mediaMessages()[item.kind]?.text ?? ''}
+                    </span>
+                  </article>
+                )}
+              </For>
+            </div>
+          </section>
+        )}
+      </Show>
+
       <Show when={audio()} keyed>
         {(settings) => (
           <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
@@ -474,6 +656,24 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
               }}
             >
               <fieldset class="contents" disabled={audioBusy()}>
+                <label class="flex cursor-pointer gap-3 rounded-2xl border border-white/[0.065] bg-black/15 p-4 md:col-span-2 xl:col-span-3">
+                  <input
+                    class="mt-0.5 size-4 accent-sky-400"
+                    name="notifications_enabled"
+                    type="checkbox"
+                    checked={settings.notifications_enabled}
+                  />
+                  <span>
+                    <b class="block text-xs font-semibold text-slate-300">
+                      Увімкнути систему сповіщень
+                    </b>
+                    <span class="mt-1 block text-[10px] leading-4 text-slate-600">
+                      Якщо вимкнути, плеєр припинить опитування API, завершить активне сповіщення та
+                      відновить попередній рівень музики.
+                    </span>
+                  </span>
+                </label>
+
                 <label class={LABEL_CLASS}>
                   Стишення музики, dB
                   <input
@@ -485,6 +685,81 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                     step="0.1"
                     required
                     value={settings.duck_db}
+                  />
+                </label>
+
+                <label class="flex cursor-pointer gap-3 rounded-2xl border border-white/[0.065] bg-black/15 p-4 md:col-span-2 xl:col-span-3">
+                  <input
+                    class="mt-0.5 size-4 accent-sky-400"
+                    name="minute_silence_enabled"
+                    type="checkbox"
+                    checked={settings.minute_silence_enabled}
+                  />
+                  <span>
+                    <b class="block text-xs font-semibold text-slate-300">
+                      Увімкнути хвилину мовчання
+                    </b>
+                    <span class="mt-1 block text-[10px] leading-4 text-slate-600">
+                      Запуск виконується один раз на добу за вказаним локальним часом.
+                    </span>
+                  </span>
+                </label>
+
+                <label class={LABEL_CLASS}>
+                  Час початку
+                  <input
+                    class={INPUT_CLASS}
+                    name="minute_silence_start_time"
+                    type="time"
+                    step="1"
+                    required
+                    value={settings.minute_silence_start_time}
+                  />
+                </label>
+
+                <label class={LABEL_CLASS}>
+                  Часовий пояс
+                  <input
+                    class={INPUT_CLASS}
+                    name="minute_silence_timezone"
+                    type="text"
+                    list="minute-silence-timezones"
+                    required
+                    spellcheck={false}
+                    value={settings.minute_silence_timezone}
+                  />
+                  <datalist id="minute-silence-timezones">
+                    <option value="Europe/Kyiv" />
+                    <option value="UTC" />
+                  </datalist>
+                </label>
+
+                <label class={LABEL_CLASS}>
+                  Допустиме запізнення, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="minute_silence_catch_up_seconds"
+                    type="number"
+                    min="0"
+                    max="86400"
+                    step="1"
+                    required
+                    value={settings.minute_silence_catch_up_seconds}
+                  />
+                  <span class={HELP_CLASS}>Вікно запуску після перезавантаження або простою.</span>
+                </label>
+
+                <label class={LABEL_CLASS}>
+                  Плавне стишення музики, с
+                  <input
+                    class={INPUT_CLASS}
+                    name="minute_silence_music_fade_seconds"
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="0.1"
+                    required
+                    value={settings.minute_silence_music_fade_seconds}
                   />
                 </label>
 
