@@ -531,9 +531,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 Файли сповіщень
               </h2>
               <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
-                Власні MP3 зберігаються у користувацькому DATA-розділі та не губляться після
-                оновлення прошивки. Максимальний розмір одного файла —{' '}
-                {formatBytes(files.max_size_bytes)}.
+                Власні MP3 зберігаються у постійному сховищі та не губляться після оновлення
+                прошивки. Максимальний розмір одного файла — {formatBytes(files.max_size_bytes)}.
               </p>
             </div>
 
@@ -596,7 +595,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                         disabled={mediaBusy() !== undefined}
                         onClick={() => void resetMedia(item.kind)}
                       >
-                        Стандартний
+                        Відновити
                       </button>
                     </div>
                     <span
