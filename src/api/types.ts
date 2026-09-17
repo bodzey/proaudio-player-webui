@@ -11,6 +11,21 @@ export interface CapabilitiesResponse {
   features: string[];
 }
 
+export interface ReleaseInfo {
+  version: string | null;
+  channel: string | null;
+  status: string | null;
+  build_id: string | null;
+  firmware_sha: string | null;
+  native_sha: string | null;
+  webui_sha: string | null;
+}
+
+export interface SystemInfoResponse {
+  temperature_celsius: number | null;
+  release: ReleaseInfo;
+}
+
 export interface PlayerControls {
   play: boolean;
   pause: boolean;
