@@ -10,7 +10,6 @@ import {
 } from 'solid-js';
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
-import { formatDb, percentToDb } from '../../audio/scale';
 import { StationArtwork } from '../radio/StationArtwork';
 import { findRadioStation } from '../radio/stations';
 
@@ -18,8 +17,6 @@ interface PlayerPanelProps {
   status: PlayerStatus | undefined;
   pendingAction: PlayerAction | undefined;
   onAction: (action: PlayerAction) => void;
-  onVolume: (percent: number) => void;
-  onMute: (muted: boolean) => void;
   disabled: boolean;
 }
 
@@ -44,7 +41,6 @@ function sameText(left: string, right: string): boolean {
 
 export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const [clock, setClock] = createSignal(performance.now());
-  const [volumeDraft, setVolumeDraft] = createSignal(0);
   let positionAnchor = 0;
   let positionAnchorAt = performance.now();
   let clockTimer: number | undefined;
@@ -54,11 +50,6 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
     positionAnchor = player?.position_seconds ?? 0;
     positionAnchorAt = performance.now();
     setClock(positionAnchorAt);
-  });
-
-  createEffect(() => {
-    const volume = props.status?.volume;
-    if (volume !== undefined) setVolumeDraft(volume);
   });
 
   onMount(() => {
@@ -120,22 +111,22 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   return (
     <section
-      class="overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#11161e] shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)]"
+      class="player-card overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#10141b] shadow-[0_24px_80px_-48px_rgba(0,0,0,0.95)] sm:rounded-[26px]"
       aria-busy={props.status === undefined}
     >
-      <div class="grid min-h-[330px] lg:grid-cols-[310px_minmax(0,1fr)]">
-        <div class="relative aspect-square overflow-hidden bg-[#0b0f15] lg:aspect-auto">
+      <div class="player-card-grid grid min-h-[300px] lg:grid-cols-[300px_minmax(0,1fr)]">
+        <div class="player-art relative aspect-[16/10] overflow-hidden bg-[#090c11] sm:aspect-[16/9] lg:aspect-auto">
           <Show
             when={isRadio()}
             fallback={
               <Show
                 when={props.status?.player.art_url}
                 fallback={
-                  <div class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(93,129,255,0.15),transparent_45%),linear-gradient(145deg,#101722,#090c11)]">
-                    <div class="flex size-28 items-center justify-center rounded-[30px] border border-white/10 bg-white/[0.04] shadow-2xl">
+                  <div class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(14,165,233,0.16),transparent_42%),linear-gradient(145deg,#111722,#080b10)]">
+                    <div class="flex size-24 items-center justify-center rounded-[26px] border border-white/10 bg-white/[0.035] shadow-2xl sm:size-28 sm:rounded-[30px]">
                       <svg
                         viewBox="0 0 24 24"
-                        class="size-12 text-slate-500"
+                        class="size-10 text-slate-500 sm:size-12"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="1.4"
@@ -149,9 +140,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   </div>
                 }
               >
-                {(url) => (
-                  <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />
-                )}
+                {(url) => <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />}
               </Show>
             }
           >
@@ -161,26 +150,35 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               class="absolute inset-0 size-full"
             />
           </Show>
-          <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
-          <div class="absolute bottom-4 left-4 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl">
-            {props.status?.player.source ?? 'Без джерела'}
+          <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 to-transparent sm:h-32" />
+          <div class="absolute right-3 bottom-3 left-3 flex items-end justify-between gap-3 sm:right-4 sm:bottom-4 sm:left-4">
+            <div class="rounded-lg border border-white/10 bg-black/45 px-2.5 py-1.5 text-[10px] font-bold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl sm:rounded-full sm:px-3 sm:text-[11px]">
+              {props.status?.player.source ?? 'Без джерела'}
+            </div>
+            <Show when={props.status?.player.backend}>
+              {(backend) => (
+                <div class="rounded-lg border border-white/[0.08] bg-black/45 px-2 py-1 font-mono text-[9px] text-slate-400 backdrop-blur-xl lg:hidden">
+                  {backend()}
+                </div>
+              )}
+            </Show>
           </div>
         </div>
 
-        <div class="flex min-w-0 flex-col p-5 sm:p-7 lg:p-8">
-          <div class="flex items-start justify-between gap-4">
+        <div class="player-content flex min-w-0 flex-col p-4 sm:p-6 lg:p-7">
+          <div class="player-meta flex items-start justify-between gap-3 sm:gap-4">
             <div class="min-w-0 flex-1">
               <Show
                 when={isRadio()}
                 fallback={
                   <>
-                    <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+                    <p class="text-[10px] font-bold tracking-[0.18em] text-sky-400/70 uppercase sm:text-[11px]">
                       Зараз відтворюється
                     </p>
-                    <h2 class="mt-3 truncate text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+                    <h2 class="mt-2 line-clamp-2 text-xl font-semibold tracking-[-0.03em] text-white sm:mt-3 sm:text-2xl lg:text-3xl">
                       {props.status?.player.title || 'Немає активного потоку'}
                     </h2>
-                    <p class="mt-2 truncate text-sm text-slate-400 sm:text-base">
+                    <p class="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-400 sm:mt-2 sm:text-sm lg:text-base">
                       {props.status?.player.artist ||
                         props.status?.player.album ||
                         'ProAudio Player'}
@@ -188,54 +186,54 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   </>
                 }
               >
-                <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+                <p class="text-[10px] font-bold tracking-[0.18em] text-sky-400/70 uppercase sm:text-[11px]">
                   Радіоефір
                 </p>
-                <div class="mt-2 flex min-w-0 items-center gap-2 text-sm font-semibold text-cyan-200/80">
+                <div class="mt-2 flex min-w-0 items-center gap-2 text-xs font-semibold text-cyan-200/80 sm:text-sm">
                   <span class="size-2 shrink-0 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]" />
                   <span class="truncate">{stationName()}</span>
                 </div>
-                <h2 class="mt-3 line-clamp-2 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+                <h2 class="mt-2 line-clamp-2 text-xl font-semibold tracking-[-0.03em] text-white sm:mt-3 sm:text-2xl lg:text-3xl">
                   {radioMetadata().title || 'Ефір наживо'}
                 </h2>
-                <p class="mt-2 truncate text-sm text-slate-400 sm:text-base">
+                <p class="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-400 sm:mt-2 sm:text-sm lg:text-base">
                   {radioMetadata().artist || 'Метадані поточного треку не передаються станцією'}
                 </p>
               </Show>
             </div>
-            <div class="shrink-0 rounded-xl border border-white/[0.06] bg-black/15 px-3 py-2 text-right">
-              <div class="text-[10px] tracking-[0.15em] text-slate-500 uppercase">Backend</div>
-              <div class="mt-1 font-mono text-xs text-slate-400">
+            <div class="hidden shrink-0 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2 text-right lg:block">
+              <div class="text-[9px] tracking-[0.14em] text-slate-600 uppercase">Backend</div>
+              <div class="mt-1 font-mono text-[11px] text-slate-400">
                 {props.status?.player.backend ?? 'none'}
               </div>
             </div>
           </div>
 
-          <div class="mt-auto pt-8">
+          <div class="player-controls mt-auto pt-6 sm:pt-8">
             <Show
               when={!isRadio()}
               fallback={
                 <div class="flex items-center gap-3">
-                  <span class="font-mono text-[10px] font-semibold tracking-[0.16em] text-red-300/75 uppercase">
+                  <span class="font-mono text-[9px] font-bold tracking-[0.16em] text-red-300/75 uppercase sm:text-[10px]">
                     Наживо
                   </span>
                   <div class="h-px flex-1 bg-gradient-to-r from-red-400/45 via-white/10 to-transparent" />
                 </div>
               }
             >
-              <div class="h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+              <div class="h-1 overflow-hidden rounded-full bg-white/[0.07] sm:h-1.5">
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 transition-[width] duration-300 ease-linear"
+                  class="h-full rounded-full bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 transition-[width] duration-300 ease-linear"
                   style={{ width: `${progress()}%` }}
                 />
               </div>
-              <div class="mt-2.5 flex justify-between font-mono text-[11px] text-slate-500">
+              <div class="mt-2 flex justify-between font-mono text-[10px] text-slate-500 sm:mt-2.5 sm:text-[11px]">
                 <span>{formatClock(position())}</span>
                 <span>{formatClock(props.status?.player.duration_seconds ?? null)}</span>
               </div>
             </Show>
 
-            <div class="mt-6 flex items-center justify-center gap-2 sm:gap-3">
+            <div class="transport-controls mt-5 flex items-center justify-center gap-2 sm:mt-6 sm:gap-3">
               <TransportButton
                 label="Попередній"
                 action="prev"
@@ -287,59 +285,6 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 <path d="M18 5v14M6 6l8 6-8 6V6Z" />
               </TransportButton>
             </div>
-
-            <div class="mt-7 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-white/[0.06] bg-black/15 px-4 py-3.5">
-              <button
-                type="button"
-                class="flex size-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
-                aria-label={props.status?.muted ? 'Увімкнути звук' : 'Вимкнути звук'}
-                disabled={controlsDisabled()}
-                onClick={() => props.onMute(!props.status?.muted)}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  class="size-5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M11 5 6 9H3v6h3l5 4V5Z" />
-                  <Show when={!props.status?.muted && volumeDraft() > 0}>
-                    <path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a7.5 7.5 0 0 1 0 11" />
-                  </Show>
-                  <Show when={props.status?.muted || volumeDraft() <= 0}>
-                    <path d="m16 9 5 6M21 9l-5 6" />
-                  </Show>
-                </svg>
-              </button>
-              <input
-                class="volume-range w-full"
-                type="range"
-                min="0"
-                max="100"
-                step="0.1"
-                value={volumeDraft()}
-                disabled={controlsDisabled()}
-                aria-label="Гучність музики"
-                aria-valuetext={formatDb(percentToDb(volumeDraft()))}
-                style={{ '--volume-percent': `${volumeDraft()}%` }}
-                onInput={(event) => {
-                  const value = Number(event.currentTarget.value);
-                  setVolumeDraft(value);
-                  props.onVolume(value);
-                }}
-              />
-              <div class="min-w-20 text-right">
-                <div class="font-mono text-sm font-semibold text-slate-100 tabular-nums">
-                  {volumeDraft().toFixed(1)}%
-                </div>
-                <div class="mt-0.5 font-mono text-[10px] text-slate-600 tabular-nums">
-                  {formatDb(percentToDb(volumeDraft()))}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -362,8 +307,8 @@ const TransportButton: Component<TransportButtonProps> = (props) => (
     type="button"
     class={
       props.primary
-        ? 'flex size-14 items-center justify-center rounded-2xl bg-white text-slate-950 shadow-lg shadow-white/10 transition hover:bg-slate-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-16'
-        : 'flex size-11 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.035] text-slate-300 transition hover:border-white/15 hover:bg-white/[0.07] hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-12'
+        ? 'flex size-14 items-center justify-center rounded-xl bg-sky-400 text-slate-950 shadow-lg shadow-sky-950/25 transition hover:bg-sky-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-16 sm:rounded-2xl'
+        : 'flex size-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-slate-300 transition hover:border-sky-400/20 hover:bg-sky-400/[0.055] hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-12'
     }
     aria-label={props.label}
     disabled={props.disabled || props.pending}

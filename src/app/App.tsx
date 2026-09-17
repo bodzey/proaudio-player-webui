@@ -73,19 +73,20 @@ export function App() {
   });
 
   return (
-    <main class="min-h-screen bg-[#090c11] text-slate-100">
-      <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_-10%,rgba(56,189,248,0.08),transparent_28%),radial-gradient(circle_at_90%_0%,rgba(99,102,241,0.07),transparent_24%)]" />
+    <main class="app-shell min-h-screen text-slate-100">
+      <div class="app-accent-line" aria-hidden="true" />
+      <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_-10%,rgba(14,165,233,0.10),transparent_30%),radial-gradient(circle_at_92%_4%,rgba(37,99,235,0.08),transparent_24%)]" />
 
-      <div class="relative mx-auto min-h-screen max-w-[1500px] px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
-        <header class="mb-5 flex items-center justify-between gap-4">
-          <div class="flex min-w-0 items-center gap-3.5">
-            <div class="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.045] shadow-lg shadow-black/20">
+      <div class="app-frame relative mx-auto min-h-screen max-w-[1540px] px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
+        <header class="app-header mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-5 sm:gap-4">
+          <div class="flex min-w-0 items-center gap-3 sm:gap-3.5">
+            <div class="brand-mark flex size-10 shrink-0 items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/[0.07] shadow-lg shadow-black/20 sm:size-11">
               <svg
                 viewBox="0 0 24 24"
-                class="size-5 text-slate-200"
+                class="size-5 text-sky-300 sm:size-5.5"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.6"
+                stroke-width="1.7"
                 stroke-linecap="round"
                 aria-hidden="true"
               >
@@ -93,26 +94,29 @@ export function App() {
               </svg>
             </div>
             <div class="min-w-0">
-              <p class="truncate text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-                ProAudio Player
-              </p>
-              <h1 class="mt-0.5 truncate text-base font-semibold tracking-[-0.02em] text-white">
+              <div class="flex items-center gap-2">
+                <p class="truncate text-[10px] font-bold tracking-[0.19em] text-sky-400/85 uppercase sm:text-[11px]">
+                  ProAudio Player
+                </p>
+                <span class="hidden h-px w-8 bg-sky-400/30 sm:block" />
+              </div>
+              <h1 class="mt-0.5 truncate text-sm font-semibold tracking-[-0.02em] text-white sm:text-base">
                 {player.status()?.name ?? 'Панель керування'}
               </h1>
             </div>
           </div>
 
-          <div class="flex items-center gap-2.5">
+          <div class="status-cluster flex min-w-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2.5">
             <Show when={systemInfo()?.temperature_celsius ?? undefined}>
               {(temperature) => (
-                <span class="rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-400">
+                <span class="status-chip rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5 font-mono text-[9px] text-slate-400 sm:px-3 sm:py-2 sm:text-[10px]">
                   CPU {temperature().toFixed(1)} °C
                 </span>
               )}
             </Show>
             <Show when={capabilities()?.api_version}>
               {(version) => (
-                <span class="hidden rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-500 sm:block">
+                <span class="status-chip hidden rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-500 md:block">
                   API {version()}
                 </span>
               )}
@@ -121,10 +125,7 @@ export function App() {
           </div>
         </header>
 
-        <nav
-          class="mb-5 flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-white/[0.07] bg-[#0d1118]/90 p-1"
-          aria-label="Основні розділи"
-        >
+        <nav class="app-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border border-white/[0.08] bg-[#0d1117]/95 p-1 shadow-lg shadow-black/10 sm:mb-5 sm:flex sm:w-fit" aria-label="Основні розділи">
           <NavButton active={page() === 'player'} onClick={() => navigate('player')}>
             <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
               <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
@@ -171,7 +172,7 @@ export function App() {
         <Show when={player.error()}>
           {(message) => (
             <div
-              class="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.055] px-4 py-3.5 text-sm text-amber-100/80"
+              class="mb-4 flex items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.055] px-3.5 py-3 text-xs text-amber-100/80 sm:mb-5 sm:px-4 sm:py-3.5 sm:text-sm"
               role="alert"
               aria-live="assertive"
             >
@@ -184,20 +185,17 @@ export function App() {
         <PriorityBanner priority={player.status()?.priority} />
 
         <Show when={page() === 'player'}>
-          <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
-            <div class="min-w-0 space-y-5">
+          <div class="player-dashboard grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
+            <div class="dashboard-player min-w-0">
               <PlayerPanel
                 status={player.status()}
                 pendingAction={player.pendingAction()}
                 onAction={(action) => void player.playerAction(action)}
-                onVolume={(percent) => void player.setVolume(percent)}
-                onMute={(muted) => void player.setMute(muted)}
                 disabled={controlsUnavailable()}
               />
-              <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
             </div>
 
-            <div class="min-w-0 space-y-5">
+            <div class="dashboard-mixer min-w-0">
               <MixerPanel
                 status={player.status()}
                 buffer={meterBuffer}
@@ -206,6 +204,13 @@ export function App() {
                 onMusicMute={(muted) => void player.setMute(muted)}
                 disabled={controlsUnavailable()}
               />
+            </div>
+
+            <div class="dashboard-outputs min-w-0">
+              <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
+            </div>
+
+            <div class="dashboard-sources min-w-0">
               <SourcesPanel sources={player.status()?.sources} />
             </div>
           </div>
@@ -223,7 +228,7 @@ export function App() {
           <AlertsPanel priority={player.status()?.priority} />
         </Show>
 
-        <footer class="mt-8 flex flex-col gap-2 border-t border-white/[0.055] pt-4 text-[10px] tracking-[0.08em] text-slate-500 uppercase sm:flex-row sm:items-center sm:justify-between">
+        <footer class="mt-6 flex flex-col gap-1.5 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:text-[10px]">
           <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
           <span>Native API {capabilities()?.api_version ?? '—'} · realtime</span>
         </footer>
@@ -244,8 +249,8 @@ function NavButton(props: NavButtonProps) {
       type="button"
       class={
         props.active
-          ? 'flex shrink-0 items-center gap-2 rounded-xl bg-white/[0.09] px-3.5 py-2 text-xs font-semibold text-white shadow-sm shadow-black/20'
-          : 'flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-500 transition hover:bg-white/[0.045] hover:text-slate-300'
+          ? 'flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-sky-400/20 bg-sky-400/[0.09] px-2 py-2 text-[11px] font-semibold text-sky-100 shadow-sm shadow-black/20 sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
+          : 'flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium text-slate-500 transition hover:border-white/[0.06] hover:bg-white/[0.045] hover:text-slate-300 sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
       }
       aria-current={props.active ? 'page' : undefined}
       onClick={() => props.onClick()}
