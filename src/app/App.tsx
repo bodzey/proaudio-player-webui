@@ -24,11 +24,18 @@ function pageFromHash(): AppPage {
 export function App() {
   const player = createPlayerState();
   const [capabilities] = createResource(api.capabilities);
+  const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
   const meterBuffer = new MeterBuffer();
   const controlsUnavailable = () => !player.status() || player.connection() === 'offline';
   const priorityBlocked = () => player.status()?.priority.blocking ?? false;
+  const firmwareLabel = () => {
+    const release = systemInfo()?.release;
+    if (!release?.version) return 'Firmware —';
+    const flavor = [release.channel, release.status].filter(Boolean).join('/');
+    return `Firmware ${release.version}${flavor ? ` · ${flavor}` : ''}`;
+  };
 
   const navigate = (next: AppPage) => {
     setPage(next);
@@ -41,6 +48,11 @@ export function App() {
     syncPage();
     window.addEventListener('popstate', syncPage);
     onCleanup(() => window.removeEventListener('popstate', syncPage));
+  });
+
+  onMount(() => {
+    const timer = window.setInterval(() => void refetchSystemInfo(), 2_000);
+    onCleanup(() => window.clearInterval(timer));
   });
 
   createEffect(() => {
@@ -91,6 +103,13 @@ export function App() {
           </div>
 
           <div class="flex items-center gap-2.5">
+            <Show when={systemInfo()?.temperature_celsius ?? undefined}>
+              {(temperature) => (
+                <span class="rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-400">
+                  CPU {temperature().toFixed(1)} °C
+                </span>
+              )}
+            </Show>
             <Show when={capabilities()?.api_version}>
               {(version) => (
                 <span class="hidden rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-500 sm:block">
@@ -205,7 +224,7 @@ export function App() {
         </Show>
 
         <footer class="mt-8 flex flex-col gap-2 border-t border-white/[0.055] pt-4 text-[10px] tracking-[0.08em] text-slate-500 uppercase sm:flex-row sm:items-center sm:justify-between">
-          <span>ProAudio Player</span>
+          <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
           <span>Native API {capabilities()?.api_version ?? '—'} · realtime</span>
         </footer>
       </div>
