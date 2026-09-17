@@ -16,6 +16,7 @@ import type {
   JsonObject,
   MixerState,
   PlayerAction,
+  SystemInfoResponse,
 } from './types';
 import { parsePlayerStatus } from './validation';
 
@@ -90,6 +91,25 @@ async function request<T>(
   }
 }
 
+async function rootJson<T>(path: string): Promise<T> {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort('timeout'), 5_000);
+  try {
+    const response = await fetch(path, {
+      cache: 'no-store',
+      headers: { accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new ApiError(response.status, `HTTP ${response.status}`);
+    return (await response.json()) as T;
+  } catch (cause) {
+    if (cause instanceof ApiError) throw cause;
+    throw new ApiError(0, 'Немає зв’язку з системною інформацією плеєра');
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
 function jsonBody(value: unknown): Pick<RequestInit, 'body' | 'headers'> {
   return {
     body: JSON.stringify(value),
@@ -100,6 +120,7 @@ function jsonBody(value: unknown): Pick<RequestInit, 'body' | 'headers'> {
 export const api = {
   health: () => request<HealthResponse>('/health'),
   capabilities: () => request<CapabilitiesResponse>('/capabilities'),
+  systemInfo: () => rootJson<SystemInfoResponse>('/system-info.json'),
   status: async () => {
     const status = parsePlayerStatus(await request<unknown>('/status'));
     if (!status) throw new ApiError(502, 'Сервер повернув некоректний стан плеєра');
