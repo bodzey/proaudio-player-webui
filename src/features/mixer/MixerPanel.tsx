@@ -226,7 +226,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Мікшер</h2>
           <p class="mt-1.5 text-xs leading-5 text-slate-500">
-            Реальні Peak/RMS рівні та абсолютна атенюація шин у dB.
+            Реальні sample-peak/RMS рівні PCM та абсолютна атенюація шин у dB.
           </p>
         </div>
         <div
@@ -243,7 +243,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
                 : 'size-1.5 rounded-full bg-amber-300/60'
             }
           />
-          {props.meterLive ? '25 Hz наживо' : 'Метри недоступні'}
+          {props.meterLive ? '50 Hz наживо' : 'Метри недоступні'}
         </div>
       </div>
 
