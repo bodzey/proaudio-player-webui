@@ -10,6 +10,19 @@ interface BeforeInstallPromptEvent extends Event {
   }>;
 }
 
+let deferredPrompt: BeforeInstallPromptEvent | undefined;
+const promptListeners = new Set<(event: BeforeInstallPromptEvent) => void>();
+
+function captureInstallPrompt(event: Event) {
+  event.preventDefault();
+  deferredPrompt = event as BeforeInstallPromptEvent;
+  for (const listener of promptListeners) listener(deferredPrompt);
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', captureInstallPrompt);
+}
+
 function isStandalone(): boolean {
   const standaloneNavigator = navigator as Navigator & { standalone?: boolean };
   return (
@@ -19,19 +32,18 @@ function isStandalone(): boolean {
 }
 
 export function createPwaInstallController() {
-  const [promptEvent, setPromptEvent] = createSignal<BeforeInstallPromptEvent>();
+  const [promptEvent, setPromptEvent] = createSignal<BeforeInstallPromptEvent | undefined>(
+    deferredPrompt,
+  );
   const [installed, setInstalled] = createSignal(isStandalone());
   const [installing, setInstalling] = createSignal(false);
 
   onMount(() => {
     const displayMode = window.matchMedia('(display-mode: standalone)');
-
-    const onBeforeInstallPrompt = (event: Event) => {
-      event.preventDefault();
-      setPromptEvent(event as BeforeInstallPromptEvent);
-    };
+    const onPrompt = (event: BeforeInstallPromptEvent) => setPromptEvent(event);
 
     const onInstalled = () => {
+      deferredPrompt = undefined;
       setPromptEvent(undefined);
       setInstalled(true);
       setInstalling(false);
@@ -39,12 +51,12 @@ export function createPwaInstallController() {
 
     const onDisplayModeChange = () => setInstalled(isStandalone());
 
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    promptListeners.add(onPrompt);
     window.addEventListener('appinstalled', onInstalled);
     displayMode.addEventListener('change', onDisplayModeChange);
 
     onCleanup(() => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      promptListeners.delete(onPrompt);
       window.removeEventListener('appinstalled', onInstalled);
       displayMode.removeEventListener('change', onDisplayModeChange);
     });
@@ -58,6 +70,7 @@ export function createPwaInstallController() {
     try {
       await event.prompt();
       const choice = await event.userChoice;
+      deferredPrompt = undefined;
       setPromptEvent(undefined);
       if (choice.outcome === 'accepted') setInstalled(true);
     } finally {

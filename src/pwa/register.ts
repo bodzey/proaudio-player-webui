@@ -3,17 +3,11 @@ export function registerPwaServiceWorker(): void {
     return;
   }
 
-  window.addEventListener(
-    'load',
-    () => {
-      void navigator.serviceWorker
-        .register('/service-worker.js', {
-          scope: '/',
-          updateViaCache: 'none',
-        })
-        .then((registration) => registration.update())
-        .catch(() => undefined);
-    },
-    { once: true },
-  );
+  void navigator.serviceWorker
+    .register('/sw.js', {
+      scope: '/',
+      updateViaCache: 'none',
+    })
+    .then((registration) => registration.update())
+    .catch(() => undefined);
 }
