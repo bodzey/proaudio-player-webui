@@ -50,6 +50,10 @@ export function App() {
     const flavor = [release.channel, release.status].filter(Boolean).join('/');
     return `Firmware ${release.version}${flavor ? ` · ${flavor}` : ''}`;
   };
+  const playerVersionLabel = () => {
+    const version = systemInfo()?.native_version;
+    return `ProAudio Player ${version || '—'}`;
+  };
 
   const navigate = (next: AppPage) => {
     if (next === page()) return;
@@ -280,8 +284,9 @@ export function App() {
           </div>
         </Show>
 
-        <footer class="mt-6 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:text-[10px]">
+        <footer class="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:text-[10px]">
           <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
+          <span title={systemInfo()?.release.native_sha ?? undefined}>{playerVersionLabel()}</span>
         </footer>
       </div>
     </main>
