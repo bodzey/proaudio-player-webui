@@ -9,6 +9,7 @@ import {
 } from 'solid-js';
 
 import { api } from '../api/client';
+import proaudioLogoUrl from '../assets/proaudio-logo.jpg';
 import { subscribeToMeterEvents } from '../api/meters';
 import { ConnectionBadge } from '../components/ConnectionBadge';
 import { PriorityBanner } from '../components/PriorityBanner';
@@ -132,7 +133,7 @@ export function App() {
               <div class="brand-logo-frame">
                 <img
                   class="brand-logo-image"
-                  src="/branding/proaudio-logo.jpg"
+                  src={proaudioLogoUrl}
                   alt=""
                   width="1536"
                   height="768"
