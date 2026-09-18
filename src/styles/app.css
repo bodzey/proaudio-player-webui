@@ -4327,3 +4327,21 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
     animation: none !important;
   }
 }
+
+
+.radio-feedback-slot {
+  min-height: 46px;
+  margin-top: 14px;
+  overflow-anchor: none;
+}
+
+.radio-feedback-message {
+  animation: ui-feedback-enter 200ms var(--ui-ease-emphasized) both;
+}
+
+@media (max-width: 639px) {
+  .radio-feedback-slot {
+    min-height: 48px;
+    margin-top: 12px;
+  }
+}
