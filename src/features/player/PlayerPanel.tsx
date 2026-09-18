@@ -196,18 +196,12 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   <span class="truncate">{stationName()}</span>
                 </div>
                 <h2 class="mt-2 line-clamp-2 text-xl font-semibold tracking-[-0.03em] text-white sm:mt-3 sm:text-2xl lg:text-3xl">
-                  {radioMetadata().title || 'Ефір наживо'}
+                  {radioMetadata().title || 'Радіоефір'}
                 </h2>
                 <p class="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-400 sm:mt-2 sm:text-sm lg:text-base">
                   {radioMetadata().artist || 'Метадані поточного треку не передаються станцією'}
                 </p>
               </Show>
-            </div>
-            <div class="hidden shrink-0 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2 text-right lg:block">
-              <div class="text-[9px] tracking-[0.14em] text-slate-600 uppercase">Backend</div>
-              <div class="mt-1 font-mono text-[11px] text-slate-400">
-                {props.status?.player.backend ?? 'none'}
-              </div>
             </div>
           </div>
 
@@ -215,13 +209,11 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
             <Show
               when={!isRadio()}
               fallback={
-                <div class="player-live-row flex items-center gap-3">
-                  <span class="player-live-label font-mono text-[9px] font-bold tracking-[0.16em] uppercase sm:text-[10px]">
-                    Наживо
+                <div class="player-live-row flex items-center gap-2.5">
+                  <span class="size-2 rounded-full bg-red-400" aria-hidden="true" />
+                  <span class="font-mono text-[9px] font-bold tracking-[0.16em] uppercase sm:text-[10px]">
+                    Радіо
                   </span>
-                  <div class="player-live-track relative h-1 flex-1 overflow-hidden rounded-full">
-                    <span class="player-live-fill absolute inset-y-0 left-0 w-[52%] rounded-full" />
-                  </div>
                 </div>
               }
             >
