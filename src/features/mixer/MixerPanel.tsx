@@ -180,11 +180,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         </div>
       </div>
 
-      <div
-        class="mixer-channels overflow-hidden pb-1"
-        role="group"
-        aria-label="Канали мікшера"
-      >
+      <div class="mixer-channels overflow-hidden pb-1" role="group" aria-label="Канали мікшера">
         <div class="mixer-grid grid min-w-0 grid-cols-3 gap-2.5">
           <MixerStrip
             target="music"
@@ -251,4 +247,3 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     </section>
   );
 };
-
