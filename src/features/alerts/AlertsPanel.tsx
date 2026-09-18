@@ -249,40 +249,67 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   return (
     <div class="space-y-5">
       <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
               Оповіщення
             </p>
             <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
-              Стан системи тривог
+              Стан сценаріїв
             </h2>
+            <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
+              Повітряна тривога та хвилина мовчання працюють і вмикаються незалежно.
+            </p>
           </div>
-          <div
-            class={
-              audio()?.notifications_enabled === false
-                ? 'flex w-fit items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-medium text-amber-200'
-                : props.priority?.active
-                  ? 'flex w-fit items-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.07] px-3 py-2 text-xs font-medium text-red-200'
-                  : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
-            }
-          >
-            <span
+          <div class="flex flex-wrap gap-2">
+            <div
               class={
-                audio()?.notifications_enabled === false
-                  ? 'size-2 rounded-full bg-amber-400'
-                  : props.priority?.active
-                    ? 'size-2 rounded-full bg-red-400'
-                    : 'size-2 rounded-full bg-emerald-400/70'
+                audio()?.air_raid_alerts_enabled === false
+                  ? 'flex w-fit items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-medium text-amber-200'
+                  : props.priority?.active && !props.priority?.minute_silence_active
+                    ? 'flex w-fit items-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.07] px-3 py-2 text-xs font-medium text-red-200'
+                    : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
               }
-            />
-            {audio()?.notifications_enabled === false
-              ? 'Сповіщення вимкнено'
-              : props.priority?.minute_silence_active
-                ? 'Хвилина мовчання'
-                : props.priority?.active
+            >
+              <span
+                class={
+                  audio()?.air_raid_alerts_enabled === false
+                    ? 'size-2 rounded-full bg-amber-400'
+                    : props.priority?.active && !props.priority?.minute_silence_active
+                      ? 'size-2 rounded-full bg-red-400'
+                      : 'size-2 rounded-full bg-emerald-400/70'
+                }
+              />
+              {audio()?.air_raid_alerts_enabled === false
+                ? 'Тривоги вимкнено'
+                : props.priority?.active && !props.priority?.minute_silence_active
                   ? 'Тривога активна'
-                  : 'Черговий режим'}
+                  : 'Тривоги увімкнено'}
+            </div>
+            <div
+              class={
+                audio()?.minute_silence_enabled === false
+                  ? 'flex w-fit items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-medium text-amber-200'
+                  : props.priority?.minute_silence_active
+                    ? 'flex w-fit items-center gap-2 rounded-xl border border-sky-400/20 bg-sky-400/[0.07] px-3 py-2 text-xs font-medium text-sky-200'
+                    : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
+              }
+            >
+              <span
+                class={
+                  audio()?.minute_silence_enabled === false
+                    ? 'size-2 rounded-full bg-amber-400'
+                    : props.priority?.minute_silence_active
+                      ? 'size-2 rounded-full bg-sky-400'
+                      : 'size-2 rounded-full bg-emerald-400/70'
+                }
+              />
+              {audio()?.minute_silence_enabled === false
+                ? 'Хвилину мовчання вимкнено'
+                : props.priority?.minute_silence_active
+                  ? 'Хвилина мовчання активна'
+                  : 'Хвилина мовчання увімкнена'}
+            </div>
           </div>
         </div>
 
