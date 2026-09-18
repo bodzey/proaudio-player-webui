@@ -1,3 +1,5 @@
+import { dbToPercent, percentToDb } from '../audio/scale';
+
 import type {
   AlertMediaFile,
   AlertMediaResponse,
@@ -17,16 +19,6 @@ export const DEMO_MODE = import.meta.env.VITE_DEMO === 'true';
 
 const clone = <T>(value: T): T => structuredClone(value);
 
-function percentToDb(percent: number): number {
-  if (percent <= 0) return -60;
-  return Math.max(-60, Math.min(0, Math.round(20 * Math.log10(percent / 100) * 10) / 10));
-}
-
-function dbToPercent(db: number): number {
-  if (db <= -60) return 0;
-  return Math.max(0, Math.min(100, Math.round(1000 * Math.pow(10, db / 20)) / 10));
-}
-
 function level(volume: number, extra: Partial<AudioLevel> = {}): AudioLevel {
   return {
     volume,
@@ -36,10 +28,20 @@ function level(volume: number, extra: Partial<AudioLevel> = {}): AudioLevel {
   };
 }
 
+const DEFAULT_MIXER_PERCENT = dbToPercent(-3);
+
 let mixer: MixerState = {
-  music: level(49, { name: 'MUSIC', backend: 'pipewire', control: 'proaudio_player_music' }),
-  alert: level(25, { name: 'ALERT', backend: 'pipewire', control: 'proaudio_player_alert' }),
-  master: level(94, {
+  music: level(DEFAULT_MIXER_PERCENT, {
+    name: 'MUSIC',
+    backend: 'pipewire',
+    control: 'proaudio_player_music',
+  }),
+  alert: level(DEFAULT_MIXER_PERCENT, {
+    name: 'ALERT',
+    backend: 'pipewire',
+    control: 'proaudio_player_alert',
+  }),
+  master: level(DEFAULT_MIXER_PERCENT, {
     name: 'MASTER',
     backend: 'pipewire',
     transport_backend: 'alsa',
@@ -50,7 +52,7 @@ let mixer: MixerState = {
 
 let status: PlayerStatus = {
   name: 'ProAudio Player',
-  volume: 49,
+  volume: DEFAULT_MIXER_PERCENT,
   muted: false,
   priority: {
     mode: 'normal',
@@ -164,8 +166,8 @@ let audioSettings: AudioSettings = {
   duck_db: -12,
   duck_fade_seconds: 1,
   restore_fade_seconds: 3,
-  alert_volume_percent: 25,
-  default_restore_volume_percent: 100,
+  alert_volume_percent: DEFAULT_MIXER_PERCENT,
+  default_restore_volume_percent: DEFAULT_MIXER_PERCENT,
   minute_silence_volume_percent: 100,
   minute_silence_enabled: true,
   minute_silence_start_time: '08:59:50',
