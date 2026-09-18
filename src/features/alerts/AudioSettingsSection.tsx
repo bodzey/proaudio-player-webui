@@ -25,7 +25,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
         </p>
       </div>
     </div>
-  
+
     <form
       ref={(element) => {
         props.setFormRef(element);
@@ -52,7 +52,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
               <p>Незалежне керування тривогами та щоденною хвилиною мовчання.</p>
             </div>
           </div>
-  
+
           <div class="alert-switch-grid">
             <label class="alert-switch-row">
               <input
@@ -73,7 +73,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 </small>
               </span>
             </label>
-  
+
             <label class="alert-switch-row">
               <input
                 name="minute_silence_enabled"
@@ -92,7 +92,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
             </label>
           </div>
         </div>
-  
+
         <div class="alert-config-group">
           <div class="alert-config-title with-chip">
             <span class="alert-config-icon">
@@ -135,7 +135,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
               <span class={HELP_CLASS}>Час, за який музика досягне цільового рівня.</span>
             </label>
           </div>
-  
+
           <label class="alert-behavior-check">
             <input
               name="duck_only_during_announcement"
@@ -156,7 +156,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
             </span>
           </label>
         </div>
-  
+
         <div class="alert-config-group">
           <div class="alert-config-title">
             <span class="alert-config-icon">
@@ -182,7 +182,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 value={props.settings.minute_silence_start_time}
               />
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Часовий пояс
               <input
@@ -199,7 +199,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 <option value="UTC" />
               </datalist>
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Допустиме запізнення, с
               <input
@@ -213,7 +213,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 value={props.settings.minute_silence_catch_up_seconds}
               />
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Плавне стишення музики, с
               <input
@@ -227,7 +227,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 value={props.settings.minute_silence_music_fade_seconds}
               />
             </label>
-  
+
             <label class={LABEL_CLASS + ' alert-field-wide'}>
               Гучність хвилини мовчання, %
               <input
@@ -242,7 +242,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
               />
               <span class={HELP_CLASS}>Відносно рівня ALERT у мікшері.</span>
             </label>
-  
+
             <label class={LABEL_CLASS + ' alert-field-wide'}>
               Рівень відновлення без знімка, %
               <input
@@ -261,7 +261,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
             </label>
           </div>
         </div>
-  
+
         <div class="alert-config-group">
           <div class="alert-config-title">
             <span class="alert-config-icon">
@@ -289,7 +289,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
               />
               <span class={HELP_CLASS}>Плавне повернення до попереднього рівня.</span>
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Повторення активної тривоги, хв
               <input
@@ -307,7 +307,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
           </div>
         </div>
       </fieldset>
-  
+
       <div
         class="alert-audio-savebar"
         classList={{ 'is-dirty': props.dirty || props.busy }}
