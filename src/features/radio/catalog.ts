@@ -44,7 +44,10 @@ function quality(station: RadioDirectoryStation): string {
 }
 
 function genre(station: RadioDirectoryStation): string {
-  const tags = station.tags.map((tag) => tag.trim()).filter(Boolean).slice(0, 2);
+  const tags = station.tags
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .slice(0, 2);
   return tags.length > 0 ? tags.join(' / ') : 'Internet Radio';
 }
 
