@@ -4705,12 +4705,7 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 }
 
 :root[data-theme='light'] .redesign-shell .brand-tagline::after {
-  background: linear-gradient(
-    90deg,
-    rgb(67 87 89 / 34%),
-    rgb(67 87 89 / 15%) 72%,
-    transparent
-  );
+  background: linear-gradient(90deg, rgb(67 87 89 / 34%), rgb(67 87 89 / 15%) 72%, transparent);
 }
 
 @media (max-width: 639px) {
