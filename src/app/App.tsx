@@ -122,7 +122,7 @@ export function App() {
       <div class="app-accent-line" aria-hidden="true" />
       <div class="app-ambient" aria-hidden="true" />
 
-      <div class="app-frame relative mx-auto min-h-screen max-w-[1540px] px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
+      <div class="app-frame relative mx-auto flex min-h-screen w-full flex-col px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
         <header class="app-header mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-5 sm:gap-4">
           <div
             class="brand-lockup flex min-w-0 items-start"
@@ -300,7 +300,7 @@ export function App() {
           </div>
         </Show>
 
-        <footer class="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:text-[10px]">
+        <footer class="app-footer flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-white/[0.06] text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:text-[10px]">
           <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
           <span title={systemInfo()?.release.native_sha ?? undefined}>{playerVersionLabel()}</span>
         </footer>
