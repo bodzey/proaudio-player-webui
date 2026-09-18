@@ -20,25 +20,26 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
       </span>
     </div>
 
-    <div class="mt-5 space-y-2.5">
+    <div class="mt-5">
       <Show
         when={(props.sources?.length ?? 0) > 0}
         fallback={
-          <div class="flex min-h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.07] bg-black/10 px-5 text-center text-xs leading-5 text-slate-600">
+          <p class="flex min-h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.07] bg-black/10 px-5 text-center text-xs leading-5 text-slate-600">
             Немає активних джерел.
-          </div>
+          </p>
         }
       >
-        <For each={props.sources ?? []}>
-          {(source) => (
-            <div
+        <ul class="space-y-2.5" role="list">
+          <For each={props.sources ?? []}>
+            {(source) => (
+              <li
               class={
                 source.active
                   ? 'source-session is-active rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] p-3.5'
                   : 'source-session rounded-2xl border border-white/[0.055] bg-black/10 p-3.5'
               }
-            >
-              <div class="flex min-w-0 items-center gap-3">
+              >
+                <div class="flex min-w-0 items-center gap-3">
                 <div
                   class={
                     source.active
@@ -69,10 +70,11 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
                   </div>
                   <p class="mt-0.5 truncate text-xs text-slate-500">{source.media}</p>
                 </div>
-              </div>
-            </div>
-          )}
-        </For>
+                </div>
+              </li>
+            )}
+          </For>
+        </ul>
       </Show>
     </div>
   </section>
