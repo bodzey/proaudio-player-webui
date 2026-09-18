@@ -80,9 +80,7 @@ export function App() {
     const targetScroll = pageScroll.get(next) ?? staticNavTop();
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const documentWithTransition = document as Document & {
-      startViewTransition?: (
-        update: () => void | Promise<void>,
-      ) => { finished: Promise<void> };
+      startViewTransition?: (update: () => void | Promise<void>) => { finished: Promise<void> };
     };
 
     const update = () => {

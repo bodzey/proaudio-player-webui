@@ -4206,7 +4206,6 @@ html {
   }
 }
 
-
 /* Navigation + live-content stability ----------------------------------- */
 
 .page-stage {
@@ -4327,7 +4326,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
     animation: none !important;
   }
 }
-
 
 .radio-feedback-slot {
   min-height: 46px;
