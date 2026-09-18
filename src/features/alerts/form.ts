@@ -38,8 +38,6 @@ export function audioPayload(data: FormData): AudioSettingsUpdate {
   const airRaidAlertsEnabled = data.get('air_raid_alerts_enabled') === 'on';
   return {
     air_raid_alerts_enabled: airRaidAlertsEnabled,
-    // Keep the legacy field in requests while older API v1 servers are still
-    // supported. Current native treats it as a compatibility alias.
     notifications_enabled: airRaidAlertsEnabled,
     duck_db: formNumber(data, 'duck_db'),
     minute_silence_volume_percent: formNumber(data, 'minute_silence_volume_percent'),
