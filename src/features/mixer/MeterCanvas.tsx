@@ -233,10 +233,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       const rmsX = leftX + peakWidth + laneGap;
       const rightX = rmsX + rmsWidth + laneGap;
       const segmentGap = 1;
-      const segmentHeight = Math.max(
-        1.4,
-        (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS,
-      );
+      const segmentHeight = Math.max(1.4, (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS);
 
       const targetPeak: [number, number] = [
         snapshot.available ? clampDb(snapshot.peak[0] ?? MIN_DB) : MIN_DB,
@@ -246,13 +243,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         ? stereoRmsDb(snapshot.rms[0] ?? MIN_DB, snapshot.rms[1] ?? MIN_DB)
         : MIN_DB;
 
-      displayedRms = smoothDb(
-        displayedRms,
-        targetRms,
-        dt,
-        RMS_ATTACK_SECONDS,
-        RMS_RELEASE_SECONDS,
-      );
+      displayedRms = smoothDb(displayedRms, targetRms, dt, RMS_ATTACK_SECONDS, RMS_RELEASE_SECONDS);
 
       for (let channel = 0; channel < 2; channel += 1) {
         displayedPeak[channel] = smoothPeak(displayedPeak[channel]!, targetPeak[channel]!, dt);
@@ -280,15 +271,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         segmentGap,
         segmentHeight,
       );
-      drawSegmentedLane(
-        rmsX,
-        rmsWidth,
-        displayedRms,
-        meterBottom,
-        segmentGap,
-        segmentHeight,
-        0.72,
-      );
+      drawSegmentedLane(rmsX, rmsWidth, displayedRms, meterBottom, segmentGap, segmentHeight, 0.72);
       drawSegmentedLane(
         rightX,
         peakWidth,

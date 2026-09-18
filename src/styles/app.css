@@ -5253,7 +5253,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-
 /* Three-lane signal meter ------------------------------------------------
    Outer lanes are instantaneous sample peaks (L/R); the wider center lane is
    combined stereo RMS. Keep enough width on mobile for all three lanes to stay
