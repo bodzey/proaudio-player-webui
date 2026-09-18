@@ -29,37 +29,37 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
           </p>
         }
       >
-        <ul class="space-y-2.5" role="list">
+        <ul class="space-y-2.5">
           <For each={props.sources ?? []}>
             {(source) => (
               <li
-              class={
-                source.active
-                  ? 'source-session is-active rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] p-3.5'
-                  : 'source-session rounded-2xl border border-white/[0.055] bg-black/10 p-3.5'
-              }
+                class={
+                  source.active
+                    ? 'source-session is-active rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] p-3.5'
+                    : 'source-session rounded-2xl border border-white/[0.055] bg-black/10 p-3.5'
+                }
               >
                 <div class="flex min-w-0 items-center gap-3">
-                <div
+                  <div
                   class={
                     source.active
                       ? 'flex size-9 shrink-0 items-center justify-center rounded-xl bg-cyan-300/10 text-cyan-300'
                       : 'flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] text-slate-600'
                   }
-                >
-                  <svg
+                  >
+                    <svg
                     viewBox="0 0 24 24"
                     class="size-4.5"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="1.7"
                     stroke-linecap="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 15v-3M9 18V9M13 16V6M17 19V11M21 15v-5" />
-                  </svg>
-                </div>
-                <div class="min-w-0 flex-1">
+                      aria-hidden="true"
+                    >
+                      <path d="M5 15v-3M9 18V9M13 16V6M17 19V11M21 15v-5" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2">
                     <p class="truncate text-sm font-medium text-slate-200">{source.type}</p>
                     <Show when={source.active}>
@@ -68,8 +68,8 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
                       </span>
                     </Show>
                   </div>
-                  <p class="mt-0.5 truncate text-xs text-slate-500">{source.media}</p>
-                </div>
+                    <p class="mt-0.5 truncate text-xs text-slate-500">{source.media}</p>
+                  </div>
                 </div>
               </li>
             )}
