@@ -20,8 +20,8 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
         <p class="alert-eyebrow">Налаштування аудіо</p>
         <h2>Поведінка звуку під час тривоги</h2>
         <p>
-          Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT задається
-          одним фейдером у мікшері автоматично.
+          Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT задається одним
+          фейдером у мікшері автоматично.
         </p>
       </div>
     </div>
@@ -59,7 +59,9 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 name="air_raid_alerts_enabled"
                 type="checkbox"
                 checked={
-                  props.settings.air_raid_alerts_enabled ?? props.settings.notifications_enabled ?? true
+                  props.settings.air_raid_alerts_enabled ??
+                  props.settings.notifications_enabled ??
+                  true
                 }
               />
               <span class="alert-switch-control" aria-hidden="true">
@@ -68,8 +70,8 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
               <span class="alert-switch-copy">
                 <b>Увімкнути систему оповіщень</b>
                 <small>
-                  Якщо вимкнути, плеєр припинить опитування API, завершить активне
-                  сповіщення та відновить попередній рівень звуку.
+                  Якщо вимкнути, плеєр припинить опитування API, завершить активне сповіщення та
+                  відновить попередній рівень звуку.
                 </small>
               </span>
             </label>
@@ -85,9 +87,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
               </span>
               <span class="alert-switch-copy">
                 <b>Увімкнути хвилину мовчання</b>
-                <small>
-                  Запуск виконується один раз на добу за вказаним локальним часом.
-                </small>
+                <small>Запуск виконується один раз на добу за вказаним локальним часом.</small>
               </span>
             </label>
           </div>
@@ -150,8 +150,8 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
             <span>
               <b>Приглушувати лише під час оголошення</b>
               <small>
-                Після завершення аудіофайлу музика повертається до попереднього рівня,
-                навіть якщо тривога ще триває.
+                Після завершення аудіофайлу музика повертається до попереднього рівня, навіть якщо
+                тривога ще триває.
               </small>
             </span>
           </label>
@@ -255,9 +255,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 required
                 value={props.settings.default_restore_volume_percent}
               />
-              <span class={HELP_CLASS}>
-                Використовується, якщо немає збереженого рівня.
-              </span>
+              <span class={HELP_CLASS}>Використовується, якщо немає збереженого рівня.</span>
             </label>
           </div>
         </div>
@@ -308,10 +306,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
         </div>
       </fieldset>
 
-      <div
-        class="alert-audio-savebar"
-        classList={{ 'is-dirty': props.dirty || props.busy }}
-      >
+      <div class="alert-audio-savebar" classList={{ 'is-dirty': props.dirty || props.busy }}>
         <div>
           <span class="alert-savebar-icon" aria-hidden="true">
             i
@@ -319,8 +314,7 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
           <span>
             <b>{props.dirty ? 'Є незбережені зміни' : 'Налаштування готові'}</b>
             <small>
-              {props.message?.text ??
-                'Після збереження всі параметри почнуть діяти одразу.'}
+              {props.message?.text ?? 'Після збереження всі параметри почнуть діяти одразу.'}
             </small>
           </span>
         </div>
