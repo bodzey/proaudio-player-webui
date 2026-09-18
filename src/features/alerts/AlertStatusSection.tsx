@@ -46,7 +46,7 @@ export const AlertStatusSection: Component<AlertStatusSectionProps> = (props) =>
         </span>
       </div>
     </div>
-  
+
     <div class="alert-status-grid">
       <StatusItem kind="mode" label="Режим" value={props.priority?.mode ?? '—'} />
       <StatusItem
@@ -67,7 +67,7 @@ export const AlertStatusSection: Component<AlertStatusSectionProps> = (props) =>
         }
       />
     </div>
-  
+
     <Show when={props.priority?.last_error}>
       {(lastError) => (
         <div class="alert-inline-error" role="alert">
