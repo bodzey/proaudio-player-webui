@@ -454,16 +454,6 @@ body {
   background: var(--rd-surface) !important;
 }
 
-.player-meta h2 {
-  max-width: 92%;
-  font-size: clamp(1.8rem, 2.15vw, 2.65rem) !important;
-  line-height: 1.04;
-}
-
-.player-meta p {
-  max-width: 92%;
-}
-
 .player-controls {
   padding-top: 30px !important;
 }
