@@ -38,9 +38,7 @@ export function App() {
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
-  const [meterPageVisible, setMeterPageVisible] = createSignal(
-    document.visibilityState === 'visible',
-  );
+  const [pageVisible, setPageVisible] = createSignal(document.visibilityState === 'visible');
   const meterBuffer = new MeterBuffer();
   const controlsUnavailable = () => !player.status() || player.connection() === 'offline';
   const priorityBlocked = () => player.status()?.priority.blocking ?? false;
@@ -73,19 +71,36 @@ export function App() {
   });
 
   onMount(() => {
-    const timer = window.setInterval(() => void refetchSystemInfo(), 2_000);
-    onCleanup(() => window.clearInterval(timer));
-  });
+    let systemInfoTimer: number | undefined;
 
-  onMount(() => {
-    const syncVisibility = () => setMeterPageVisible(document.visibilityState === 'visible');
+    const stopSystemInfoPolling = () => {
+      if (systemInfoTimer !== undefined) {
+        window.clearInterval(systemInfoTimer);
+        systemInfoTimer = undefined;
+      }
+    };
+
+    const syncVisibility = () => {
+      const visible = document.visibilityState === 'visible';
+      setPageVisible(visible);
+      stopSystemInfoPolling();
+
+      if (visible) {
+        void refetchSystemInfo();
+        systemInfoTimer = window.setInterval(() => void refetchSystemInfo(), 10_000);
+      }
+    };
+
     syncVisibility();
     document.addEventListener('visibilitychange', syncVisibility);
-    onCleanup(() => document.removeEventListener('visibilitychange', syncVisibility));
+    onCleanup(() => {
+      document.removeEventListener('visibilitychange', syncVisibility);
+      stopSystemInfoPolling();
+    });
   });
 
   createEffect(() => {
-    if (page() !== 'player' || !meterPageVisible()) {
+    if (page() !== 'player' || !pageVisible()) {
       meterBuffer.reset();
       setMeterState('idle');
       return;
