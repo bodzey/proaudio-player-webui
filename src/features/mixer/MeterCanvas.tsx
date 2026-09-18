@@ -103,6 +103,7 @@ function levelColor(db: number, palette: MeterPalette): string {
 export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
   let canvas!: HTMLCanvasElement;
   let animationFrame = 0;
+  let idleTimer: number | undefined;
   let resizeFrame = 0;
   let settleFrame = 0;
   let logicalWidth = 0;
@@ -308,7 +309,18 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       context.fillText('RMS', rmsX + rmsWidth / 2, labelY);
       context.fillText('R', rightX + peakWidth / 2, labelY);
 
-      animationFrame = requestAnimationFrame(draw);
+      const settling =
+        displayedRms > MIN_DB + 0.1 ||
+        displayedPeak.some((value) => value > MIN_DB + 0.1) ||
+        heldPeak.some((value) => value > MIN_DB + 0.1);
+
+      if (snapshot.available || settling) {
+        animationFrame = requestAnimationFrame(draw);
+      } else {
+        idleTimer = window.setTimeout(() => {
+          animationFrame = requestAnimationFrame(draw);
+        }, 100);
+      }
     };
 
     animationFrame = requestAnimationFrame(draw);
@@ -323,6 +335,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       window.removeEventListener('orientationchange', onViewportResize);
       window.visualViewport?.removeEventListener('resize', onViewportResize);
       cancelAnimationFrame(animationFrame);
+      if (idleTimer !== undefined) window.clearTimeout(idleTimer);
       cancelAnimationFrame(resizeFrame);
       cancelAnimationFrame(settleFrame);
     });
