@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - feature/proaudio-ui-redesign
   pull_request:
 
 permissions:
