@@ -167,14 +167,14 @@ export function App() {
         </header>
 
         <nav
-          class="app-nav pro-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border p-1 sm:mb-5 sm:flex sm:w-fit"
+          class="app-nav pro-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border p-1 sm:mb-5"
           aria-label="Основні розділи"
         >
           <NavButton active={page() === 'player'} onClick={() => navigate('player')}>
             <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
               <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
             </svg>
-            Плеєр
+            <span class="nav-button-label">Плеєр</span>
           </NavButton>
           <NavButton active={page() === 'radio'} onClick={() => navigate('radio')}>
             <svg
@@ -190,7 +190,7 @@ export function App() {
               <rect x="3.5" y="7" width="17" height="12" rx="2" />
               <path d="m7 7 9-4M7.5 12h.01M7.5 15h.01M11 12h5.5M11 15h5.5" />
             </svg>
-            Радіо
+            <span class="nav-button-label">Радіо</span>
           </NavButton>
           <NavButton active={page() === 'alerts'} onClick={() => navigate('alerts')}>
             <svg
@@ -206,9 +206,9 @@ export function App() {
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
               <path d="M10 21h4" />
             </svg>
-            Оповіщення
+            <span class="nav-button-label">Оповіщення</span>
             <Show when={player.status()?.priority.active}>
-              <span class="size-1.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.65)]" />
+              <span class="nav-alert-dot size-1.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.65)]" />
             </Show>
           </NavButton>
         </nav>
@@ -299,8 +299,8 @@ function NavButton(props: NavButtonProps) {
       type="button"
       class={
         props.active
-          ? 'nav-button nav-button--active flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3'
-          : 'nav-button flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3'
+          ? 'nav-button nav-button--active flex min-h-11 min-w-0 w-full items-center justify-center gap-2 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-11 sm:px-3'
+          : 'nav-button flex min-h-11 min-w-0 w-full items-center justify-center gap-2 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-11 sm:px-3'
       }
       aria-current={props.active ? 'page' : undefined}
       onClick={() => props.onClick()}
