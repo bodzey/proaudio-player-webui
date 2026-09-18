@@ -128,8 +128,6 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     }
     let payload;
     try {
-      // Snapshot successful controls before `busy` disables the fieldset.
-      // Disabled controls are intentionally omitted by the FormData algorithm.
       payload = providerPayload(new FormData(providerForm));
     } catch (error) {
       setProviderMessage({ tone: 'error', text: errorText(error) });
