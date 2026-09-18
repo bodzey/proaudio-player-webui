@@ -18,6 +18,7 @@ import type {
   PlayerAction,
   SystemInfoResponse,
 } from './types';
+import { DEMO_MODE, demoRequest, demoSystemInfo } from './demo';
 import { parsePlayerStatus } from './validation';
 
 const API_BASE = '/api/v1';
@@ -38,6 +39,8 @@ async function request<T>(
   init?: RequestInit,
   timeoutMs = DEFAULT_TIMEOUT_MS,
 ): Promise<T> {
+  if (DEMO_MODE) return demoRequest<T>(path, init);
+
   const headers = new Headers(init?.headers);
   if (init?.body && !headers.has('content-type')) {
     headers.set('content-type', 'application/json');
@@ -92,6 +95,8 @@ async function request<T>(
 }
 
 async function rootJson<T>(path: string): Promise<T> {
+  if (DEMO_MODE) return structuredClone(demoSystemInfo) as T;
+
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort('timeout'), 5_000);
   try {
