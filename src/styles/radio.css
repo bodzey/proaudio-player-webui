@@ -58,6 +58,11 @@
   border: 0 !important;
 }
 
+.redesign-shell .station-artwork-image {
+  object-fit: contain;
+  background: #f4f5f5;
+}
+
 .redesign-shell .radio-station-art .station-artwork-content {
   align-items: center;
   justify-content: center;
