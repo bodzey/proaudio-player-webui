@@ -1,4 +1,12 @@
-import { For, Show, createEffect, createResource, createSignal, onCleanup, onMount } from 'solid-js';
+import {
+  For,
+  Show,
+  createEffect,
+  createResource,
+  createSignal,
+  onCleanup,
+  onMount,
+} from 'solid-js';
 
 import { api } from '../api/client';
 import { subscribeToMeterEvents } from '../api/meters';
