@@ -22,7 +22,11 @@ export const ThemeMenu: Component<ThemeMenuProps> = (props) => {
   const currentLabel = () =>
     OPTIONS.find((option) => option.value === props.value)?.label ?? 'Тема';
 
-  const selectedIndex = () => Math.max(0, OPTIONS.findIndex((option) => option.value === props.value));
+  const selectedIndex = () =>
+    Math.max(
+      0,
+      OPTIONS.findIndex((option) => option.value === props.value),
+    );
 
   const focusOption = (index: number) => {
     const normalized = (index + OPTIONS.length) % OPTIONS.length;
