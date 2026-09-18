@@ -5252,3 +5252,19 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
       inset 0 1px 0 rgb(255 255 255 / 90%) !important;
   }
 }
+
+
+/* Three-lane signal meter ------------------------------------------------
+   Outer lanes are instantaneous sample peaks (L/R); the wider center lane is
+   combined stereo RMS. Keep enough width on mobile for all three lanes to stay
+   visually distinct without changing the mixer strip layout. */
+
+.redesign-shell .mixer-meter {
+  width: 50px !important;
+}
+
+@media (max-width: 639px) {
+  .redesign-shell .mixer-meter {
+    width: 34px !important;
+  }
+}
