@@ -76,8 +76,11 @@ export function App() {
     const current = page();
     if (next === current) return;
 
-    pageScroll.set(current, window.scrollY);
-    const targetScroll = pageScroll.get(next) ?? staticNavTop();
+    const currentScroll = window.scrollY;
+    const navTop = staticNavTop();
+    pageScroll.set(current, currentScroll);
+    const firstVisitScroll = currentScroll < navTop ? currentScroll : navTop;
+    const targetScroll = pageScroll.get(next) ?? firstVisitScroll;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const documentWithTransition = document as Document & {
       startViewTransition?: (update: () => void | Promise<void>) => { finished: Promise<void> };
