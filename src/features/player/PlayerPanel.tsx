@@ -6,38 +6,19 @@ import {
   onMount,
   Show,
   type Component,
-  type JSX,
 } from 'solid-js';
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
-import { StationArtwork } from '../radio/StationArtwork';
 import { findCatalogRadioStation } from '../radio/catalog';
-import { isInternetRadioPlayer } from './presentation';
+import { PlayerArtwork } from './PlayerArtwork';
+import { TransportControls } from './TransportControls';
+import { formatClock, isInternetRadioPlayer, radioTrackMetadata } from './presentation';
 
 interface PlayerPanelProps {
   status: PlayerStatus | undefined;
   pendingAction: PlayerAction | undefined;
   onAction: (action: PlayerAction) => void;
   disabled: boolean;
-}
-
-function formatClock(seconds: number | null): string {
-  if (seconds === null || !Number.isFinite(seconds)) return '—:—';
-  const safe = Math.max(0, Math.floor(seconds));
-  const hours = Math.floor(safe / 3600);
-  const minutes = Math.floor((safe % 3600) / 60);
-  const secs = safe % 60;
-  return hours > 0
-    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-    : `${minutes}:${String(secs).padStart(2, '0')}`;
-}
-
-function normalizedText(value: string): string {
-  return value.trim().toLocaleLowerCase('uk-UA').replace(/\s+/g, ' ');
-}
-
-function sameText(left: string, right: string): boolean {
-  return Boolean(left && right && normalizedText(left) === normalizedText(right));
 }
 
 export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
@@ -79,24 +60,15 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
     isRadio() ? station()?.name || props.status?.mpd.station || 'Інтернет-радіо' : '',
   );
 
-  const radioMetadata = createMemo(() => {
-    if (!isRadio()) return { title: '', artist: '' };
-    const knownStation = stationName();
-    let title = props.status?.player.title?.trim() ?? '';
-    let artist = props.status?.player.artist?.trim() ?? '';
-
-    if (sameText(title, knownStation)) title = '';
-    if (sameText(artist, knownStation)) artist = '';
-
-    if (title && !artist) {
-      const separator = title.indexOf(' - ');
-      if (separator > 0 && separator < title.length - 3) {
-        artist = title.slice(0, separator).trim();
-        title = title.slice(separator + 3).trim();
-      }
-    }
-    return { title, artist };
-  });
+  const radioMetadata = createMemo(() =>
+    isRadio()
+      ? radioTrackMetadata(
+          props.status?.player.title,
+          props.status?.player.artist,
+          stationName(),
+        )
+      : { title: '', artist: '' },
+  );
 
   const position = createMemo(() => {
     const player = props.status?.player;
@@ -126,50 +98,13 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
       aria-busy={props.status === undefined}
     >
       <div class="player-card-grid grid min-h-[300px] lg:grid-cols-[300px_minmax(0,1fr)]">
-        <div class="player-art relative aspect-[16/10] overflow-hidden bg-[#090c11] sm:aspect-[16/9] lg:aspect-auto">
-          <Show
-            when={isRadio()}
-            fallback={
-              <Show
-                when={props.status?.player.art_url}
-                fallback={
-                  <div class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(14,165,233,0.16),transparent_42%),linear-gradient(145deg,#111722,#080b10)]">
-                    <div class="flex size-24 items-center justify-center rounded-[26px] border border-white/10 bg-white/[0.035] shadow-2xl sm:size-28 sm:rounded-[30px]">
-                      <svg
-                        viewBox="0 0 24 24"
-                        class="size-10 text-slate-500 sm:size-12"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.4"
-                        aria-hidden="true"
-                      >
-                        <path d="M9 18V5l10-2v13" />
-                        <circle cx="6" cy="18" r="3" />
-                        <circle cx="16" cy="16" r="3" />
-                      </svg>
-                    </div>
-                  </div>
-                }
-              >
-                {(url) => (
-                  <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />
-                )}
-              </Show>
-            }
-          >
-            <StationArtwork
-              station={station()}
-              fallbackName={stationName()}
-              class="absolute inset-0 size-full"
-            />
-          </Show>
-          <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 to-transparent sm:h-32" />
-          <div class="absolute right-3 bottom-3 left-3 flex items-end justify-between gap-3 sm:right-4 sm:bottom-4 sm:left-4">
-            <div class="rounded-lg border border-white/10 bg-black/45 px-2.5 py-1.5 text-[10px] font-bold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl sm:rounded-full sm:px-3 sm:text-[11px]">
-              {props.status?.player.source ?? 'Без джерела'}
-            </div>
-          </div>
-        </div>
+        <PlayerArtwork
+          radio={isRadio()}
+          station={station()}
+          stationName={stationName()}
+          artUrl={props.status?.player.art_url}
+          source={props.status?.player.source}
+        />
 
         <div class="player-content flex min-w-0 flex-col p-4 sm:p-6 lg:p-7">
           <header class="player-meta flex items-start justify-between gap-3 sm:gap-4">
@@ -241,58 +176,12 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
               </div>
             </Show>
 
-            <div class="transport-controls mt-5 flex items-center justify-center gap-2 sm:mt-6 sm:gap-3">
-              <TransportButton
-                label="Попередній"
-                action="prev"
-                disabled={controlsDisabled() || !props.status?.player.controls.prev}
-                pending={props.pendingAction === 'prev'}
-                onClick={props.onAction}
-              >
-                <path d="M6 5v14M18 6l-8 6 8 6V6Z" />
-              </TransportButton>
-              <TransportButton
-                label="Стоп"
-                action="stop"
-                disabled={controlsDisabled() || !props.status?.player.controls.stop}
-                pending={props.pendingAction === 'stop'}
-                onClick={props.onAction}
-              >
-                <rect x="7" y="7" width="10" height="10" rx="1" />
-              </TransportButton>
-              <TransportButton
-                primary
-                label={props.status?.player.state === 'playing' ? 'Пауза' : 'Відтворити'}
-                action={props.status?.player.state === 'playing' ? 'pause' : 'play'}
-                disabled={
-                  controlsDisabled() ||
-                  (props.status?.player.state === 'playing'
-                    ? !props.status?.player.controls.pause
-                    : !props.status?.player.controls.play)
-                }
-                pending={
-                  props.pendingAction ===
-                  (props.status?.player.state === 'playing' ? 'pause' : 'play')
-                }
-                onClick={props.onAction}
-              >
-                <Show
-                  when={props.status?.player.state === 'playing'}
-                  fallback={<path d="m9 7 8 5-8 5V7Z" />}
-                >
-                  <path d="M9 7v10M15 7v10" />
-                </Show>
-              </TransportButton>
-              <TransportButton
-                label="Наступний"
-                action="next"
-                disabled={controlsDisabled() || !props.status?.player.controls.next}
-                pending={props.pendingAction === 'next'}
-                onClick={props.onAction}
-              >
-                <path d="M18 5v14M6 6l8 6-8 6V6Z" />
-              </TransportButton>
-            </div>
+            <TransportControls
+              player={props.status?.player}
+              pendingAction={props.pendingAction}
+              disabled={controlsDisabled()}
+              onAction={props.onAction}
+            />
           </div>
         </div>
       </div>
@@ -300,38 +189,3 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   );
 };
 
-interface TransportButtonProps {
-  label: string;
-  action: PlayerAction;
-  disabled: boolean;
-  pending: boolean;
-  primary?: boolean | undefined;
-  onClick: (action: PlayerAction) => void;
-  children: JSX.Element;
-}
-
-const TransportButton: Component<TransportButtonProps> = (props) => (
-  <button
-    type="button"
-    class={
-      props.primary
-        ? 'transport-button transport-button--primary flex size-14 items-center justify-center rounded-xl transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-16 sm:rounded-2xl'
-        : 'transport-button flex size-11 items-center justify-center rounded-xl border transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-12'
-    }
-    aria-label={props.label}
-    disabled={props.disabled || props.pending}
-    onClick={() => props.onClick(props.action)}
-  >
-    <svg
-      viewBox="0 0 24 24"
-      class={props.primary ? 'size-7' : 'size-5'}
-      fill="none"
-      stroke="currentColor"
-      stroke-width={props.primary ? '1.9' : '1.7'}
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      {props.children}
-    </svg>
-  </button>
-);
