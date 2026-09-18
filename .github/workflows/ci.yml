@@ -36,9 +36,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Preview formatted catalog
-        run: npx prettier src/features/radio/catalog.ts
-
       - name: Formatting
         run: npm run format:check
 
