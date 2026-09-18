@@ -97,7 +97,7 @@ export function subscribeToMeterEvents(options: MeterSubscriptionOptions): () =>
     };
     frame();
     options.onOpen?.();
-    const timer = window.setInterval(frame, 40);
+    const timer = window.setInterval(frame, 20);
     return () => {
       window.clearInterval(timer);
       options.buffer.reset();
