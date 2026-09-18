@@ -4343,3 +4343,153 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
     margin-top: 12px;
   }
 }
+
+
+/* Transition isolation + stacking fixes --------------------------------- */
+
+/*
+ * Keep the header/theme popover above the sticky navigation and page cards.
+ * Header entrance animation leaves a transform stacking context behind, so
+ * the z-index must be set on the header itself, not only on the menu.
+ */
+.redesign-shell .app-header {
+  position: relative;
+  z-index: 120;
+}
+
+.redesign-shell .app-nav {
+  z-index: 70;
+}
+
+.redesign-shell .theme-control {
+  z-index: 130 !important;
+}
+
+.redesign-shell .theme-menu {
+  z-index: 140 !important;
+}
+
+/*
+ * This is a realtime appliance UI: metadata, meters and source sessions can
+ * change without user scrolling. Disable scroll anchoring for the app shell
+ * so Chromium never compensates the viewport when those blocks update.
+ */
+.redesign-shell {
+  overflow-anchor: none;
+}
+
+.redesign-shell .page-stage {
+  overflow-anchor: none;
+}
+
+/*
+ * View Transition API: animate only the page content. The previous root
+ * crossfade included the sticky navigation, so old/new active tabs were
+ * composited on top of each other and visibly "twitched".
+ */
+.page-stage {
+  view-transition-name: page-content;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none !important;
+  mix-blend-mode: normal;
+}
+
+::view-transition-group(page-content) {
+  animation-duration: 210ms;
+  animation-timing-function: var(--ui-ease-emphasized);
+}
+
+::view-transition-old(page-content),
+::view-transition-new(page-content) {
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: normal;
+  transform-origin: 50% 0;
+}
+
+::view-transition-old(page-content) {
+  animation: ui-page-content-out 180ms var(--ui-ease-standard) both;
+}
+
+::view-transition-new(page-content) {
+  animation: ui-page-content-in 210ms var(--ui-ease-emphasized) both;
+}
+
+@keyframes ui-page-content-out {
+  to {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes ui-page-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Do not run the legacy page-stage entrance while a native transition runs. */
+html.is-page-transitioning .page-stage,
+html.is-page-transitioning .page-stage--player .player-dashboard > *,
+html.is-page-transitioning .page-stage--radio .radio-page > *,
+html.is-page-transitioning .page-stage--alerts .alerts-page > * {
+  animation: none !important;
+}
+
+/* Source/station state changes stay visual-only: no geometry changes. */
+.source-session,
+.radio-station-card,
+.output-option {
+  contain: layout paint;
+}
+
+.radio-station-card .radio-station-action {
+  min-width: 64px;
+}
+
+.radio-station-card .radio-action-label {
+  min-height: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+  .redesign-shell .app-header {
+    z-index: 120;
+  }
+
+  .redesign-shell .app-nav {
+    z-index: 80;
+  }
+
+  .redesign-shell .theme-menu {
+    max-height: min(320px, calc(100dvh - 24px));
+    overflow-y: auto;
+  }
+
+  ::view-transition-group(page-content) {
+    animation-duration: 180ms;
+  }
+
+  ::view-transition-old(page-content) {
+    animation-duration: 150ms;
+  }
+
+  ::view-transition-new(page-content) {
+    animation-duration: 180ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(page-content),
+  ::view-transition-new(page-content) {
+    animation: none !important;
+  }
+}
