@@ -110,9 +110,7 @@ export function subscribeToMeterEvents(options: MeterSubscriptionOptions): () =>
     try {
       const parsed = snapshot(JSON.parse((event as MessageEvent<string>).data) as unknown);
       if (parsed) options.buffer.write(parsed);
-    } catch {
-      // Ignore a malformed frame and keep the last valid meter snapshot.
-    }
+    } catch {}
   });
 
   source.onopen = () => options.onOpen?.();
