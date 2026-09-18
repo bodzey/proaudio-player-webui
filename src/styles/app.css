@@ -4493,7 +4493,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-
 /* Stable tab switching ---------------------------------------------------
    Do not interpolate page geometry. Different sections have very different
    heights, so transform/scale/ViewTransition morphing causes visible jitter.
