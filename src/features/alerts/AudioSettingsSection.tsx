@@ -32,8 +32,8 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
       }}
       class="alert-audio-form"
       aria-busy={props.busy}
-      onInput={props.onDirty}
-      onChange={props.onDirty}
+      onInput={() => props.onDirty()}
+      onChange={() => props.onDirty()}
       onSubmit={(event) => {
         event.preventDefault();
         props.onSave();
