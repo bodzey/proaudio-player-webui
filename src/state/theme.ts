@@ -20,6 +20,7 @@ function persistTheme(mode: ThemeMode) {
     if (mode === 'system') window.localStorage.removeItem(STORAGE_KEY);
     else window.localStorage.setItem(STORAGE_KEY, mode);
   } catch {
+    void 0;
   }
 }
 
