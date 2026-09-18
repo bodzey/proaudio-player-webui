@@ -102,7 +102,7 @@ export function App() {
                 src="/branding/proaudio-logo.jpg"
                 alt="PRO Audio"
                 width="1536"
-                height="468"
+                height="768"
                 decoding="async"
                 fetchpriority="high"
               />
