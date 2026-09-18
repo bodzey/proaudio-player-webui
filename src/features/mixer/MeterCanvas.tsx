@@ -177,7 +177,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
             context.fillStyle = palette.inactive;
           } else if (segmentDb >= -3) {
             context.fillStyle = palette.high;
-          } else if (segmentDb >= -12) {
+          } else if (segmentDb >= -18) {
             context.fillStyle = palette.mid;
           } else {
             context.fillStyle = palette.low;

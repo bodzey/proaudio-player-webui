@@ -18,9 +18,7 @@ type MixerTarget = 'master' | 'music' | 'alert';
 type DirectTarget = Exclude<MixerTarget, 'music'>;
 
 const CONTROL_INTERVAL_MS = 20;
-const FADER_MARKS = [
-  0, -3, -6, -9, -12, -18, -24, -30, -36, -48, -60,
-] as const;
+const FADER_MARKS = [0, -3, -6, -9, -12, -18, -24, -30, -36, -48, -60] as const;
 const FADER_SCALE = [
   { db: 0, position: 0 },
   { db: -3, position: 0.09 },

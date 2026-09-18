@@ -790,7 +790,6 @@ textarea:focus-visible,
   }
 }
 
-
 /* Redesign branch ---------------------------------------------------------
    Professional console-inspired UI. Visual meters never synthesize signal:
    they animate only the real Peak/RMS snapshots supplied by the native API. */

@@ -37,7 +37,7 @@ export function createThemeController() {
     root.style.colorScheme = resolved;
 
     const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (themeColor) themeColor.content = resolved === 'dark' ? '#101314' : '#f3f5f4';
+    if (themeColor) themeColor.content = resolved === 'dark' ? '#091012' : '#f1f4f3';
   };
 
   const setMode = (next: ThemeMode) => {
