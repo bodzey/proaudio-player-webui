@@ -36,9 +36,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Preview formatted RadioPanel
-        run: npx prettier src/features/radio/RadioPanel.tsx
-
       - name: Formatting
         run: npm run format:check
 
