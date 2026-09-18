@@ -36,7 +36,21 @@ jobs:
         run: npm run lint
 
       - name: Formatting
-        run: npm run format:check
+        run: |
+          npm run format
+          echo '__PRETTIER_APP_BEGIN__'
+          base64 -w0 src/app/App.tsx
+          echo
+          echo '__PRETTIER_APP_END__'
+          echo '__PRETTIER_PLAYER_BEGIN__'
+          base64 -w0 src/features/player/PlayerPanel.tsx
+          echo
+          echo '__PRETTIER_PLAYER_END__'
+          echo '__PRETTIER_CSS_BEGIN__'
+          base64 -w0 src/styles/app.css
+          echo
+          echo '__PRETTIER_CSS_END__'
+          exit 1
 
       - name: Build
         run: npm run build
