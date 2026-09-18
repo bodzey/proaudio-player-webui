@@ -12,6 +12,7 @@ import { RadioPanel } from '../features/radio/RadioPanel';
 import { SourcesPanel } from '../features/sources/SourcesPanel';
 import { MeterBuffer } from '../realtime/meter-buffer';
 import { createPlayerState } from '../state/player';
+import { createThemeController, type ThemeMode } from '../state/theme';
 
 type AppPage = 'player' | 'radio' | 'alerts';
 type MeterState = 'idle' | 'connecting' | 'live' | 'reconnecting';
@@ -23,6 +24,7 @@ function pageFromHash(): AppPage {
 
 export function App() {
   const player = createPlayerState();
+  const theme = createThemeController();
   const [capabilities] = createResource(api.capabilities);
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
@@ -75,34 +77,31 @@ export function App() {
   return (
     <main class="app-shell min-h-screen text-slate-100">
       <div class="app-accent-line" aria-hidden="true" />
-      <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_-10%,rgba(14,165,233,0.10),transparent_30%),radial-gradient(circle_at_92%_4%,rgba(37,99,235,0.08),transparent_24%)]" />
+      <div class="app-ambient" aria-hidden="true" />
 
       <div class="app-frame relative mx-auto min-h-screen max-w-[1540px] px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
         <header class="app-header mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-5 sm:gap-4">
-          <div class="flex min-w-0 items-center gap-3 sm:gap-3.5">
-            <div class="brand-mark flex size-10 shrink-0 items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/[0.07] shadow-lg shadow-black/20 sm:size-11">
-              <svg
-                viewBox="0 0 24 24"
-                class="size-5 text-sky-300 sm:size-5.5"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M4 15V9M8 18V6M12 20V4M16 17V7M20 14v-4" />
-              </svg>
-            </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <p class="truncate text-[10px] font-bold tracking-[0.19em] text-sky-400/85 uppercase sm:text-[11px]">
-                  ProAudio Player
-                </p>
-                <span class="hidden h-px w-8 bg-sky-400/30 sm:block" />
+          <div class="brand-lockup flex min-w-0 items-center gap-3">
+            <div class="brand-wordmark shrink-0" aria-label="PRO Audio Player">
+              <div class="flex items-center leading-none">
+                <span class="brand-pro">PRO</span>
+                <svg
+                  viewBox="0 0 34 18"
+                  class="brand-wave mx-0.5 h-[18px] w-[34px]"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <path d="M1 9h3l2-5 2 10 2-8 2 6 2-10 2 14 2-9 2 5 2-7 2 8 2-4h6" />
+                </svg>
+                <span class="brand-audio">Audio</span>
               </div>
-              <h1 class="mt-0.5 truncate text-sm font-semibold tracking-[-0.02em] text-white sm:text-base">
-                {player.status()?.name ?? 'Панель керування'}
-              </h1>
+              <div class="brand-subline">
+                <span>PLAYER</span>
+                <span class="brand-device-name">{player.status()?.name ?? 'Network audio'}</span>
+              </div>
             </div>
           </div>
 
@@ -121,6 +120,7 @@ export function App() {
                 </span>
               )}
             </Show>
+            <ThemeSelect value={theme.mode()} onChange={theme.setMode} />
             <ConnectionBadge state={player.connection()} />
           </div>
         </header>
@@ -257,5 +257,41 @@ function NavButton(props: NavButtonProps) {
     >
       {props.children}
     </button>
+  );
+}
+
+
+interface ThemeSelectProps {
+  value: ThemeMode;
+  onChange: (value: ThemeMode) => void;
+}
+
+function ThemeSelect(props: ThemeSelectProps) {
+  return (
+    <label class="theme-control" title="Тема інтерфейсу">
+      <svg
+        viewBox="0 0 24 24"
+        class="size-4 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.42 1.42M16.94 16.94l1.42 1.42M18.36 5.64l-1.42 1.42M7.06 16.94l-1.42 1.42" />
+        <circle cx="12" cy="12" r="4" />
+      </svg>
+      <span class="sr-only">Тема інтерфейсу</span>
+      <select
+        class="theme-select"
+        aria-label="Тема інтерфейсу"
+        value={props.value}
+        onChange={(event) => props.onChange(event.currentTarget.value as ThemeMode)}
+      >
+        <option value="system">Система</option>
+        <option value="light">Світла</option>
+        <option value="dark">Темна</option>
+      </select>
+    </label>
   );
 }

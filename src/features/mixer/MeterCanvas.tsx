@@ -23,6 +23,37 @@ const BUS_LABELS: Record<MeterBus, string> = {
   alert: 'ALERT',
 };
 
+interface MeterPalette {
+  background: string;
+  inactive: string;
+  low: string;
+  mid: string;
+  high: string;
+  peak: string;
+  clip: string;
+  label: string;
+  labelMuted: string;
+}
+
+function cssColor(name: string, fallback: string): string {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+
+function readMeterPalette(): MeterPalette {
+  return {
+    background: cssColor('--pa-meter-bg', '#090c11'),
+    inactive: cssColor('--pa-meter-off', '#18202b'),
+    low: cssColor('--pa-meter-green', '#22c55e'),
+    mid: cssColor('--pa-meter-yellow', '#eab308'),
+    high: cssColor('--pa-meter-red', '#ef4444'),
+    peak: cssColor('--pa-meter-peak', '#e2e8f0'),
+    clip: cssColor('--pa-meter-clip', '#f87171'),
+    label: cssColor('--pa-meter-label', '#64748b'),
+    labelMuted: cssColor('--pa-meter-label-muted', '#334155'),
+  };
+}
+
 function clampDb(value: number): number {
   return Math.min(MAX_DB, Math.max(MIN_DB, value));
 }
@@ -69,6 +100,18 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
     observer.observe(canvas);
     resize();
 
+    let palette = readMeterPalette();
+    const refreshPalette = () => {
+      palette = readMeterPalette();
+    };
+    const themeObserver = new MutationObserver(refreshPalette);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'style'],
+    });
+    const scheme = window.matchMedia('(prefers-color-scheme: dark)');
+    scheme.addEventListener('change', refreshPalette);
+
     const draw = (now: number) => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
@@ -76,7 +119,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       const dt = Math.min(0.1, Math.max(0, now - lastFrameAt) / 1000);
       lastFrameAt = now;
 
-      context.fillStyle = '#090c11';
+      context.fillStyle = palette.background;
       context.fillRect(0, 0, width, height);
 
       const labelHeight = 18;
@@ -127,13 +170,13 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
           const y = meterBottom - (segment + 1) * segmentHeight - segment * segmentGap;
           const active = segmentDb <= displayedRms[channel]!;
           if (!active) {
-            context.fillStyle = '#18202b';
+            context.fillStyle = palette.inactive;
           } else if (segmentDb >= -3) {
-            context.fillStyle = '#ef4444';
+            context.fillStyle = palette.high;
           } else if (segmentDb >= -12) {
-            context.fillStyle = '#eab308';
+            context.fillStyle = palette.mid;
           } else {
-            context.fillStyle = '#22c55e';
+            context.fillStyle = palette.low;
           }
           context.fillRect(xs[channel]!, y, barWidth, segmentHeight);
         }
@@ -141,7 +184,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         const visiblePeak = Math.max(displayedPeak[channel]!, heldPeak[channel]!);
         if (snapshot.available || visiblePeak > MIN_DB + 0.1) {
           const peakY = meterBottom - normalized(visiblePeak) * meterHeight;
-          context.fillStyle = now < clipUntil[channel]! ? '#f87171' : '#e2e8f0';
+          context.fillStyle = now < clipUntil[channel]! ? palette.clip : palette.peak;
           context.fillRect(xs[channel]!, peakY, barWidth, 2);
         }
       }
@@ -149,7 +192,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       context.font = '9px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
       context.textAlign = 'center';
       context.textBaseline = 'bottom';
-      context.fillStyle = snapshot.available ? '#64748b' : '#334155';
+      context.fillStyle = snapshot.available ? palette.label : palette.labelMuted;
       context.fillText('L', xs[0]! + barWidth / 2, height - 2);
       context.fillText('R', xs[1]! + barWidth / 2, height - 2);
 
@@ -160,6 +203,8 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
 
     onCleanup(() => {
       observer.disconnect();
+      themeObserver.disconnect();
+      scheme.removeEventListener('change', refreshPalette);
       cancelAnimationFrame(animationFrame);
     });
   });
@@ -169,7 +214,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       ref={(element) => {
         canvas = element;
       }}
-      class="h-64 w-11 rounded-lg border border-white/[0.07] bg-[#090c11]"
+      class="h-64 w-11 rounded-lg border border-[var(--pa-border)] bg-[var(--pa-meter-bg)]"
       aria-label={`Стереорівень ${BUS_LABELS[props.bus]}`}
       role="img"
     />
