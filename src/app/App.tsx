@@ -95,21 +95,28 @@ export function App() {
 
       <div class="app-frame relative mx-auto min-h-screen max-w-[1540px] px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
         <header class="app-header mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-5 sm:gap-4">
-          <div class="brand-lockup flex min-w-0 items-start">
+          <div
+            class="brand-lockup flex min-w-0 items-start"
+            role="img"
+            aria-label="PRO Audio — Network Streaming Player"
+          >
             <div class="brand-wordmark shrink-0">
               <div class="brand-logo-frame">
                 <img
                   class="brand-logo-image"
                   src="/branding/proaudio-logo.jpg"
-                  alt="PRO Audio"
+                  alt=""
                   width="1536"
                   height="768"
                   decoding="async"
                   fetchpriority="high"
+                  draggable="false"
                 />
               </div>
-              <div class="brand-tagline" aria-label="Network Streaming Player">
-                NETWORK STREAMING PLAYER
+              <div class="brand-tagline" aria-hidden="true">
+                <span>NETWORK</span>
+                <span>STREAMING</span>
+                <span>PLAYER</span>
               </div>
             </div>
           </div>
