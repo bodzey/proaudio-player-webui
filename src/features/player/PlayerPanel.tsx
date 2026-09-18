@@ -11,7 +11,7 @@ import {
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
 import { StationArtwork } from '../radio/StationArtwork';
-import { findCatalogRadioStation } from '../radio/catalog';
+import { findCatalogRadioStation, refreshRadioStations } from '../radio/catalog';
 import { isInternetRadioPlayer } from './presentation';
 
 interface PlayerPanelProps {
@@ -54,6 +54,8 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   });
 
   onMount(() => {
+    void refreshRadioStations();
+
     const syncVisibility = () => {
       const visible = document.visibilityState === 'visible';
       setPageVisible(visible);
