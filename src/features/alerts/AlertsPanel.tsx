@@ -1015,7 +1015,6 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                     </label>
                   </div>
                 </div>
-
               </fieldset>
 
               <div
