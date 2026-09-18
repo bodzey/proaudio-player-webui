@@ -20,7 +20,6 @@ function persistTheme(mode: ThemeMode) {
     if (mode === 'system') window.localStorage.removeItem(STORAGE_KEY);
     else window.localStorage.setItem(STORAGE_KEY, mode);
   } catch {
-    // Theme persistence is optional in restricted/private browsers.
   }
 }
 
