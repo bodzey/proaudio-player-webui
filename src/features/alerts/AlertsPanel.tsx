@@ -806,13 +806,9 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                       </svg>
                     </span>
                     <div>
-                      <h3>Приглушення музики (ducking)</h3>
+                      <h3>Приглушення музики</h3>
                       <p>Рівень та швидкість зниження музики під час системного оголошення.</p>
                     </div>
-                    <span class="alert-tech-chip">
-                      {(settings.sample_rate / 1000).toFixed(1)} kHz · stereo ·{' '}
-                      {settings.duck_db.toFixed(1)} dB
-                    </span>
                   </div>
                   <div class="alert-config-fields two-cols">
                     <label class={LABEL_CLASS}>
