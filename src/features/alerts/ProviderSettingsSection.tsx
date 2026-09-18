@@ -55,8 +55,8 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
       }}
       class="alert-provider-form"
       aria-busy={props.busy !== null}
-      onInput={props.onDirty}
-      onChange={props.onDirty}
+      onInput={() => props.onDirty()}
+      onChange={() => props.onDirty()}
       onSubmit={(event) => {
         event.preventDefault();
         props.onSave();
