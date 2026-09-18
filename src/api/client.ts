@@ -82,7 +82,6 @@ async function request<T>(
       const payload = (await response.json()) as ApiErrorPayload;
       if (payload.error) message = payload.error;
     } catch {
-      // HTTP status remains authoritative when the response body is not JSON.
     }
     throw new ApiError(response.status, message);
   }
