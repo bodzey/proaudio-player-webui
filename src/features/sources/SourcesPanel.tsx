@@ -16,7 +16,7 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
         </h2>
       </div>
       <span class="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-1 font-mono text-[10px] text-slate-500 tabular-nums">
-        {props.sources?.length ?? 0} наживо
+        {props.sources?.length ?? 0}
       </span>
     </div>
 
@@ -25,7 +25,7 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
         when={(props.sources?.length ?? 0) > 0}
         fallback={
           <div class="flex min-h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.07] bg-black/10 px-5 text-center text-xs leading-5 text-slate-600">
-            На музичній шині немає активних джерел.
+            Немає активних джерел.
           </div>
         }
       >
