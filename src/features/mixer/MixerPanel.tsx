@@ -468,19 +468,21 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
       <div class="mixer-strip-console mt-4 flex items-center justify-center gap-2.5">
         <MeterCanvas buffer={props.buffer} bus={bus()} />
         <div class="mixer-fader relative h-[292px] w-[72px] shrink-0 select-none">
-          <For each={FADER_MARKS}>
-            {(mark) => (
-              <div
-                class="mixer-db-mark pointer-events-none absolute inset-x-0 flex -translate-y-1/2 items-center"
-                style={{ top: `${dbToFaderPosition(mark) * 100}%` }}
-              >
-                <span class="w-6 pr-1 text-right font-mono text-[9px] text-slate-500 tabular-nums">
-                  {mark}
-                </span>
-                <span class="h-px flex-1 bg-white/[0.07]" />
-              </div>
-            )}
-          </For>
+          <div class="mixer-fader-scale pointer-events-none absolute inset-x-0">
+            <For each={FADER_MARKS}>
+              {(mark) => (
+                <div
+                  class="mixer-db-mark absolute inset-x-0 flex -translate-y-1/2 items-center"
+                  style={{ top: `${dbToFaderPosition(mark) * 100}%` }}
+                >
+                  <span class="w-6 pr-1 text-right font-mono text-[9px] text-slate-500 tabular-nums">
+                    {mark}
+                  </span>
+                  <span class="h-px flex-1 bg-white/[0.07]" />
+                </div>
+              )}
+            </For>
+          </div>
 
           <div
             ref={(element) => {
