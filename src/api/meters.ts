@@ -110,7 +110,9 @@ export function subscribeToMeterEvents(options: MeterSubscriptionOptions): () =>
     try {
       const parsed = snapshot(JSON.parse((event as MessageEvent<string>).data) as unknown);
       if (parsed) options.buffer.write(parsed);
-    } catch {}
+    } catch {
+      void 0;
+    }
   });
 
   source.onopen = () => options.onOpen?.();
