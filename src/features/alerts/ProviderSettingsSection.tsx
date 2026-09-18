@@ -1,4 +1,4 @@
-import type { Component } from 'solid-js';
+import { Show, type Component } from 'solid-js';
 
 import type { AlertProviderSettings } from '../../api/types';
 import {
@@ -48,7 +48,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
         {props.settings.token_configured ? 'Токен налаштовано' : 'Токен відсутній'}
       </div>
     </div>
-  
+
     <form
       ref={(element) => {
         props.setFormRef(element);
@@ -84,7 +84,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
             Адреса повинна містити <code>{'{uid}'}</code>.
           </span>
         </label>
-  
+
         <label class={LABEL_CLASS}>
           UID локації
           <input
@@ -99,7 +99,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
           />
           <span class={HELP_CLASS}>Ідентифікатор вашої локації (uid).</span>
         </label>
-  
+
         <label class={LABEL_CLASS}>
           Тип локації
           <select class={INPUT_CLASS} name="location_type" value={props.settings.location_type}>
@@ -111,7 +111,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
           </select>
           <span class={HELP_CLASS}>Оберіть тип вашої локації.</span>
         </label>
-  
+
         <label class={LABEL_CLASS + ' alert-span-full'}>
           Новий API-токен
           <div class="alert-input-shell has-trailing-action">
@@ -138,7 +138,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
           </div>
           <span class={HELP_CLASS}>Залиште порожнім, щоб не змінювати поточний токен.</span>
         </label>
-  
+
         <details class="alert-advanced alert-span-full">
           <summary>
             <span>
@@ -165,7 +165,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
               />
               <span class={HELP_CLASS}>Як часто перевіряти стан тривог.</span>
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Очікування відповіді, с
               <input
@@ -180,7 +180,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
               />
               <span class={HELP_CLASS}>Скільки чекати на відповідь сервера.</span>
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Пауза після HTTP 429, с
               <input
@@ -195,7 +195,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
               />
               <span class={HELP_CLASS}>Затримка після перевищення ліміту.</span>
             </label>
-  
+
             <label class={LABEL_CLASS}>
               Підтверджень відбою
               <input
@@ -213,7 +213,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
           </div>
         </details>
       </fieldset>
-  
+
       <div class="alert-form-actions alert-span-full">
         <span
           class={'alert-form-message ' + messageClass(props.message)}
