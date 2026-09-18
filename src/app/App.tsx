@@ -1,4 +1,4 @@
-import { Show, createEffect, createResource, createSignal, onCleanup, onMount } from 'solid-js';
+import { For, Show, createEffect, createResource, createSignal, onCleanup, onMount } from 'solid-js';
 
 import { api } from '../api/client';
 import { subscribeToMeterEvents } from '../api/meters';
@@ -83,27 +83,25 @@ export function App() {
 
       <div class="app-frame relative mx-auto min-h-screen max-w-[1540px] px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
         <header class="app-header mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-5 sm:gap-4">
-          <div class="brand-lockup flex min-w-0 items-center gap-3">
-            <div class="brand-wordmark shrink-0" aria-label="PRO Audio Player">
-              <div class="flex items-center leading-none">
+          <div class="brand-lockup flex min-w-0 items-center">
+            <div class="brand-wordmark shrink-0" aria-label="PRO Audio — Network Player">
+              <div class="brand-wordmark-main">
                 <span class="brand-pro">PRO</span>
                 <svg
-                  viewBox="0 0 34 18"
-                  class="brand-wave mx-0.5 h-[18px] w-[34px]"
+                  viewBox="0 0 52 20"
+                  class="brand-wave"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="1.35"
+                  stroke-width="1.55"
                   stroke-linecap="round"
+                  stroke-linejoin="round"
                   aria-hidden="true"
                 >
-                  <path d="M1 9h3l2-5 2 10 2-8 2 6 2-10 2 14 2-9 2 5 2-7 2 8 2-4h6" />
+                  <path d="M1 10h5l2.4-4 2.3 8 2.6-11 2.7 15 2.7-9 2.8 5 2.8-12 2.8 16 2.7-10 2.7 6 2.7-8 2.8 8 2.5-4H51" />
                 </svg>
                 <span class="brand-audio">Audio</span>
               </div>
-              <div class="brand-subline">
-                <span>PLAYER</span>
-                <span class="brand-device-name">{player.status()?.name ?? 'Network audio'}</span>
-              </div>
+              <div class="brand-subline">NETWORK PLAYER</div>
             </div>
           </div>
 
@@ -303,32 +301,112 @@ interface ThemeSelectProps {
   onChange: (value: ThemeMode) => void;
 }
 
+const THEME_OPTIONS: Array<{ value: ThemeMode; label: string }> = [
+  { value: 'system', label: 'Система' },
+  { value: 'light', label: 'Світла' },
+  { value: 'dark', label: 'Темна' },
+];
+
 function ThemeSelect(props: ThemeSelectProps) {
+  const [open, setOpen] = createSignal(false);
+  let root!: HTMLDivElement;
+  let trigger!: HTMLButtonElement;
+
+  const currentLabel = () =>
+    THEME_OPTIONS.find((option) => option.value === props.value)?.label ?? 'Тема';
+
+  const choose = (value: ThemeMode) => {
+    props.onChange(value);
+    setOpen(false);
+    queueMicrotask(() => trigger.focus());
+  };
+
+  onMount(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (!root.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !open()) return;
+      setOpen(false);
+      trigger.focus();
+    };
+
+    window.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('keydown', onKeyDown);
+    onCleanup(() => {
+      window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('keydown', onKeyDown);
+    });
+  });
+
   return (
-    <label class="theme-control" title="Тема інтерфейсу">
-      <svg
-        viewBox="0 0 24 24"
-        class="size-4 shrink-0"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.7"
-        stroke-linecap="round"
-        aria-hidden="true"
-      >
-        <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.42 1.42M16.94 16.94l1.42 1.42M18.36 5.64l-1.42 1.42M7.06 16.94l-1.42 1.42" />
-        <circle cx="12" cy="12" r="4" />
-      </svg>
-      <span class="sr-only">Тема інтерфейсу</span>
-      <select
-        class="theme-select"
+    <div
+      ref={(element) => {
+        root = element;
+      }}
+      class="theme-control"
+    >
+      <button
+        ref={(element) => {
+          trigger = element;
+        }}
+        type="button"
+        class="theme-button"
         aria-label="Тема інтерфейсу"
-        value={props.value}
-        onChange={(event) => props.onChange(event.currentTarget.value as ThemeMode)}
+        aria-haspopup="menu"
+        aria-expanded={open()}
+        onClick={() => setOpen((value) => !value)}
       >
-        <option value="system">Система</option>
-        <option value="light">Світла</option>
-        <option value="dark">Темна</option>
-      </select>
-    </label>
+        <svg
+          viewBox="0 0 24 24"
+          class="theme-button-icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.42 1.42M16.94 16.94l1.42 1.42M18.36 5.64l-1.42 1.42M7.06 16.94l-1.42 1.42" />
+          <circle cx="12" cy="12" r="4" />
+        </svg>
+        <span>{currentLabel()}</span>
+        <svg
+          viewBox="0 0 20 20"
+          class="theme-chevron"
+          classList={{ 'is-open': open() }}
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m6 8 4 4 4-4" />
+        </svg>
+      </button>
+
+      <Show when={open()}>
+        <div class="theme-menu" role="menu" aria-label="Оберіть тему">
+          <p class="theme-menu-label">Тема інтерфейсу</p>
+          <For each={THEME_OPTIONS}>
+            {(option) => (
+              <button
+                type="button"
+                class="theme-option"
+                classList={{ 'is-selected': props.value === option.value }}
+                role="menuitemradio"
+                aria-checked={props.value === option.value}
+                onClick={() => choose(option.value)}
+              >
+                <span>{option.label}</span>
+                <span class="theme-option-radio" aria-hidden="true">
+                  <span />
+                </span>
+              </button>
+            )}
+          </For>
+        </div>
+      </Show>
+    </div>
   );
 }
