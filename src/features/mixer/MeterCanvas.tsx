@@ -122,10 +122,6 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
 
-      // Mobile browsers can briefly report a 0/1 px layout while restoring a
-      // standalone PWA or switching back from the background. Never replace a
-      // valid backing store with that transient size: it would then be stretched
-      // by CSS and the meter would look malformed until a reload.
       if (rect.width < 4 || rect.height < 4) return false;
 
       const scale = Math.max(1, window.devicePixelRatio || 1);
