@@ -229,10 +229,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       const rmsX = leftX + peakWidth + laneGap;
       const rightX = rmsX + rmsWidth + laneGap;
       const segmentGap = 0.75;
-      const segmentHeight = Math.max(
-        1.25,
-        (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS,
-      );
+      const segmentHeight = Math.max(1.25, (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS);
 
       const targetPeak: [number, number] = [
         snapshot.available ? clampDb(snapshot.peak[0] ?? MIN_DB) : MIN_DB,
