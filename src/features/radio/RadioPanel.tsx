@@ -95,7 +95,9 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                 <button
                   type="button"
                   aria-pressed={active()}
-                  aria-label={active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`}
+                  aria-label={
+                    active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`
+                  }
                   class={
                     active()
                       ? 'radio-station-card is-active group overflow-hidden rounded-2xl border text-left transition'
