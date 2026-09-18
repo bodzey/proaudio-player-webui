@@ -298,7 +298,10 @@ export async function demoRequest<T>(path: string, init?: RequestInit): Promise<
 
   if (method === 'POST' && path === '/volume') {
     const volume = Math.max(0, Math.min(100, Number(body.percent ?? status.volume)));
-    mixer = { ...mixer, music: { ...mixer.music, volume, db: percentToDb(volume), muted: volume <= 0 } };
+    mixer = {
+      ...mixer,
+      music: { ...mixer.music, volume, db: percentToDb(volume), muted: volume <= 0 },
+    };
     syncLevels();
     return clone({ volume, muted: mixer.music.muted }) as T;
   }
@@ -322,7 +325,10 @@ export async function demoRequest<T>(path: string, init?: RequestInit): Promise<
     const target = String(body.target) as 'master' | 'music' | 'alert';
     const volume = Math.max(0, Math.min(100, Number(body.percent ?? 0)));
     if (target === 'master' || target === 'music' || target === 'alert') {
-      mixer = { ...mixer, [target]: { ...mixer[target], volume, db: percentToDb(volume), muted: volume <= 0 } };
+      mixer = {
+        ...mixer,
+        [target]: { ...mixer[target], volume, db: percentToDb(volume), muted: volume <= 0 },
+      };
       syncLevels();
       return clone(mixer[target]) as T;
     }
@@ -371,7 +377,9 @@ export async function demoRequest<T>(path: string, init?: RequestInit): Promise<
     return clone(audioSettings) as T;
   }
 
-  const mediaMatch = path.match(/^\/settings\/alerts\/media\/(alarm_start|alarm_end|minute_silence)$/);
+  const mediaMatch = path.match(
+    /^\/settings\/alerts\/media\/(alarm_start|alarm_end|minute_silence)$/,
+  );
   if (mediaMatch && (method === 'PUT' || method === 'DELETE')) {
     const kind = mediaMatch[1] as AlertMediaFile['kind'];
     media = {

@@ -883,7 +883,10 @@ interface StatusItemProps {
 
 const StatusItem: Component<StatusItemProps> = (props) => (
   <div class="alert-status-item flex min-w-0 items-center gap-3 rounded-2xl border px-3.5 py-3">
-    <span class="alert-status-icon flex size-9 shrink-0 items-center justify-center rounded-xl" aria-hidden="true">
+    <span
+      class="alert-status-icon flex size-9 shrink-0 items-center justify-center rounded-xl"
+      aria-hidden="true"
+    >
       <svg
         viewBox="0 0 24 24"
         class="size-4.5"

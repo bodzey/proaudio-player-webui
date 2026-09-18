@@ -102,7 +102,11 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                   onClick={() => void toggleStation(station.url, station.name)}
                 >
                   <div class="radio-station-layout grid grid-cols-[96px_minmax(0,1fr)_64px]">
-                    <StationArtwork station={station} compact class="radio-station-art aspect-square" />
+                    <StationArtwork
+                      station={station}
+                      compact
+                      class="radio-station-art aspect-square"
+                    />
                     <div class="min-w-0 px-4 py-3.5">
                       <div class="min-w-0">
                         <div class="truncate text-sm font-semibold text-slate-100">

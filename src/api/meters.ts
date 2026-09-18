@@ -78,11 +78,7 @@ export function subscribeToMeterEvents(options: MeterSubscriptionOptions): () =>
     let sequence = 0;
     const frame = () => {
       const time = performance.now() / 1000;
-      const stereo = (
-        base: number,
-        swing: number,
-        phase: number,
-      ): StereoMeterSnapshot => {
+      const stereo = (base: number, swing: number, phase: number): StereoMeterSnapshot => {
         const left = base + Math.sin(time * 3.2 + phase) * swing;
         const right = base + Math.sin(time * 2.7 + phase + 0.7) * swing;
         return {

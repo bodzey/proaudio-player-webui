@@ -853,8 +853,7 @@ textarea:focus-visible,
 body {
   background:
     radial-gradient(circle at 9% -10%, rgb(255 100 42 / 9%), transparent 30rem),
-    radial-gradient(circle at 92% 0%, rgb(30 70 74 / 7%), transparent 38rem),
-    var(--rd-bg);
+    radial-gradient(circle at 92% 0%, rgb(30 70 74 / 7%), transparent 38rem), var(--rd-bg);
 }
 
 .redesign-shell {
@@ -891,8 +890,7 @@ body {
 
 .nav-button--active {
   border-color: var(--rd-accent-border) !important;
-  background:
-    linear-gradient(180deg, rgb(255 100 42 / 13%), rgb(255 100 42 / 6%)) !important;
+  background: linear-gradient(180deg, rgb(255 100 42 / 13%), rgb(255 100 42 / 6%)) !important;
   color: var(--pa-accent-text) !important;
   box-shadow:
     0 8px 22px -18px rgb(255 100 42 / 70%),
@@ -909,9 +907,11 @@ body {
 .pro-panel,
 .player-card {
   border-color: var(--rd-border) !important;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--rd-surface) 98%, white 2%), var(--rd-surface))
-    !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--rd-surface) 98%, white 2%),
+    var(--rd-surface)
+  ) !important;
   box-shadow:
     0 26px 70px -52px var(--rd-shadow-strong),
     0 1px 0 rgb(255 255 255 / 3%) inset;
@@ -936,8 +936,7 @@ body {
 
 .player-content {
   background:
-    radial-gradient(circle at 100% 0%, rgb(255 100 42 / 4%), transparent 42%),
-    var(--rd-surface);
+    radial-gradient(circle at 100% 0%, rgb(255 100 42 / 4%), transparent 42%), var(--rd-surface);
 }
 
 .transport-button {
@@ -978,9 +977,11 @@ body {
 .radio-station-card {
   min-height: 116px;
   border-color: var(--rd-border) !important;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--rd-surface-2) 92%, transparent), var(--rd-inset))
-    !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--rd-surface-2) 92%, transparent),
+    var(--rd-inset)
+  ) !important;
   box-shadow: 0 12px 28px -28px var(--rd-shadow-strong);
 }
 
@@ -993,8 +994,7 @@ body {
 .radio-station-card.is-active {
   border-color: var(--rd-accent-border) !important;
   background:
-    linear-gradient(135deg, rgb(255 100 42 / 12%), rgb(255 100 42 / 4%) 45%),
-    var(--rd-surface-2) !important;
+    linear-gradient(135deg, rgb(255 100 42 / 12%), rgb(255 100 42 / 4%) 45%), var(--rd-surface-2) !important;
   box-shadow:
     0 18px 42px -34px rgb(255 100 42 / 72%),
     inset 0 0 0 1px rgb(255 100 42 / 5%);
@@ -1027,8 +1027,7 @@ body {
 .priority-banner {
   border-color: var(--pa-danger-border) !important;
   background:
-    linear-gradient(90deg, rgb(248 113 113 / 10%), rgb(248 113 113 / 4%)),
-    var(--rd-surface) !important;
+    linear-gradient(90deg, rgb(248 113 113 / 10%), rgb(248 113 113 / 4%)), var(--rd-surface) !important;
   box-shadow: 0 18px 48px -38px rgb(248 113 113 / 45%);
 }
 
@@ -1036,15 +1035,16 @@ body {
 
 .mixer-panel {
   background:
-    radial-gradient(circle at 92% 5%, rgb(255 100 42 / 5%), transparent 34%),
-    var(--rd-surface) !important;
+    radial-gradient(circle at 92% 5%, rgb(255 100 42 / 5%), transparent 34%), var(--rd-surface) !important;
 }
 
 .mixer-strip {
   border-color: var(--rd-border) !important;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--rd-surface-2) 94%, transparent), var(--rd-inset))
-    !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--rd-surface-2) 94%, transparent),
+    var(--rd-inset)
+  ) !important;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 4%),
     0 12px 26px -26px var(--rd-shadow-strong);
@@ -1088,8 +1088,7 @@ body {
 .mixer-fader-rail {
   border-color: var(--rd-border-strong) !important;
   background:
-    linear-gradient(90deg, rgb(255 255 255 / 3%), transparent 40%),
-    var(--rd-track-inset) !important;
+    linear-gradient(90deg, rgb(255 255 255 / 3%), transparent 40%), var(--rd-track-inset) !important;
   box-shadow:
     inset 0 2px 5px rgb(0 0 0 / 48%),
     0 0 0 1px rgb(255 255 255 / 2%);
@@ -1195,7 +1194,6 @@ body {
   }
 }
 
-
 /* Reference-match pass ----------------------------------------------------
    Matches the approved dark control-room mockups while keeping the existing
    API, responsive behavior and light theme intact. */
@@ -1203,8 +1201,7 @@ body {
 .redesign-shell {
   background:
     radial-gradient(circle at 8% -14%, rgb(255 92 38 / 10%), transparent 33rem),
-    radial-gradient(circle at 93% 1%, rgb(0 111 148 / 8%), transparent 42rem),
-    var(--rd-bg);
+    radial-gradient(circle at 93% 1%, rgb(0 111 148 / 8%), transparent 42rem), var(--rd-bg);
 }
 
 .redesign-shell .app-ambient {
@@ -1271,8 +1268,7 @@ body {
 .nav-button--active {
   border-color: rgb(255 100 42 / 62%) !important;
   background:
-    linear-gradient(180deg, rgb(255 100 42 / 13%), rgb(255 100 42 / 7%)),
-    rgb(18 22 24 / 96%) !important;
+    linear-gradient(180deg, rgb(255 100 42 / 13%), rgb(255 100 42 / 7%)), rgb(18 22 24 / 96%) !important;
   box-shadow:
     0 0 0 1px rgb(255 100 42 / 7%) inset,
     0 8px 24px -16px rgb(255 100 42 / 68%);
@@ -1281,8 +1277,7 @@ body {
 .pro-panel,
 .player-card {
   border-color: rgb(133 156 161 / 18%) !important;
-  background:
-    linear-gradient(180deg, rgb(16 24 27 / 97%), rgb(11 18 21 / 98%)) !important;
+  background: linear-gradient(180deg, rgb(16 24 27 / 97%), rgb(11 18 21 / 98%)) !important;
   box-shadow:
     0 28px 70px -54px rgb(0 0 0 / 88%),
     inset 0 1px 0 rgb(255 255 255 / 2%);
@@ -1448,8 +1443,7 @@ body {
 .mixer-strip {
   padding: 12px 10px 10px !important;
   border-radius: 14px !important;
-  background:
-    linear-gradient(180deg, rgb(15 23 26 / 96%), rgb(10 17 20 / 96%)) !important;
+  background: linear-gradient(180deg, rgb(15 23 26 / 96%), rgb(10 17 20 / 96%)) !important;
   border-color: rgb(255 255 255 / 9%) !important;
 }
 
@@ -1500,8 +1494,7 @@ body {
   padding: 0 9px;
   border-color: rgb(255 255 255 / 14%) !important;
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 4%), transparent),
-    rgb(11 17 19 / 92%) !important;
+    linear-gradient(180deg, rgb(255 255 255 / 4%), transparent), rgb(11 17 19 / 92%) !important;
   color: #899697 !important;
   font-size: 9px;
   line-height: 1;
@@ -1525,16 +1518,14 @@ body {
 .mixer-mute-button:hover:not(:disabled):not(.is-muted) {
   border-color: rgb(255 255 255 / 24%) !important;
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 7%), transparent),
-    rgb(14 21 23 / 96%) !important;
+    linear-gradient(180deg, rgb(255 255 255 / 7%), transparent), rgb(14 21 23 / 96%) !important;
   color: #c4cecf !important;
 }
 
 .mixer-mute-button.is-muted {
   border-color: rgb(255 84 63 / 70%) !important;
   background:
-    linear-gradient(180deg, rgb(255 104 73 / 30%), rgb(218 49 32 / 20%)),
-    rgb(31 14 13 / 96%) !important;
+    linear-gradient(180deg, rgb(255 104 73 / 30%), rgb(218 49 32 / 20%)), rgb(31 14 13 / 96%) !important;
   color: #ffb1a2 !important;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 9%),
@@ -1593,15 +1584,13 @@ body {
   overflow: hidden;
   border-radius: 14px !important;
   border-color: rgb(255 255 255 / 10%) !important;
-  background:
-    linear-gradient(180deg, rgb(14 22 25 / 98%), rgb(11 18 21 / 98%)) !important;
+  background: linear-gradient(180deg, rgb(14 22 25 / 98%), rgb(11 18 21 / 98%)) !important;
   transform: none !important;
 }
 
 .radio-station-card:hover:not(:disabled) {
   border-color: rgb(255 255 255 / 17%) !important;
-  background:
-    linear-gradient(180deg, rgb(17 26 29 / 100%), rgb(12 20 23 / 100%)) !important;
+  background: linear-gradient(180deg, rgb(17 26 29 / 100%), rgb(12 20 23 / 100%)) !important;
 }
 
 .radio-station-card.is-active {
@@ -1694,8 +1683,14 @@ body {
 }
 
 @keyframes radio-eq {
-  0% { transform: scaleY(0.45); opacity: 0.72; }
-  100% { transform: scaleY(1); opacity: 1; }
+  0% {
+    transform: scaleY(0.45);
+    opacity: 0.72;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
 }
 
 .radio-play-button {

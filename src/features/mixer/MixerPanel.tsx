@@ -29,7 +29,7 @@ const FADER_SCALE = [
   { db: -24, position: 0.59 },
   { db: -30, position: 0.69 },
   { db: -36, position: 0.77 },
-  { db: -48, position: 0.90 },
+  { db: -48, position: 0.9 },
   { db: -60, position: 1 },
 ] as const;
 
