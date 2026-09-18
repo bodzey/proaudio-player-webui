@@ -625,7 +625,11 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                           <h3>{item.label}</h3>
                           <p>{item.file_name}</p>
                         </div>
-                        <span class={item.configured ? 'alert-ready-badge' : 'alert-ready-badge is-missing'}>
+                        <span
+                          class={
+                            item.configured ? 'alert-ready-badge' : 'alert-ready-badge is-missing'
+                          }
+                        >
                           {item.configured ? 'Готово' : 'Відсутній'}
                         </span>
                       </div>
@@ -687,7 +691,6 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 )}
               </For>
             </div>
-
           </section>
         )}
       </Show>
@@ -700,8 +703,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 <p class="alert-eyebrow">Налаштування аудіо</p>
                 <h2>Поведінка звуку під час тривоги</h2>
                 <p>
-                  Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT
-                  задається одним фейдером у мікшері автоматично.
+                  Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT задається
+                  одним фейдером у мікшері автоматично.
                 </p>
               </div>
             </div>
@@ -785,7 +788,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                       <p>Рівень та швидкість зниження музики під час системного оголошення.</p>
                     </div>
                     <span class="alert-tech-chip">
-                      {(settings.sample_rate / 1000).toFixed(1)} kHz · stereo · {settings.duck_db.toFixed(1)} dB
+                      {(settings.sample_rate / 1000).toFixed(1)} kHz · stereo ·{' '}
+                      {settings.duck_db.toFixed(1)} dB
                     </span>
                   </div>
                   <div class="alert-config-fields two-cols">
@@ -918,7 +922,9 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                         required
                         value={settings.default_restore_volume_percent}
                       />
-                      <span class={HELP_CLASS}>Використовується, якщо немає збереженого рівня.</span>
+                      <span class={HELP_CLASS}>
+                        Використовується, якщо немає збереженого рівня.
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -991,7 +997,9 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
 
               <div class="alert-audio-savebar">
                 <div>
-                  <span class="alert-savebar-icon" aria-hidden="true">i</span>
+                  <span class="alert-savebar-icon" aria-hidden="true">
+                    i
+                  </span>
                   <span>
                     <b>{audioDirty() ? 'Є незбережені зміни' : 'Налаштування готові'}</b>
                     <small>
