@@ -212,20 +212,22 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
           </p>
         </Show>
 
-        <Show when={message()}>
-          {(result) => (
-            <div
-              class={
-                result().kind === 'success'
-                  ? 'mt-4 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3.5 py-2.5 text-xs text-emerald-200/75'
-                  : 'mt-4 rounded-xl border border-red-400/15 bg-red-400/[0.05] px-3.5 py-2.5 text-xs text-red-200/75'
-              }
-              role="status"
-            >
-              {result().text}
-            </div>
-          )}
-        </Show>
+        <div class="radio-feedback-slot" aria-live="polite">
+          <Show when={message()}>
+            {(result) => (
+              <div
+                class={
+                  result().kind === 'success'
+                    ? 'radio-feedback-message rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3.5 py-2.5 text-xs text-emerald-200/75'
+                    : 'radio-feedback-message rounded-xl border border-red-400/15 bg-red-400/[0.05] px-3.5 py-2.5 text-xs text-red-200/75'
+                }
+                role="status"
+              >
+                {result().text}
+              </div>
+            )}
+          </Show>
+        </div>
       </section>
     </div>
   );
