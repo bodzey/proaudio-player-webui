@@ -723,6 +723,7 @@ body {
 .radio-station-card {
   --radio-art-size: clamp(6rem, 7.2vw, 7rem);
   --radio-action-size: clamp(2.75rem, 4vw, 3.5rem);
+  min-height: var(--radio-art-size) !important;
 }
 
 .radio-station-layout {
@@ -1128,7 +1129,6 @@ body {
   .radio-station-card {
     --radio-art-size: clamp(5.5rem, 27vw, 6.25rem);
     --radio-action-size: clamp(2.75rem, 13vw, 3.15rem);
-    min-height: 0;
   }
 
   .radio-station-copy {
