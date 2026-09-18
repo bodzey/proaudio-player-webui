@@ -30,15 +30,13 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
         <p class="alert-eyebrow">API налаштування</p>
         <h2>API повітряних тривог</h2>
         <p>
-          Налаштування підключення до сервера alerts.in.ua. Перевірка API використовує
-          введені значення, але не зберігає їх.
+          Налаштування підключення до сервера alerts.in.ua. Перевірка API використовує введені
+          значення, але не зберігає їх.
         </p>
       </div>
       <div
         class={
-          props.settings.token_configured
-            ? 'alert-token-badge is-configured'
-            : 'alert-token-badge'
+          props.settings.token_configured ? 'alert-token-badge is-configured' : 'alert-token-badge'
         }
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -220,9 +218,7 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
           role="status"
           aria-live="polite"
         >
-          <Show when={props.dirty && !props.message?.text}>
-            Є незбережені зміни
-          </Show>
+          <Show when={props.dirty && !props.message?.text}>Є незбережені зміни</Show>
           {props.message?.text ?? ''}
         </span>
         <div class="alert-action-buttons">
