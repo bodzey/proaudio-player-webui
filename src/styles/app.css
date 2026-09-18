@@ -704,9 +704,6 @@ textarea:focus-visible,
     min-height: 46px;
   }
 
-  [aria-label='Канали мікшера'] > div > div {
-    width: min(78vw, 260px);
-  }
 }
 
 /* Installed app ----------------------------------------------------------- */
@@ -1433,8 +1430,15 @@ body {
 }
 
 .mixer-fader {
+  --mixer-fader-edge: 16px;
   width: 68px !important;
   height: 286px !important;
+}
+
+.mixer-fader-scale,
+.mixer-fader-track {
+  top: var(--mixer-fader-edge) !important;
+  bottom: var(--mixer-fader-edge) !important;
 }
 
 .mixer-fader-rail {
@@ -1917,6 +1921,7 @@ body {
   }
 
   .mixer-fader {
+    --mixer-fader-edge: 14px;
     width: 46px !important;
     height: 260px !important;
   }
