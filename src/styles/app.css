@@ -3236,3 +3236,671 @@ body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Unified motion + surface system -----------------------------------------
+   Final interaction pass: one motion language across Player / Radio /
+   Alerts, tuned to the approved ProAudio control-room direction. */
+
+.redesign-shell {
+  --ui-radius-panel: 18px;
+  --ui-radius-control: 10px;
+  --ui-radius-inner: 12px;
+  --ui-motion-fast: 140ms;
+  --ui-motion-base: 220ms;
+  --ui-motion-slow: 340ms;
+  --ui-ease-standard: cubic-bezier(0.2, 0.72, 0.2, 1);
+  --ui-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --ui-surface-border: rgb(133 156 161 / 18%);
+  --ui-surface-border-hover: rgb(154 176 180 / 28%);
+  --ui-inset: rgb(6 13 16 / 42%);
+  --ui-inset-hover: rgb(11 20 23 / 68%);
+  --ui-orange-glow: rgb(255 100 42 / 26%);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.redesign-shell,
+.redesign-shell .pro-panel,
+.redesign-shell .player-card,
+.redesign-shell .app-nav,
+.redesign-shell .status-chip,
+.redesign-shell .theme-control,
+.redesign-shell .connection-badge {
+  transition:
+    color var(--ui-motion-base) var(--ui-ease-standard),
+    background-color var(--ui-motion-base) var(--ui-ease-standard),
+    border-color var(--ui-motion-base) var(--ui-ease-standard),
+    box-shadow var(--ui-motion-base) var(--ui-ease-standard);
+}
+
+.redesign-shell .pro-panel,
+.redesign-shell .player-card,
+.redesign-shell .radio-panel,
+.redesign-shell .mixer-panel,
+.redesign-shell .outputs-panel,
+.redesign-shell .sources-panel,
+.redesign-shell .alerts-card {
+  border-radius: var(--ui-radius-panel) !important;
+  border-color: var(--ui-surface-border) !important;
+}
+
+.redesign-shell .pro-panel,
+.redesign-shell .player-card {
+  background:
+    radial-gradient(circle at 92% 0%, rgb(255 100 42 / 2.5%), transparent 26rem),
+    linear-gradient(180deg, rgb(16 24 27 / 97%), rgb(10 17 20 / 98%)) !important;
+}
+
+:root[data-theme='light'] .redesign-shell .pro-panel,
+:root[data-theme='light'] .redesign-shell .player-card {
+  background: var(--rd-surface) !important;
+}
+
+/* Page transitions ------------------------------------------------------- */
+
+.page-stage {
+  min-width: 0;
+  transform-origin: 50% 0;
+  animation: ui-page-enter var(--ui-motion-slow) var(--ui-ease-emphasized) both;
+}
+
+.page-stage--player .player-dashboard > *,
+.page-stage--radio .radio-page > *,
+.page-stage--alerts .alerts-page > * {
+  animation: ui-card-enter 380ms var(--ui-ease-emphasized) both;
+}
+
+.page-stage--player .player-dashboard > :nth-child(2),
+.page-stage--radio .radio-page > :nth-child(2),
+.page-stage--alerts .alerts-page > :nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.page-stage--player .player-dashboard > :nth-child(3),
+.page-stage--alerts .alerts-page > :nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.page-stage--player .player-dashboard > :nth-child(4),
+.page-stage--alerts .alerts-page > :nth-child(4) {
+  animation-delay: 105ms;
+}
+
+.page-stage--alerts .alerts-page > :nth-child(n + 5) {
+  animation-delay: 125ms;
+}
+
+@keyframes ui-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header / navigation ---------------------------------------------------- */
+
+.redesign-shell .app-header {
+  animation: ui-header-enter 360ms var(--ui-ease-emphasized) both;
+}
+
+.redesign-shell .app-nav {
+  animation: ui-nav-enter 420ms 45ms var(--ui-ease-emphasized) both;
+}
+
+@keyframes ui-header-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-nav-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.redesign-shell .nav-button {
+  position: relative;
+  overflow: hidden;
+  transition:
+    color var(--ui-motion-fast) var(--ui-ease-standard),
+    background-color var(--ui-motion-base) var(--ui-ease-standard),
+    border-color var(--ui-motion-base) var(--ui-ease-standard),
+    box-shadow var(--ui-motion-base) var(--ui-ease-standard),
+    transform var(--ui-motion-fast) var(--ui-ease-standard);
+}
+
+.redesign-shell .nav-button::after {
+  position: absolute;
+  inset: auto 18% -1px;
+  height: 2px;
+  transform: scaleX(0);
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #ff6a2a 18%, #ff6a2a 82%, transparent);
+  content: '';
+  opacity: 0;
+  transition:
+    transform var(--ui-motion-base) var(--ui-ease-emphasized),
+    opacity var(--ui-motion-base) ease;
+}
+
+.redesign-shell .nav-button--active::after {
+  transform: scaleX(1);
+  opacity: 0.92;
+}
+
+.redesign-shell .nav-button > svg {
+  transition:
+    transform var(--ui-motion-base) var(--ui-ease-emphasized),
+    color var(--ui-motion-base) ease;
+}
+
+.redesign-shell .nav-button--active > svg {
+  transform: scale(1.08);
+}
+
+.redesign-shell .nav-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Realtime status -------------------------------------------------------- */
+
+.connection-badge .status-dot,
+.alerts-v2 .alert-duty-dot {
+  transition:
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease,
+    transform var(--ui-motion-base) var(--ui-ease-emphasized);
+}
+
+.connection-badge[data-state='online'] .status-dot,
+.alerts-v2 .alert-duty-badge:not(.is-active):not(.is-disabled) .alert-duty-dot {
+  animation: ui-online-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes ui-online-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgb(40 220 161 / 35%);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 15px rgb(40 220 161 / 62%);
+  }
+}
+
+.priority-banner {
+  animation: ui-priority-enter 300ms var(--ui-ease-emphasized) both;
+}
+
+@keyframes ui-priority-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Unified interactive controls ------------------------------------------ */
+
+.transport-button,
+.mixer-mute-button,
+.radio-station-card,
+.radio-play-button,
+.output-option,
+.panel-action-button,
+.source-session,
+.alerts-v2 .alert-button,
+.alerts-v2 .alert-input,
+.alerts-v2 .alert-input-action,
+.alerts-v2 .alert-switch-control,
+.alerts-v2 .alert-check-box {
+  transition:
+    color var(--ui-motion-fast) ease,
+    background-color var(--ui-motion-base) var(--ui-ease-standard),
+    border-color var(--ui-motion-base) var(--ui-ease-standard),
+    box-shadow var(--ui-motion-base) var(--ui-ease-standard),
+    transform var(--ui-motion-fast) var(--ui-ease-standard),
+    opacity var(--ui-motion-fast) ease;
+}
+
+.transport-button:hover:not(:disabled) {
+  border-color: rgb(255 255 255 / 18%) !important;
+  background: rgb(23 32 35 / 98%) !important;
+}
+
+.transport-button--primary:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ff8654, #ff5d29) !important;
+  box-shadow:
+    0 15px 38px -9px rgb(255 82 30 / 58%),
+    inset 0 1px 0 rgb(255 255 255 / 28%) !important;
+}
+
+.transport-button:active:not(:disabled),
+.radio-play-button:active:not(:disabled),
+.output-option:active:not(:disabled),
+.panel-action-button:active:not(:disabled),
+.alerts-v2 .alert-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+
+.panel-action-button {
+  border-radius: var(--ui-radius-control) !important;
+}
+
+/* Interior cards use the same visual grammar across all sections. */
+
+.mixer-strip,
+.radio-station-card,
+.output-option,
+.source-session,
+.alerts-v2 .alert-status-item,
+.alerts-v2 .alert-config-group,
+.alerts-v2 .alert-media-card.alert-media-row {
+  border-radius: var(--ui-radius-inner) !important;
+  border-color: rgb(133 156 161 / 15%) !important;
+  background:
+    linear-gradient(180deg, rgb(15 23 26 / 92%), rgb(9 16 19 / 94%)) !important;
+}
+
+.output-option.is-selected,
+.source-session.is-active,
+.radio-station-card.is-active {
+  border-color: rgb(255 100 42 / 52%) !important;
+  background:
+    radial-gradient(circle at 88% 50%, rgb(255 100 42 / 9%), transparent 42%),
+    linear-gradient(180deg, rgb(21 24 25 / 98%), rgb(13 19 21 / 98%)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 100 42 / 6%),
+    0 14px 30px -24px var(--ui-orange-glow) !important;
+}
+
+:root[data-theme='light'] .mixer-strip,
+:root[data-theme='light'] .radio-station-card,
+:root[data-theme='light'] .output-option,
+:root[data-theme='light'] .source-session,
+:root[data-theme='light'] .alerts-v2 .alert-status-item,
+:root[data-theme='light'] .alerts-v2 .alert-config-group,
+:root[data-theme='light'] .alerts-v2 .alert-media-card.alert-media-row {
+  background: var(--rd-surface-2) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .radio-station-card:hover:not(:disabled),
+  .output-option:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    border-color: var(--ui-surface-border-hover) !important;
+    box-shadow: 0 14px 28px -24px rgb(0 0 0 / 88%);
+  }
+
+  .source-session:hover,
+  .mixer-strip:hover {
+    border-color: var(--ui-surface-border-hover) !important;
+  }
+
+  .alerts-v2 .alert-config-group:hover,
+  .alerts-v2 .alert-media-card.alert-media-row:hover,
+  .alerts-v2 .alert-status-item:hover {
+    border-color: rgb(154 176 180 / 24%) !important;
+  }
+}
+
+/* Player ---------------------------------------------------------------- */
+
+.player-art img,
+.station-artwork--hero {
+  transition:
+    transform 620ms var(--ui-ease-emphasized),
+    filter 620ms var(--ui-ease-emphasized);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .player-card:hover .player-art img,
+  .player-card:hover .station-artwork--hero {
+    transform: scale(1.015);
+  }
+}
+
+.player-live-fill {
+  animation: ui-live-flow 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes ui-live-flow {
+  from {
+    opacity: 0.78;
+    filter: saturate(0.92);
+  }
+  to {
+    opacity: 1;
+    filter: saturate(1.2);
+  }
+}
+
+/* Mixer ----------------------------------------------------------------- */
+
+.mixer-fader-thumb {
+  transition:
+    border-color var(--ui-motion-fast) ease,
+    box-shadow var(--ui-motion-fast) ease,
+    background-color var(--ui-motion-fast) ease;
+}
+
+.mixer-fader-track:not(.is-dragging):focus-visible .mixer-fader-thumb {
+  border-color: rgb(255 124 76 / 88%) !important;
+  box-shadow:
+    0 0 0 3px rgb(255 100 42 / 12%),
+    0 6px 16px rgb(0 0 0 / 45%);
+}
+
+.mixer-fader-track.is-dragging .mixer-fader-thumb {
+  border-color: rgb(255 125 78 / 88%) !important;
+  box-shadow:
+    0 0 0 3px rgb(255 100 42 / 10%),
+    0 9px 20px rgb(0 0 0 / 52%);
+}
+
+.mixer-mute-led {
+  transition:
+    background-color var(--ui-motion-fast) ease,
+    box-shadow var(--ui-motion-fast) ease,
+    transform var(--ui-motion-fast) var(--ui-ease-emphasized);
+}
+
+.mixer-mute-button.is-muted .mixer-mute-led {
+  transform: scale(1.08);
+}
+
+/* Radio ----------------------------------------------------------------- */
+
+.radio-station-card .radio-station-action,
+.radio-station-card .radio-station-art,
+.radio-station-card .radio-action-button {
+  transition:
+    transform var(--ui-motion-base) var(--ui-ease-emphasized),
+    opacity var(--ui-motion-base) ease,
+    border-color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .radio-station-card:hover:not(:disabled) .radio-action-button {
+    transform: scale(1.06);
+  }
+
+  .radio-station-card:hover:not(:disabled) .radio-station-art {
+    transform: scale(1.015);
+  }
+}
+
+.radio-panel input[type='url'] {
+  min-height: 44px;
+  border-radius: var(--ui-radius-control) !important;
+  border-color: rgb(133 156 161 / 20%) !important;
+  background: rgb(5 12 15 / 54%) !important;
+  transition:
+    border-color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease;
+}
+
+.radio-panel input[type='url']:focus {
+  border-color: rgb(255 112 62 / 78%) !important;
+  box-shadow: 0 0 0 3px rgb(255 100 42 / 8%) !important;
+}
+
+/* Alerts / disclosure animations ---------------------------------------- */
+
+.alerts-v2 .alert-status-item,
+.alerts-v2 .alert-media-card.alert-media-row,
+.alerts-v2 .alert-config-group {
+  transition:
+    border-color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease;
+}
+
+.alerts-v2 .alert-ready-badge,
+.alerts-v2 .alert-token-badge,
+.alerts-v2 .alert-duty-badge,
+.stream-active-badge {
+  transition:
+    color var(--ui-motion-base) ease,
+    border-color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease;
+}
+
+.alerts-v2 .alert-switch-control > span {
+  transition:
+    transform 190ms var(--ui-ease-emphasized),
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease;
+}
+
+.alerts-v2 .alert-switch-row:active .alert-switch-control {
+  transform: scale(0.96);
+}
+
+.alerts-v2 .alert-check-box svg {
+  transform: scale(0.55);
+  opacity: 0;
+  transition:
+    transform 180ms var(--ui-ease-emphasized),
+    opacity 120ms ease;
+}
+
+.alerts-v2 .alert-behavior-check > input:checked + .alert-check-box svg {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.alerts-v2 .alert-advanced {
+  interpolate-size: allow-keywords;
+  transition:
+    border-color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease;
+}
+
+.alerts-v2 .alert-advanced > summary {
+  transition:
+    color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease;
+}
+
+.alerts-v2 .alert-advanced > summary::after {
+  transition: transform 240ms var(--ui-ease-emphasized);
+}
+
+.alerts-v2 .alert-advanced::details-content {
+  block-size: 0;
+  overflow: clip;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    block-size 300ms var(--ui-ease-emphasized),
+    opacity 180ms ease,
+    transform 260ms var(--ui-ease-emphasized),
+    content-visibility 300ms allow-discrete;
+}
+
+.alerts-v2 .alert-advanced[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@starting-style {
+  .alerts-v2 .alert-advanced[open]::details-content {
+    block-size: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.alerts-v2 .alert-audio-savebar {
+  transition:
+    transform var(--ui-motion-base) var(--ui-ease-emphasized),
+    border-color var(--ui-motion-base) ease,
+    background-color var(--ui-motion-base) ease,
+    box-shadow var(--ui-motion-base) ease,
+    opacity var(--ui-motion-base) ease;
+}
+
+.alerts-v2 .alert-audio-savebar.is-dirty {
+  animation: ui-savebar-enter 260ms var(--ui-ease-emphasized) both;
+}
+
+@keyframes ui-savebar-enter {
+  from {
+    opacity: 0.5;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alerts-v2 .alert-load-error,
+.alerts-v2 .alert-inline-error,
+.radio-page [role='status'] {
+  animation: ui-feedback-enter 220ms var(--ui-ease-emphasized) both;
+}
+
+@keyframes ui-feedback-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Consistent section typography ----------------------------------------- */
+
+.mixer-panel > div:first-child > div > p:first-child,
+.outputs-panel > div:first-child > div > p:first-child,
+.sources-panel > div:first-child > div > p:first-child,
+.radio-panel > div:first-child > div > p:first-child {
+  color: #9ba8aa !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2em !important;
+}
+
+.mixer-panel > div:first-child h2,
+.outputs-panel > div:first-child h2,
+.sources-panel > div:first-child h2,
+.radio-panel > div:first-child h2 {
+  color: var(--pa-text-strong) !important;
+  font-weight: 750 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.mixer-panel > div:first-child p:last-child,
+.outputs-panel > div:first-child p:last-child,
+.radio-panel > div:first-child p:last-child {
+  color: #839193 !important;
+}
+
+/* Mobile tuning ---------------------------------------------------------- */
+
+@media (max-width: 639px) {
+  .redesign-shell {
+    --ui-radius-panel: 16px;
+    --ui-radius-inner: 11px;
+  }
+
+  .page-stage--player .player-dashboard > *,
+  .page-stage--radio .radio-page > *,
+  .page-stage--alerts .alerts-page > * {
+    animation-duration: 300ms;
+    animation-delay: 0ms !important;
+  }
+
+  .redesign-shell .pro-nav {
+    box-shadow:
+      0 12px 30px -20px rgb(0 0 0 / 88%),
+      inset 0 1px 0 rgb(255 255 255 / 3%);
+  }
+
+  .redesign-shell .nav-button::after {
+    inset-inline: 28%;
+  }
+
+  .panel-action-button,
+  .radio-play-button {
+    min-height: 44px;
+  }
+
+  .source-session {
+    padding: 12px !important;
+  }
+
+  .alerts-v2 .alert-advanced::details-content {
+    transition-duration: 260ms;
+  }
+}
+
+/* Users who request reduced motion still get state changes with no travel. */
+
+@media (prefers-reduced-motion: reduce) {
+  .page-stage,
+  .page-stage--player .player-dashboard > *,
+  .page-stage--radio .radio-page > *,
+  .page-stage--alerts .alerts-page > *,
+  .redesign-shell .app-header,
+  .redesign-shell .app-nav,
+  .priority-banner,
+  .alerts-v2 .alert-audio-savebar.is-dirty,
+  .alerts-v2 .alert-load-error,
+  .alerts-v2 .alert-inline-error,
+  .radio-page [role='status'],
+  .connection-badge[data-state='online'] .status-dot,
+  .alerts-v2 .alert-duty-badge:not(.is-active):not(.is-disabled) .alert-duty-dot,
+  .player-live-fill {
+    animation: none !important;
+  }
+
+  .radio-station-card:hover:not(:disabled),
+  .output-option:hover:not(:disabled),
+  .player-card:hover .player-art img,
+  .player-card:hover .station-artwork--hero {
+    transform: none !important;
+  }
+}
