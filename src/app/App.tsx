@@ -39,8 +39,6 @@ export function App() {
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
-  const pageScroll = new Map<AppPage, number>();
-  let appNav!: HTMLElement;
   const meterBuffer = new MeterBuffer();
   const controlsUnavailable = () => !player.status() || player.connection() === 'offline';
   const priorityBlocked = () => player.status()?.priority.blocking ?? false;
@@ -51,59 +49,22 @@ export function App() {
     return `Firmware ${release.version}${flavor ? ` · ${flavor}` : ''}`;
   };
 
-  const staticNavTop = () => {
-    let top = 0;
-    let node: HTMLElement | null = appNav;
-    while (node) {
-      top += node.offsetTop;
-      node = node.offsetParent as HTMLElement | null;
-    }
-    return Math.max(0, top - 6);
-  };
+  const navigate = (next: AppPage) => {
+    if (next === page()) return;
 
-  const clampScroll = (value: number) =>
-    Math.max(0, Math.min(value, Math.max(0, document.documentElement.scrollHeight - innerHeight)));
-
-  const commitPage = (next: AppPage, pushHistory: boolean) => {
     setPage(next);
     const hash = `#${next}`;
-    if (pushHistory && window.location.hash !== hash) {
+    if (window.location.hash !== hash) {
       window.history.pushState(null, '', hash);
     }
   };
 
-  const switchPage = (next: AppPage, pushHistory = true) => {
-    const current = page();
-    if (next === current) return;
-
-    const currentScroll = window.scrollY;
-    const navTop = staticNavTop();
-    pageScroll.set(current, currentScroll);
-    const firstVisitScroll = currentScroll < navTop ? currentScroll : navTop;
-    const targetScroll = pageScroll.get(next) ?? firstVisitScroll;
-
-    commitPage(next, pushHistory);
-    queueMicrotask(() => {
-      window.scrollTo({ top: clampScroll(targetScroll), behavior: 'instant' });
-    });
-  };
-
-  const navigate = (next: AppPage) => switchPage(next, true);
 
   onMount(() => {
-    const previousRestoration = window.history.scrollRestoration;
-    window.history.scrollRestoration = 'manual';
-
-    const initialPage = pageFromHash();
-    setPage(initialPage);
-    pageScroll.set(initialPage, window.scrollY);
-
-    const syncPage = () => switchPage(pageFromHash(), false);
+    const syncPage = () => setPage(pageFromHash());
+    syncPage();
     window.addEventListener('popstate', syncPage);
-    onCleanup(() => {
-      window.history.scrollRestoration = previousRestoration;
-      window.removeEventListener('popstate', syncPage);
-    });
+    onCleanup(() => window.removeEventListener('popstate', syncPage));
   });
 
   onMount(() => {
@@ -205,9 +166,6 @@ export function App() {
         </header>
 
         <nav
-          ref={(element) => {
-            appNav = element;
-          }}
           class="app-nav pro-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border p-1 sm:mb-5 sm:flex sm:w-fit"
           aria-label="Основні розділи"
         >
