@@ -1285,20 +1285,6 @@ body {
   margin-top: 2px;
 }
 
-.player-live-label {
-  color: #ff7960 !important;
-}
-
-.player-live-track {
-  height: 4px !important;
-  background: rgb(255 255 255 / 8%) !important;
-}
-
-.player-live-fill {
-  background: linear-gradient(90deg, #ff7544, #ff5c2b);
-  box-shadow: 0 0 12px rgb(255 93 43 / 34%);
-}
-
 .transport-controls {
   margin-top: 58px !important;
   gap: 12px !important;
@@ -3545,21 +3531,6 @@ html {
   }
 }
 
-.player-live-fill {
-  animation: ui-live-flow 2.8s ease-in-out infinite alternate;
-}
-
-@keyframes ui-live-flow {
-  from {
-    opacity: 0.78;
-    filter: saturate(0.92);
-  }
-  to {
-    opacity: 1;
-    filter: saturate(1.2);
-  }
-}
-
 .mixer-fader-thumb {
   transition:
     border-color var(--ui-motion-fast) ease,
@@ -3832,8 +3803,7 @@ html {
   .alerts-v2 .alert-inline-error,
   .radio-page [role='status'],
   .connection-badge[data-state='online'] .status-dot,
-  .alerts-v2 .alert-duty-badge:not(.is-active):not(.is-disabled) .alert-duty-dot,
-  .player-live-fill {
+  .alerts-v2 .alert-duty-badge:not(.is-active):not(.is-disabled) .alert-duty-dot {
     animation: none !important;
   }
 
@@ -4881,10 +4851,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   border-color: rgb(255 100 31 / 48%) !important;
   background: linear-gradient(180deg, #ff7d45, #ff5e1d) !important;
   box-shadow: 0 14px 30px -15px rgb(255 100 31 / 56%) !important;
-}
-
-:root[data-resolved-theme='light'] .redesign-shell .player-live-track {
-  background: #e3e8eb !important;
 }
 
 :root[data-resolved-theme='light'] .redesign-shell .mixer-strip {
