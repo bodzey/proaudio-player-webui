@@ -4881,34 +4881,45 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   color: var(--lt-accent-strong);
 }
 
-/* Navigation stays deliberately dark: a visual anchor shared with the brand. */
+/* Navigation follows the resolved theme while keeping the same geometry. */
 
 :root[data-resolved-theme='light'] .redesign-shell .pro-nav {
-  border-color: rgb(30 45 51 / 18%) !important;
-  background: linear-gradient(180deg, #182225, #121b1e) !important;
+  border-color: var(--lt-border) !important;
+  background: rgb(255 255 255 / 92%) !important;
   box-shadow:
-    0 13px 28px -20px rgb(18 31 36 / 44%),
-    inset 0 1px 0 rgb(255 255 255 / 5%);
+    0 12px 28px -20px rgb(29 47 56 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 92%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 :root[data-resolved-theme='light'] .redesign-shell .nav-button {
-  color: #9da9ac !important;
+  color: var(--lt-text-soft) !important;
 }
 
 :root[data-resolved-theme='light'] .redesign-shell .nav-button:hover {
-  border-color: rgb(255 255 255 / 10%) !important;
-  background: rgb(255 255 255 / 4%) !important;
-  color: #edf1f1 !important;
+  border-color: var(--lt-border-strong) !important;
+  background: var(--lt-surface-muted) !important;
+  color: var(--lt-text) !important;
 }
 
 :root[data-resolved-theme='light'] .redesign-shell .nav-button--active {
-  border-color: rgb(255 100 31 / 72%) !important;
-  background:
-    linear-gradient(180deg, rgb(255 100 31 / 16%), rgb(255 100 31 / 8%)), #1a2022 !important;
-  color: #ff8659 !important;
+  border-color: var(--lt-accent-border) !important;
+  background: linear-gradient(180deg, #fff8f3, #fff2e9) !important;
+  color: var(--lt-accent-strong) !important;
   box-shadow:
-    0 0 0 1px rgb(255 100 31 / 7%) inset,
-    0 10px 24px -16px rgb(255 100 31 / 66%);
+    0 0 0 1px rgb(255 100 31 / 6%) inset,
+    0 10px 24px -17px rgb(255 100 31 / 34%);
+}
+
+:root[data-resolved-theme='light'] .redesign-shell .nav-button::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--lt-accent) 18%,
+    var(--lt-accent) 82%,
+    transparent
+  );
 }
 
 /* Primary surfaces ------------------------------------------------------ */
