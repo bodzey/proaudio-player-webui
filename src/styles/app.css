@@ -1678,7 +1678,7 @@ body {
 
 .radio-play-button:hover:not(:disabled) {
   background: rgb(255 100 42 / 14%) !important;
-  border-color: rgb(255 100 42 / 68%) !important;
+  border-color: rgb(118 145 151 / 42%) !important;
 }
 
 .radio-now-playing {
@@ -1755,7 +1755,7 @@ body {
 }
 
 .alerts-page label {
-  font-size: 0.67rem;
+  font-size: 0.74rem;
 }
 
 .alerts-page input:not([type='checkbox']):not([type='file']),
@@ -1987,8 +1987,8 @@ body {
   --alert-card-border: rgb(118 145 151 / 20%);
   --alert-card-inset: rgb(5 13 16 / 32%);
   --alert-card-inset-strong: rgb(5 11 13 / 58%);
-  --alert-field-bg: rgb(5 12 15 / 72%);
-  --alert-field-border: rgb(255 100 42 / 48%);
+  --alert-field-bg: rgb(5 12 15 / 54%);
+  --alert-field-border: rgb(118 145 151 / 24%);
   --alert-field-border-focus: rgb(255 112 62 / 88%);
   --alert-copy-muted: #859395;
   --alert-copy-dim: #697779;
@@ -2035,7 +2035,7 @@ body {
 .alerts-v2 .alert-section-heading h2 {
   margin-top: 4px;
   color: var(--pa-text-strong);
-  font-size: 1.24rem;
+  font-size: 1.34rem;
   font-weight: 750;
   letter-spacing: -0.025em;
 }
@@ -2044,7 +2044,7 @@ body {
   max-width: 760px;
   margin-top: 5px;
   color: var(--alert-copy-muted);
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   line-height: 1.55;
 }
 
@@ -2167,7 +2167,7 @@ body {
 .alerts-v2 .alert-status-label {
   display: block;
   color: var(--alert-copy-dim);
-  font-size: 0.63rem;
+  font-size: 0.74rem;
 }
 
 .alerts-v2 .alert-status-item strong {
@@ -2176,7 +2176,7 @@ body {
   overflow-wrap: anywhere;
   color: var(--pa-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 600;
   line-height: 1.35;
 }
@@ -2258,7 +2258,7 @@ body {
 .alerts-v2 .alert-field {
   min-width: 0;
   color: #d3dbdc;
-  font-size: 0.69rem !important;
+  font-size: 0.78rem !important;
   font-weight: 650;
 }
 
@@ -2269,8 +2269,8 @@ body {
 .alerts-v2 .alert-help {
   margin-top: 5px !important;
   color: var(--alert-copy-dim) !important;
-  font-size: 0.61rem !important;
-  line-height: 1.4 !important;
+  font-size: 0.69rem !important;
+  line-height: 1.45 !important;
 }
 
 .alerts-v2 .alert-help code {
@@ -2284,12 +2284,12 @@ body {
   background: var(--alert-field-bg) !important;
   padding: 8px 11px !important;
   color: var(--pa-text-strong) !important;
-  font-size: 0.75rem !important;
+  font-size: 0.84rem !important;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 2%);
 }
 
 .alerts-v2 .alert-input:hover:not(:disabled) {
-  border-color: rgb(255 100 42 / 68%) !important;
+  border-color: rgb(118 145 151 / 42%) !important;
 }
 
 .alerts-v2 .alert-input:focus {
@@ -2392,7 +2392,7 @@ body {
   border: 1px solid var(--alert-card-border);
   border-radius: 9px !important;
   padding: 8px 14px !important;
-  font-size: 0.7rem !important;
+  font-size: 0.76rem !important;
   font-weight: 750 !important;
   line-height: 1.2;
   transition:
@@ -2506,7 +2506,7 @@ body {
 
 .alerts-v2 .alert-media-title-row h3 {
   color: var(--pa-text-strong);
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   font-weight: 750;
 }
 
@@ -2515,7 +2515,7 @@ body {
   overflow: hidden;
   color: #849294;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.63rem;
+  font-size: 0.68rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2529,7 +2529,7 @@ body {
   background: rgb(40 220 161 / 6%);
   padding: 4px 8px;
   color: #62dfba;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 750;
   text-transform: uppercase;
 }
@@ -2549,13 +2549,13 @@ body {
 
 .alerts-v2 .alert-media-meta dt {
   color: var(--alert-copy-dim);
-  font-size: 0.58rem;
+  font-size: 0.64rem;
 }
 
 .alerts-v2 .alert-media-meta dd {
   margin-top: 2px;
   color: #aab5b6;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
 }
 
 .alerts-v2 .alert-media-message {
@@ -2623,15 +2623,15 @@ body {
 
 .alerts-v2 .alert-config-title h3 {
   color: var(--pa-text-strong);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   font-weight: 750;
 }
 
 .alerts-v2 .alert-config-title p {
   margin-top: 2px;
   color: var(--alert-copy-dim);
-  font-size: 0.61rem;
-  line-height: 1.4;
+  font-size: 0.68rem;
+  line-height: 1.45;
 }
 
 .alerts-v2 .alert-tech-chip {
@@ -2642,7 +2642,7 @@ body {
   padding: 5px 8px;
   color: #a6b2b3;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.58rem;
+  font-size: 0.64rem;
   white-space: nowrap;
 }
 
@@ -2723,8 +2723,8 @@ body {
 .alerts-v2 .alert-switch-copy small {
   margin-top: 3px;
   color: var(--alert-copy-dim);
-  font-size: 0.59rem;
-  line-height: 1.45;
+  font-size: 0.67rem;
+  line-height: 1.5;
 }
 
 .alerts-v2 .alert-config-fields {
@@ -2806,13 +2806,12 @@ body {
 .alerts-v2 .alert-behavior-check small {
   margin-top: 4px;
   color: var(--alert-copy-dim);
-  font-size: 0.59rem;
-  line-height: 1.45;
+  font-size: 0.67rem;
+  line-height: 1.5;
 }
 
 .alerts-v2 .alert-audio-savebar {
-  position: sticky;
-  bottom: calc(8px + env(safe-area-inset-bottom));
+  position: static;
   z-index: 24;
   display: flex;
   align-items: center;
@@ -2827,6 +2826,16 @@ body {
     inset 0 1px 0 rgb(255 255 255 / 3%);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+}
+
+.alerts-v2 .alert-audio-savebar.is-dirty {
+  position: sticky;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  border-color: rgb(255 100 42 / 38%);
+  box-shadow:
+    0 18px 38px -18px rgb(0 0 0 / 92%),
+    0 0 0 1px rgb(255 100 42 / 5%),
+    inset 0 1px 0 rgb(255 255 255 / 4%);
 }
 
 :root[data-theme='light'] .alerts-v2 .alert-audio-savebar {
@@ -2912,6 +2921,74 @@ body {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+.alerts-v2 .alert-advanced {
+  overflow: hidden;
+  border: 1px solid var(--alert-card-border);
+  border-radius: 11px;
+  background: rgb(255 255 255 / 1.5%);
+}
+
+.alerts-v2 .alert-advanced > summary {
+  position: relative;
+  display: flex;
+  min-height: 52px;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 44px 10px 13px;
+  color: var(--pa-text);
+  user-select: none;
+}
+
+.alerts-v2 .alert-advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.alerts-v2 .alert-advanced > summary::after {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  transform: translateY(-65%) rotate(45deg);
+  border-right: 1.5px solid #8d9a9b;
+  border-bottom: 1.5px solid #8d9a9b;
+  content: '';
+  transition: transform 140ms ease;
+}
+
+.alerts-v2 .alert-advanced[open] > summary::after {
+  transform: translateY(-35%) rotate(225deg);
+}
+
+.alerts-v2 .alert-advanced > summary:hover {
+  background: rgb(255 255 255 / 2.5%);
+}
+
+.alerts-v2 .alert-advanced > summary b,
+.alerts-v2 .alert-advanced > summary small {
+  display: block;
+}
+
+.alerts-v2 .alert-advanced > summary b {
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.alerts-v2 .alert-advanced > summary small {
+  margin-top: 3px;
+  color: var(--alert-copy-dim);
+  font-size: 0.66rem;
+  line-height: 1.35;
+}
+
+.alerts-v2 .alert-advanced .alert-provider-timing {
+  border-top: 1px solid var(--alert-card-border);
+  padding: 14px;
+}
+
 @media (max-width: 1023px) {
   .alerts-v2 .alert-status-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2938,8 +3015,8 @@ body {
   }
 
   .alerts-v2 .alerts-card {
-    padding: 16px 14px !important;
-    border-radius: 15px !important;
+    padding: 18px 16px !important;
+    border-radius: 16px !important;
   }
 
   .alerts-v2 .alert-section-heading {
@@ -2948,11 +3025,13 @@ body {
   }
 
   .alerts-v2 .alert-section-heading h2 {
-    font-size: 1.08rem;
+    font-size: 1.18rem;
+    line-height: 1.2;
   }
 
   .alerts-v2 .alert-section-heading p:not(.alert-eyebrow) {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
   }
 
   .alerts-v2 .alert-duty-badge,
@@ -2976,9 +3055,9 @@ body {
   }
 
   .alerts-v2 .alert-status-item {
-    min-height: 75px;
-    gap: 9px;
-    padding: 10px;
+    min-height: 82px;
+    gap: 10px;
+    padding: 11px;
   }
 
   .alerts-v2 .alert-status-icon {
@@ -2992,7 +3071,8 @@ body {
   }
 
   .alerts-v2 .alert-status-item strong {
-    font-size: 0.67rem;
+    font-size: 0.73rem;
+    line-height: 1.4;
   }
 
   .alerts-v2 .alert-provider-form,
@@ -3008,8 +3088,29 @@ body {
   }
 
   .alerts-v2 .alert-input {
-    min-height: 44px !important;
-    font-size: 0.8rem !important;
+    min-height: 46px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .alerts-v2 .alert-field {
+    font-size: 0.82rem !important;
+  }
+
+  .alerts-v2 .alert-help {
+    font-size: 0.73rem !important;
+  }
+
+  .alerts-v2 .alert-advanced > summary {
+    min-height: 58px;
+    padding-block: 11px;
+  }
+
+  .alerts-v2 .alert-advanced > summary b {
+    font-size: 0.8rem;
+  }
+
+  .alerts-v2 .alert-advanced > summary small {
+    font-size: 0.7rem;
   }
 
   .alerts-v2 .alert-form-actions {
@@ -3056,17 +3157,27 @@ body {
 
   .alerts-v2 .alert-media-actions {
     display: grid;
+    grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding-left: 54px;
+    padding-left: 0;
   }
 
   .alerts-v2 .alert-media-actions .alert-button {
     width: 100%;
+    min-height: 44px;
     padding-inline: 8px !important;
   }
 
+  .alerts-v2 .alert-media-title-row {
+    flex-wrap: wrap;
+  }
+
+  .alerts-v2 .alert-ready-badge {
+    margin-left: 0;
+  }
+
   .alerts-v2 .alert-config-group {
-    padding: 12px;
+    padding: 14px;
   }
 
   .alerts-v2 .alert-config-title,
@@ -3090,16 +3201,35 @@ body {
   }
 
   .alerts-v2 .alert-audio-savebar {
-    bottom: calc(6px + env(safe-area-inset-bottom));
     flex-direction: column;
     align-items: stretch;
     gap: 9px;
     padding: 10px;
   }
 
+  .alerts-v2 .alert-audio-savebar.is-dirty {
+    bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+
   .alerts-v2 .alert-save-audio {
     width: 100%;
     min-width: 0;
+    min-height: 46px;
+  }
+
+  .alerts-v2 .alert-button {
+    min-height: 44px;
+    font-size: 0.8rem !important;
+  }
+
+  .alerts-v2 .alert-switch-copy b,
+  .alerts-v2 .alert-behavior-check b {
+    font-size: 0.78rem;
+  }
+
+  .alerts-v2 .alert-switch-copy small,
+  .alerts-v2 .alert-behavior-check small {
+    font-size: 0.7rem;
   }
 }
 
