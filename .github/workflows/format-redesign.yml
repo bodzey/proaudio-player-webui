@@ -26,7 +26,14 @@ jobs:
         run: npm ci
 
       - name: Apply canonical formatting
-        run: npm run format
+        run: >-
+          npx prettier --write
+          src/api/demo.ts
+          src/api/meters.ts
+          src/features/alerts/AlertsPanel.tsx
+          src/features/mixer/MixerPanel.tsx
+          src/features/radio/RadioPanel.tsx
+          src/styles/app.css
 
       - name: Commit formatting
         run: |
