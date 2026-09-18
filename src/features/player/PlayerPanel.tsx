@@ -172,19 +172,19 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
         </div>
 
         <div class="player-content flex min-w-0 flex-col p-4 sm:p-6 lg:p-7">
-          <div class="player-meta flex items-start justify-between gap-3 sm:gap-4">
+          <header class="player-meta flex items-start justify-between gap-3 sm:gap-4">
             <div class="min-w-0 flex-1">
               <Show
                 when={isRadio()}
                 fallback={
                   <>
-                    <p class="text-[10px] font-bold tracking-[0.18em] text-sky-400/70 uppercase sm:text-[11px]">
+                    <p class="player-kicker font-bold tracking-[0.18em] text-sky-400/70 uppercase">
                       Зараз відтворюється
                     </p>
-                    <h2 class="mt-2 line-clamp-2 text-xl font-semibold tracking-[-0.03em] text-white sm:mt-3 sm:text-2xl lg:text-3xl">
+                    <h2 class="player-track-title mt-2 line-clamp-2 font-semibold tracking-[-0.03em] text-white sm:mt-3">
                       {props.status?.player.title || 'Немає активного потоку'}
                     </h2>
-                    <p class="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-400 sm:mt-2 sm:text-sm lg:text-base">
+                    <p class="player-track-subtitle mt-1.5 line-clamp-2 text-slate-400 sm:mt-2">
                       {props.status?.player.artist ||
                         props.status?.player.album ||
                         'ProAudio Player'}
@@ -192,22 +192,22 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   </>
                 }
               >
-                <p class="text-[10px] font-bold tracking-[0.18em] text-sky-400/70 uppercase sm:text-[11px]">
+                <p class="player-kicker font-bold tracking-[0.18em] text-sky-400/70 uppercase">
                   Радіоефір
                 </p>
                 <div class="mt-2 flex min-w-0 items-center gap-2 text-xs font-semibold text-cyan-200/80 sm:text-sm">
                   <span class="size-2 shrink-0 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]" />
                   <span class="truncate">{stationName()}</span>
                 </div>
-                <h2 class="mt-2 line-clamp-2 text-xl font-semibold tracking-[-0.03em] text-white sm:mt-3 sm:text-2xl lg:text-3xl">
+                <h2 class="player-track-title mt-2 line-clamp-2 font-semibold tracking-[-0.03em] text-white sm:mt-3">
                   {radioMetadata().title || 'Радіоефір'}
                 </h2>
-                <p class="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-400 sm:mt-2 sm:text-sm lg:text-base">
+                <p class="player-track-subtitle mt-1.5 line-clamp-2 text-slate-400 sm:mt-2">
                   {radioMetadata().artist || 'Метадані поточного треку не передаються станцією'}
                 </p>
               </Show>
             </div>
-          </div>
+          </header>
 
           <div class="player-controls pt-5 sm:pt-6">
             <Show
