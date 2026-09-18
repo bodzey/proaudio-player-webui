@@ -282,8 +282,6 @@ canvas {
   }
 }
 
-/* ProAudio brand theme ----------------------------------------------------- */
-
 :root {
   color-scheme: light;
   --pa-brand: #263d3f;
@@ -705,8 +703,6 @@ textarea:focus-visible,
   }
 }
 
-/* Installed app ----------------------------------------------------------- */
-
 .install-app-button {
   display: inline-flex;
   min-height: 34px;
@@ -758,10 +754,6 @@ textarea:focus-visible,
     padding-left: max(0.75rem, env(safe-area-inset-left));
   }
 }
-
-/* Redesign branch ---------------------------------------------------------
-   Professional console-inspired UI. Visual meters never synthesize signal:
-   they animate only the real Peak/RMS snapshots supplied by the native API. */
 
 :root {
   --rd-bg: #f1f4f3;
@@ -1000,8 +992,6 @@ body {
   box-shadow: 0 18px 48px -38px rgb(248 113 113 / 45%);
 }
 
-/* Mixer ------------------------------------------------------------------ */
-
 .mixer-panel {
   background:
     radial-gradient(circle at 92% 5%, rgb(255 100 42 / 5%), transparent 34%), var(--rd-surface) !important;
@@ -1163,10 +1153,6 @@ body {
   }
 }
 
-/* Reference-match pass ----------------------------------------------------
-   Matches the approved dark control-room mockups while keeping the existing
-   API, responsive behavior and light theme intact. */
-
 .redesign-shell {
   background:
     radial-gradient(circle at 8% -14%, rgb(255 92 38 / 10%), transparent 33rem),
@@ -1258,8 +1244,6 @@ body {
   background: var(--rd-surface) !important;
 }
 
-/* Player ----------------------------------------------------------------- */
-
 .player-card {
   border-radius: 20px !important;
 }
@@ -1336,8 +1320,6 @@ body {
     inset 0 1px 0 rgb(255 255 255 / 26%) !important;
 }
 
-/* Station artwork -------------------------------------------------------- */
-
 .station-artwork--hero {
   isolation: isolate;
 }
@@ -1388,8 +1370,6 @@ body {
   font-size: 0.48rem !important;
   letter-spacing: 0.08em !important;
 }
-
-/* Mixer ------------------------------------------------------------------ */
 
 .mixer-panel {
   min-height: 566px;
@@ -1530,8 +1510,6 @@ body {
   font-size: 0.68rem !important;
   line-height: 1.35 !important;
 }
-
-/* Radio ------------------------------------------------------------------ */
 
 .radio-page {
   gap: 12px !important;
@@ -1687,8 +1665,6 @@ body {
   color: #77dabb !important;
 }
 
-/* Alerts ----------------------------------------------------------------- */
-
 .alerts-page {
   gap: 10px !important;
 }
@@ -1783,8 +1759,6 @@ body {
   box-shadow: 0 9px 20px -13px rgb(255 82 30 / 68%);
 }
 
-/* Bottom cards ----------------------------------------------------------- */
-
 .outputs-panel,
 .sources-panel {
   min-height: 168px;
@@ -1794,8 +1768,6 @@ body {
 .sources-panel .rounded-2xl {
   border-color: rgb(255 100 42 / 38%) !important;
 }
-
-/* Desktop proportions from the approved 1664 px reference ---------------- */
 
 @media (min-width: 1280px) {
   .player-dashboard {
@@ -1967,8 +1939,6 @@ body {
     padding: 14px !important;
   }
 }
-
-/* Alerts v2 — approved operator-focused layout --------------------------- */
 
 .alerts-v2 {
   --alert-card-border: rgb(118 145 151 / 20%);
@@ -3237,10 +3207,6 @@ body {
   }
 }
 
-/* Unified motion + surface system -----------------------------------------
-   Final interaction pass: one motion language across Player / Radio /
-   Alerts, tuned to the approved ProAudio control-room direction. */
-
 .redesign-shell {
   --ui-radius-panel: 18px;
   --ui-radius-control: 10px;
@@ -3298,8 +3264,6 @@ html {
   background: var(--rd-surface) !important;
 }
 
-/* Page transitions ------------------------------------------------------- */
-
 .page-stage {
   min-width: 0;
   transform-origin: 50% 0;
@@ -3353,8 +3317,6 @@ html {
     transform: translateY(0) scale(1);
   }
 }
-
-/* Header / navigation ---------------------------------------------------- */
 
 .redesign-shell .app-header {
   animation: ui-header-enter 360ms var(--ui-ease-emphasized) both;
@@ -3430,8 +3392,6 @@ html {
   transform: scale(0.98);
 }
 
-/* Realtime status -------------------------------------------------------- */
-
 .connection-badge .status-dot,
 .alerts-v2 .alert-duty-dot {
   transition:
@@ -3471,8 +3431,6 @@ html {
     transform: translateY(0) scale(1);
   }
 }
-
-/* Unified interactive controls ------------------------------------------ */
 
 .transport-button,
 .mixer-mute-button,
@@ -3518,8 +3476,6 @@ html {
 .panel-action-button {
   border-radius: var(--ui-radius-control) !important;
 }
-
-/* Interior cards use the same visual grammar across all sections. */
 
 .mixer-strip,
 .radio-station-card,
@@ -3575,8 +3531,6 @@ html {
   }
 }
 
-/* Player ---------------------------------------------------------------- */
-
 .player-art img,
 .station-artwork--hero {
   transition:
@@ -3605,8 +3559,6 @@ html {
     filter: saturate(1.2);
   }
 }
-
-/* Mixer ----------------------------------------------------------------- */
 
 .mixer-fader-thumb {
   transition:
@@ -3639,8 +3591,6 @@ html {
 .mixer-mute-button.is-muted .mixer-mute-led {
   transform: scale(1.08);
 }
-
-/* Radio ----------------------------------------------------------------- */
 
 .radio-station-card .radio-station-action,
 .radio-station-card .radio-station-art,
@@ -3677,8 +3627,6 @@ html {
   border-color: rgb(255 112 62 / 78%) !important;
   box-shadow: 0 0 0 3px rgb(255 100 42 / 8%) !important;
 }
-
-/* Alerts / disclosure animations ---------------------------------------- */
 
 .alerts-v2 .alert-status-item,
 .alerts-v2 .alert-media-card.alert-media-row,
@@ -3809,8 +3757,6 @@ html {
   }
 }
 
-/* Consistent section typography ----------------------------------------- */
-
 .mixer-panel > div:first-child > div > p:first-child,
 .outputs-panel > div:first-child > div > p:first-child,
 .sources-panel > div:first-child > div > p:first-child,
@@ -3835,8 +3781,6 @@ html {
 .radio-panel > div:first-child p:last-child {
   color: #839193 !important;
 }
-
-/* Mobile tuning ---------------------------------------------------------- */
 
 @media (max-width: 639px) {
   .redesign-shell {
@@ -3875,8 +3819,6 @@ html {
   }
 }
 
-/* Users who request reduced motion still get state changes with no travel. */
-
 @media (prefers-reduced-motion: reduce) {
   .page-stage,
   .page-stage--player .player-dashboard > *,
@@ -3902,8 +3844,6 @@ html {
     transform: none !important;
   }
 }
-
-/* Header refinement: site-aligned wordmark + custom theme menu ----------- */
 
 .redesign-shell .brand-wordmark {
   min-width: 0;
@@ -4206,8 +4146,6 @@ html {
   }
 }
 
-/* Navigation + live-content stability ----------------------------------- */
-
 .page-stage {
   min-height: max(420px, calc(100dvh - 190px));
 }
@@ -4251,11 +4189,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-/*
- * Realtime data updates must not become browser scroll anchors. Without this,
- * changing source metadata or session rows can make Chromium compensate the
- * document scroll position while the sticky navigation is active.
- */
 .player-card,
 .mixer-panel,
 .outputs-panel,
@@ -4344,13 +4277,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-/* Transition isolation + stacking fixes --------------------------------- */
-
-/*
- * Keep the header/theme popover above the sticky navigation and page cards.
- * Header entrance animation leaves a transform stacking context behind, so
- * the z-index must be set on the header itself, not only on the menu.
- */
 .redesign-shell .app-header {
   position: relative;
   z-index: 120;
@@ -4368,11 +4294,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   z-index: 140 !important;
 }
 
-/*
- * This is a realtime appliance UI: metadata, meters and source sessions can
- * change without user scrolling. Disable scroll anchoring for the app shell
- * so Chromium never compensates the viewport when those blocks update.
- */
 .redesign-shell {
   overflow-anchor: none;
 }
@@ -4381,11 +4302,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   overflow-anchor: none;
 }
 
-/*
- * View Transition API: animate only the page content. The previous root
- * crossfade included the sticky navigation, so old/new active tabs were
- * composited on top of each other and visibly "twitched".
- */
 .page-stage {
   view-transition-name: page-content;
 }
@@ -4435,7 +4351,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-/* Do not run the legacy page-stage entrance while a native transition runs. */
 html.is-page-transitioning .page-stage,
 html.is-page-transitioning .page-stage--player .player-dashboard > *,
 html.is-page-transitioning .page-stage--radio .radio-page > *,
@@ -4443,7 +4358,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   animation: none !important;
 }
 
-/* Source/station state changes stay visual-only: no geometry changes. */
 .source-session,
 .radio-station-card,
 .output-option {
@@ -4492,11 +4406,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
     animation: none !important;
   }
 }
-
-/* Stable tab switching ---------------------------------------------------
-   Do not interpolate page geometry. Different sections have very different
-   heights, so transform/scale/ViewTransition morphing causes visible jitter.
-   Only opacity is animated; layout swaps immediately and remains stable. */
 
 .page-stage {
   view-transition-name: none !important;
@@ -4548,11 +4457,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-/* Final tab-switching behavior -------------------------------------------
-   Tab changes must not animate page geometry or page opacity. Only the tab
-   control itself transitions. This prevents the whole content column from
-   appearing to "twitch" when sections with different heights are swapped. */
-
 .page-stage,
 .page-stage--player .player-dashboard > *,
 .page-stage--radio .radio-page > *,
@@ -4576,7 +4480,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   transition: none !important;
 }
 
-/* Keep interaction motion on the tabs only, never on the page container. */
 .redesign-shell .nav-button {
   transition:
     color var(--ui-motion-fast) var(--ui-ease-standard),
@@ -4588,11 +4491,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 .redesign-shell .nav-button:active:not(:disabled) {
   transform: none !important;
 }
-
-/* Exact ProAudio source logo -------------------------------------------
-   The approved source file is kept byte-for-byte unchanged. The source canvas
-   is 1536×768 while the actual mark occupies x=48…1503, y=158…597. Crop only
-   those empty black margins in CSS so the header uses the exact artwork. */
 
 .redesign-shell .brand-lockup {
   flex: 0 1 auto;
@@ -4694,8 +4592,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-/* Balanced primary navigation ------------------------------------------- */
-
 .redesign-shell .pro-nav {
   display: grid !important;
   width: min(100%, 560px);
@@ -4778,11 +4674,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-/* Production light theme --------------------------------------------------
-   Light mode is a first-class visual system, not an inversion of the dark UI.
-   Keep audio metering/console elements technical, while surfaces, forms and
-   information hierarchy use a soft neutral canvas with restrained orange. */
-
 :root[data-resolved-theme='light'] {
   --lt-canvas: #f3f5f7;
   --lt-canvas-deep: #edf1f3;
@@ -4828,8 +4719,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
     radial-gradient(circle at 17% 0%, rgb(255 100 31 / 5%), transparent 30%);
   opacity: 1;
 }
-
-/* Header/status --------------------------------------------------------- */
 
 :root[data-resolved-theme='light'] .redesign-shell .status-chip,
 :root[data-resolved-theme='light'] .redesign-shell .connection-badge {
@@ -4881,8 +4770,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   color: var(--lt-accent-strong);
 }
 
-/* Navigation follows the resolved theme while keeping the same geometry. */
-
 :root[data-resolved-theme='light'] .redesign-shell .pro-nav {
   border-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 92%) !important;
@@ -4922,8 +4809,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   );
 }
 
-/* Primary surfaces ------------------------------------------------------ */
-
 :root[data-resolved-theme='light'] .redesign-shell .pro-panel,
 :root[data-resolved-theme='light'] .redesign-shell .player-card,
 :root[data-resolved-theme='light'] .redesign-shell .alerts-card,
@@ -4958,16 +4843,12 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   color: var(--lt-text-muted) !important;
 }
 
-/* Keep white text where it is semantically over dark artwork/accent controls. */
-
 :root[data-resolved-theme='light'] .redesign-shell .player-art [class*='text-white'],
 :root[data-resolved-theme='light'] .redesign-shell .transport-button--primary,
 :root[data-resolved-theme='light'] .redesign-shell .alert-button-primary,
 :root[data-resolved-theme='light'] .redesign-shell .alert-upload-button {
   color: #fff !important;
 }
-
-/* Player ---------------------------------------------------------------- */
 
 :root[data-resolved-theme='light'] .redesign-shell .player-content {
   background:
@@ -5006,8 +4887,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   background: #e3e8eb !important;
 }
 
-/* Mixer ---------------------------------------------------------------- */
-
 :root[data-resolved-theme='light'] .redesign-shell .mixer-strip {
   border-color: var(--lt-border) !important;
   background: linear-gradient(180deg, #fbfcfd, #f2f5f6) !important;
@@ -5030,8 +4909,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   background: var(--lt-danger-soft) !important;
   color: var(--lt-danger) !important;
 }
-
-/* Outputs + sources ----------------------------------------------------- */
 
 :root[data-resolved-theme='light'] .redesign-shell .panel-action-button {
   border-color: var(--lt-border) !important;
@@ -5072,8 +4949,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text-muted) !important;
 }
-
-/* Radio ----------------------------------------------------------------- */
 
 :root[data-resolved-theme='light'] .redesign-shell .radio-station-card {
   border-color: var(--lt-border) !important;
@@ -5120,8 +4995,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   color: #26765e !important;
 }
 
-/* Forms ----------------------------------------------------------------- */
-
 :root[data-resolved-theme='light'] .redesign-shell .alert-input,
 :root[data-resolved-theme='light']
   .redesign-shell
@@ -5157,8 +5030,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 :root[data-resolved-theme='light'] .redesign-shell .alert-help {
   color: var(--lt-text-muted) !important;
 }
-
-/* Alerts ---------------------------------------------------------------- */
 
 :root[data-resolved-theme='light'] .redesign-shell .alert-status-item,
 :root[data-resolved-theme='light'] .redesign-shell .alert-config-group,
@@ -5230,14 +5101,10 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   color: #26765e !important;
 }
 
-/* Footer ---------------------------------------------------------------- */
-
 :root[data-resolved-theme='light'] .redesign-shell footer {
   border-top-color: var(--lt-border) !important;
   color: var(--lt-text-muted) !important;
 }
-
-/* Mobile light mode: reduce shadow weight on the narrow canvas. */
 
 @media (max-width: 639px) {
   :root[data-resolved-theme='light'] .redesign-shell .pro-panel,
@@ -5252,11 +5119,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
       inset 0 1px 0 rgb(255 255 255 / 90%) !important;
   }
 }
-
-/* Three-lane signal meter ------------------------------------------------
-   Outer lanes are instantaneous sample peaks (L/R); the wider center lane is
-   combined stereo RMS. Keep enough width on mobile for all three lanes to stay
-   visually distinct without changing the mixer strip layout. */
 
 .redesign-shell .mixer-meter {
   width: 50px !important;
