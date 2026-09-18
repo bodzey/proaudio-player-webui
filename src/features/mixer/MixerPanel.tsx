@@ -91,7 +91,6 @@ function levelsMatch(left: AudioLevel, right: AudioLevel): boolean {
   return Math.abs(left.db - right.db) <= 0.2 && left.muted === right.muted;
 }
 
-
 export const MixerPanel: Component<MixerPanelProps> = (props) => {
   const [error, setError] = createSignal<string>();
   const [pendingVersion, setPendingVersion] = createSignal(0);
@@ -214,9 +213,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         <div>
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Мікшер</h2>
-          <p class="mt-1.5 text-xs leading-5 text-slate-500">
-            Рівні сигналу та гучність каналів.
-          </p>
+          <p class="mt-1.5 text-xs leading-5 text-slate-500">Рівні сигналу та гучність каналів.</p>
         </div>
         <div
           class={
