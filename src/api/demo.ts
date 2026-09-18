@@ -218,6 +218,7 @@ let media: AlertMediaResponse = {
 
 export const demoSystemInfo: SystemInfoResponse = {
   temperature_celsius: 49.8,
+  native_version: '0.1.0',
   release: {
     version: '0.1.0',
     channel: 'preview',
