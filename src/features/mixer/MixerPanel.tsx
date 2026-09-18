@@ -565,18 +565,24 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
         </div>
       </div>
 
-      <button
-        type="button"
-        disabled={props.blocked}
-        class={
-          props.level.muted
-            ? 'mixer-mute-button is-muted mt-3 w-full rounded-lg border px-2 py-2 text-[10px] font-bold tracking-[0.12em] uppercase transition'
-            : 'mixer-mute-button mt-3 w-full rounded-lg border px-2 py-2 text-[10px] font-bold tracking-[0.12em] uppercase transition'
-        }
-        onClick={() => props.onSet(props.target, draft(), !props.level.muted)}
-      >
-        {props.level.muted ? 'Увімкнути' : 'Вимкнути'}
-      </button>
+      <div class="mt-3 flex justify-center">
+        <button
+          type="button"
+          disabled={props.blocked}
+          class={
+            props.level.muted
+              ? 'mixer-mute-button is-muted rounded-md border font-bold tracking-[0.12em] uppercase transition'
+              : 'mixer-mute-button rounded-md border font-bold tracking-[0.12em] uppercase transition'
+          }
+          aria-pressed={props.level.muted}
+          aria-label={`${props.level.muted ? 'Зняти Mute з' : 'Mute'} ${props.label}`}
+          title={`${props.level.muted ? 'Unmute' : 'Mute'} ${props.label}`}
+          onClick={() => props.onSet(props.target, draft(), !props.level.muted)}
+        >
+          <span class="mixer-mute-led" aria-hidden="true" />
+          <span>MUTE</span>
+        </button>
+      </div>
       <div class="mt-2 h-3 text-center text-[9px] tracking-[0.08em] text-slate-500 uppercase">
         {props.pending ? 'синхронізація' : props.meterLive ? 'наживо' : ''}
       </div>
