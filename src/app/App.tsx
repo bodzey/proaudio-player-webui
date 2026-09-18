@@ -96,24 +96,16 @@ export function App() {
       <div class="app-frame relative mx-auto min-h-screen max-w-[1540px] px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
         <header class="app-header mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-5 sm:gap-4">
           <div class="brand-lockup flex min-w-0 items-center">
-            <div class="brand-wordmark shrink-0" aria-label="PRO Audio — Network Player">
-              <div class="brand-wordmark-main">
-                <span class="brand-pro">PRO</span>
-                <svg
-                  viewBox="0 0 52 20"
-                  class="brand-wave"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.55"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M1 10h5l2.4-4 2.3 8 2.6-11 2.7 15 2.7-9 2.8 5 2.8-12 2.8 16 2.7-10 2.7 6 2.7-8 2.8 8 2.5-4H51" />
-                </svg>
-                <span class="brand-audio">Audio</span>
-              </div>
-              <div class="brand-subline">NETWORK PLAYER</div>
+            <div class="brand-wordmark shrink-0">
+              <img
+                class="brand-logo-image"
+                src="/branding/proaudio-logo.jpg"
+                alt="PRO Audio"
+                width="1536"
+                height="468"
+                decoding="async"
+                fetchpriority="high"
+              />
             </div>
           </div>
 
