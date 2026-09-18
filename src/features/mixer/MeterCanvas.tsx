@@ -162,11 +162,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
 
     const draw = (now: number) => {
       const currentDpr = Math.max(1, window.devicePixelRatio || 1);
-      if (
-        logicalWidth < 4 ||
-        logicalHeight < 4 ||
-        Math.abs(currentDpr - renderedDpr) > 0.01
-      ) {
+      if (logicalWidth < 4 || logicalHeight < 4 || Math.abs(currentDpr - renderedDpr) > 0.01) {
         resize();
       }
 
