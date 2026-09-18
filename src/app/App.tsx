@@ -35,7 +35,6 @@ export function App() {
   const player = createPlayerState();
   const pwa = createPwaInstallController();
   const theme = createThemeController();
-  const [capabilities] = createResource(api.capabilities);
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
@@ -134,13 +133,6 @@ export function App() {
               {(temperature) => (
                 <span class="status-chip rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5 font-mono text-[9px] text-slate-400 sm:px-3 sm:py-2 sm:text-[10px]">
                   CPU {temperature().toFixed(1)} °C
-                </span>
-              )}
-            </Show>
-            <Show when={capabilities()?.api_version}>
-              {(version) => (
-                <span class="status-chip hidden rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 font-mono text-[10px] text-slate-500 md:block">
-                  API {version()}
                 </span>
               )}
             </Show>
@@ -288,9 +280,8 @@ export function App() {
           </div>
         </Show>
 
-        <footer class="mt-6 flex flex-col gap-1.5 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:text-[10px]">
+        <footer class="mt-6 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:text-[10px]">
           <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
-          <span>Native API {capabilities()?.api_version ?? '—'} · realtime</span>
         </footer>
       </div>
     </main>
