@@ -4693,3 +4693,88 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
     letter-spacing: 0.155em;
   }
 }
+
+
+/* Balanced primary navigation ------------------------------------------- */
+
+.redesign-shell .pro-nav {
+  display: grid !important;
+  width: min(100%, 560px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px !important;
+  border-radius: 12px !important;
+}
+
+.redesign-shell .nav-button {
+  position: relative;
+  display: grid !important;
+  width: 100%;
+  min-width: 0 !important;
+  min-height: 44px !important;
+  grid-template-columns: 16px auto;
+  align-items: center;
+  justify-content: center !important;
+  column-gap: 8px !important;
+  padding: 0 12px !important;
+  border-radius: 9px !important;
+  text-align: center;
+  line-height: 1;
+}
+
+.redesign-shell .nav-button > svg {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  justify-self: end;
+}
+
+.redesign-shell .nav-button-label {
+  min-width: 0;
+  justify-self: start;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.redesign-shell .nav-alert-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  pointer-events: none;
+}
+
+.redesign-shell .nav-button::after {
+  inset-inline: 24%;
+}
+
+@media (min-width: 640px) {
+  .redesign-shell .pro-nav {
+    width: min(100%, 560px);
+  }
+
+  .redesign-shell .nav-button {
+    min-height: 42px !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .redesign-shell .pro-nav {
+    width: 100%;
+  }
+
+  .redesign-shell .nav-button {
+    min-height: 46px !important;
+    grid-template-columns: 16px auto;
+    column-gap: 7px !important;
+    padding-inline: 8px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .redesign-shell .nav-alert-dot {
+    top: 7px;
+    right: 7px;
+  }
+}
