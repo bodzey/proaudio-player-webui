@@ -81,31 +81,11 @@ export function App() {
     pageScroll.set(current, currentScroll);
     const firstVisitScroll = currentScroll < navTop ? currentScroll : navTop;
     const targetScroll = pageScroll.get(next) ?? firstVisitScroll;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const documentWithTransition = document as Document & {
-      startViewTransition?: (update: () => void | Promise<void>) => { finished: Promise<void> };
-    };
 
-    const update = () => {
-      commitPage(next, pushHistory);
-      return new Promise<void>((resolve) => {
-        queueMicrotask(() => {
-          window.scrollTo({ top: clampScroll(targetScroll), behavior: 'instant' });
-          resolve();
-        });
-      });
-    };
-
-    if (!reduceMotion && documentWithTransition.startViewTransition) {
-      document.documentElement.classList.add('is-page-transitioning');
-      const transition = documentWithTransition.startViewTransition(update);
-      void transition.finished.finally(() => {
-        document.documentElement.classList.remove('is-page-transitioning');
-      });
-      return;
-    }
-
-    void update();
+    commitPage(next, pushHistory);
+    queueMicrotask(() => {
+      window.scrollTo({ top: clampScroll(targetScroll), behavior: 'instant' });
+    });
   };
 
   const navigate = (next: AppPage) => switchPage(next, true);
