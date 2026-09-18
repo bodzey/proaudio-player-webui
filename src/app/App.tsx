@@ -217,47 +217,53 @@ export function App() {
         <PriorityBanner priority={player.status()?.priority} />
 
         <Show when={page() === 'player'}>
-          <div class="player-dashboard grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
-            <div class="dashboard-player min-w-0">
-              <PlayerPanel
-                status={player.status()}
-                pendingAction={player.pendingAction()}
-                onAction={(action) => void player.playerAction(action)}
-                disabled={controlsUnavailable()}
-              />
-            </div>
+          <div class="page-stage page-stage--player">
+            <div class="player-dashboard grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
+              <div class="dashboard-player min-w-0">
+                <PlayerPanel
+                  status={player.status()}
+                  pendingAction={player.pendingAction()}
+                  onAction={(action) => void player.playerAction(action)}
+                  disabled={controlsUnavailable()}
+                />
+              </div>
 
-            <div class="dashboard-mixer min-w-0">
-              <MixerPanel
-                status={player.status()}
-                buffer={meterBuffer}
-                meterLive={meterState() === 'live'}
-                onMusicVolume={(percent) => void player.setVolume(percent)}
-                onMusicMute={(muted) => void player.setMute(muted)}
-                disabled={controlsUnavailable()}
-              />
-            </div>
+              <div class="dashboard-mixer min-w-0">
+                <MixerPanel
+                  status={player.status()}
+                  buffer={meterBuffer}
+                  meterLive={meterState() === 'live'}
+                  onMusicVolume={(percent) => void player.setVolume(percent)}
+                  onMusicMute={(muted) => void player.setMute(muted)}
+                  disabled={controlsUnavailable()}
+                />
+              </div>
 
-            <div class="dashboard-outputs min-w-0">
-              <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
-            </div>
+              <div class="dashboard-outputs min-w-0">
+                <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
+              </div>
 
-            <div class="dashboard-sources min-w-0">
-              <SourcesPanel sources={player.status()?.sources} />
+              <div class="dashboard-sources min-w-0">
+                <SourcesPanel sources={player.status()?.sources} />
+              </div>
             </div>
           </div>
         </Show>
 
         <Show when={page() === 'radio'}>
-          <RadioPanel
-            status={player.status()}
-            blocked={priorityBlocked()}
-            disabled={controlsUnavailable()}
-          />
+          <div class="page-stage page-stage--radio">
+            <RadioPanel
+              status={player.status()}
+              blocked={priorityBlocked()}
+              disabled={controlsUnavailable()}
+            />
+          </div>
         </Show>
 
         <Show when={page() === 'alerts'}>
-          <AlertsPanel priority={player.status()?.priority} />
+          <div class="page-stage page-stage--alerts">
+            <AlertsPanel priority={player.status()?.priority} />
+          </div>
         </Show>
 
         <footer class="mt-6 flex flex-col gap-1.5 border-t border-white/[0.06] pt-4 text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:text-[10px]">
