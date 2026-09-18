@@ -248,7 +248,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       for (let channel = 0; channel < 2; channel += 1) {
         displayedPeak[channel] = smoothPeak(displayedPeak[channel]!, targetPeak[channel]!, dt);
 
-        if (snapshot.clip[channel] || targetPeak[channel]! >= -0.1) {
+        if (snapshot.clip[channel]) {
           clipUntil[channel] = now + CLIP_HOLD_MS;
         }
 
