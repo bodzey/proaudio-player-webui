@@ -247,8 +247,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         </div>
       </div>
 
-      <div class="overflow-x-auto pb-1" aria-label="Канали мікшера">
-        <div class="grid min-w-[420px] grid-cols-3 gap-2.5">
+      <div class="mixer-channels overflow-hidden pb-1" aria-label="Канали мікшера">
+        <div class="mixer-grid grid min-w-0 grid-cols-3 gap-2.5">
           <MixerStrip
             target="music"
             label="MUSIC"
