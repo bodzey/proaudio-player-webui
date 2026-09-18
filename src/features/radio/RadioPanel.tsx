@@ -135,18 +135,27 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
 
                       <button
                         type="button"
-                        class={active() ? 'radio-station-control is-stop' : 'radio-station-control'}
+                        class={
+                          active() ? 'radio-station-control is-stop' : 'radio-station-control'
+                        }
                         aria-pressed={active()}
                         aria-label={
                           active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`
                         }
-                        disabled={props.blocked || props.disabled || pendingUrl() !== null}
+                        disabled={
+                          props.blocked || props.disabled || pendingUrl() !== null
+                        }
                         onClick={() => void toggleStation(station.url, station.name)}
                       >
                         <Show
                           when={active()}
                           fallback={
-                            <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
+                            <svg
+                              viewBox="0 0 24 24"
+                              class="size-4"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
                               <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
                             </svg>
                           }
