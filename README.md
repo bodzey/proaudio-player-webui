@@ -4,8 +4,8 @@ Realtime browser control surface for ProAudio Player.
 
 This repository contains only the frontend client. Player logic, protocol integrations, alerts, source arbitration, audio routing and the HTTP control backend live in `proaudio-player-native`.
 
-The universal audio UI is developed on `feature/universal-audio-backend` and targets the
-versioned `/api/v1` contract from the matching `proaudio-player-native` feature branch.
+The development branch targets the versioned `/api/v1` contract from
+`proaudio-player-native/dev`.
 
 ## Stack
 
@@ -15,7 +15,7 @@ versioned `/api/v1` contract from the matching `proaudio-player-native` feature 
 - Tailwind CSS 4 for layout and design tokens.
 - Server-Sent Events for player/state updates.
 - Canvas 2D for high-frequency level-meter rendering.
-- Server-Sent Events carry the dedicated 25 Hz stereo meter stream without pushing samples through the reactive component tree.
+- Server-Sent Events carry the dedicated 50 Hz stereo meter stream only while a visible Player UI is subscribed.
 
 The production player does **not** need Node.js. Vite produces static assets in `dist/`, which are served by the native daemon from `/usr/share/proaudio-player/webui`.
 
@@ -45,7 +45,7 @@ Open this repository from WSL, not through the Windows filesystem:
 
 ```bash
 cd ~/dev/proaudio-player-webui
-git switch feature/universal-audio-backend
+git switch dev
 npm ci
 code .
 ```
