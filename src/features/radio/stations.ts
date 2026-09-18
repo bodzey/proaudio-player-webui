@@ -7,6 +7,8 @@ export interface RadioStation {
   quality: string;
   url: string;
   artwork: string;
+  favicon?: string | null | undefined;
+  homepage?: string | null | undefined;
 }
 
 export const RADIO_STATIONS: readonly RadioStation[] = [

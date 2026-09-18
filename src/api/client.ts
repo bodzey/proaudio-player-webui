@@ -16,6 +16,7 @@ import type {
   JsonObject,
   MixerState,
   PlayerAction,
+  RadioDirectoryResponse,
   SystemInfoResponse,
 } from './types';
 import { DEMO_MODE, demoRequest, demoSystemInfo } from './demo';
@@ -133,6 +134,7 @@ export const api = {
   },
   mixer: () => request<MixerState>('/audio/mixer'),
   audioOutputs: () => request<AudioOutputsResponse>('/audio/outputs'),
+  radioStations: () => request<RadioDirectoryResponse>('/radio/stations', undefined, 12_000),
   alertSettings: () => request<AlertProviderSettings>('/settings/alerts'),
   audioSettings: () => request<AudioSettings>('/settings/audio'),
   alertMedia: () => request<AlertMediaResponse>('/settings/alerts/media'),
