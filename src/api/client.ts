@@ -82,6 +82,7 @@ async function request<T>(
       const payload = (await response.json()) as ApiErrorPayload;
       if (payload.error) message = payload.error;
     } catch {
+      void 0;
     }
     throw new ApiError(response.status, message);
   }
