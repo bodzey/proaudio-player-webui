@@ -260,7 +260,6 @@ function NavButton(props: NavButtonProps) {
   );
 }
 
-
 interface ThemeSelectProps {
   value: ThemeMode;
   onChange: (value: ThemeMode) => void;
