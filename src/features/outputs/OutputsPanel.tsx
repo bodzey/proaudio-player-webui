@@ -95,7 +95,7 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
         </div>
         <button
           type="button"
-          class="flex min-w-[112px] items-center justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.03] px-3 py-2 text-[10px] font-semibold tracking-[0.08em] text-slate-500 uppercase transition hover:bg-white/[0.06] hover:text-slate-300 disabled:cursor-default disabled:opacity-60"
+          class="panel-action-button flex min-w-[112px] items-center justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.03] px-3 py-2 text-[10px] font-semibold tracking-[0.08em] text-slate-500 uppercase transition hover:bg-white/[0.06] hover:text-slate-300 disabled:cursor-default disabled:opacity-60"
           disabled={outputs.loading || props.disabled}
           aria-busy={outputs.loading}
           onClick={() => void refresh()}
@@ -147,8 +147,8 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
                   type="button"
                   class={
                     output.selected
-                      ? 'min-h-[76px] rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.055] p-4 text-left shadow-[0_14px_40px_-32px_rgba(34,211,238,0.7)]'
-                      : 'min-h-[76px] rounded-2xl border border-white/[0.06] bg-black/15 p-4 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
+                      ? 'output-option is-selected min-h-[76px] rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.055] p-4 text-left shadow-[0_14px_40px_-32px_rgba(34,211,238,0.7)]'
+                      : 'output-option min-h-[76px] rounded-2xl border border-white/[0.06] bg-black/15 p-4 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
                   }
                   disabled={
                     output.selected ||
