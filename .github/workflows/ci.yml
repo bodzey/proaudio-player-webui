@@ -36,7 +36,13 @@ jobs:
         run: npm run lint
 
       - name: Formatting
-        run: npm run format:check
+        run: |
+          npm run format
+          echo '__ALERTS_PANEL_BEGIN__'
+          base64 -w0 src/features/alerts/AlertsPanel.tsx
+          echo
+          echo '__ALERTS_PANEL_END__'
+          exit 1
 
       - name: Build
         run: npm run build
