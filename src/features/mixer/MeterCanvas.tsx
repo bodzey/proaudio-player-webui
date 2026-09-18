@@ -218,7 +218,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       ref={(element) => {
         canvas = element;
       }}
-      class="mixer-meter min-w-0 max-w-full h-[292px] w-12 rounded-lg border bg-[var(--pa-meter-bg)]"
+      class="mixer-meter h-[292px] w-12 min-w-0 max-w-full rounded-lg border bg-[var(--pa-meter-bg)]"
       aria-label={`Стереорівень ${BUS_LABELS[props.bus]}`}
       role="img"
     />
