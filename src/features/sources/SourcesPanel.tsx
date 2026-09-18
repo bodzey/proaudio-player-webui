@@ -34,8 +34,8 @@ export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
             <div
               class={
                 source.active
-                  ? 'rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] p-3.5'
-                  : 'rounded-2xl border border-white/[0.055] bg-black/10 p-3.5'
+                  ? 'source-session is-active rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.055] p-3.5'
+                  : 'source-session rounded-2xl border border-white/[0.055] bg-black/10 p-3.5'
               }
             >
               <div class="flex min-w-0 items-center gap-3">
