@@ -72,9 +72,7 @@ export const AppHeader: Component<AppHeaderProps> = (props) => (
             <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
             <path d="M5 20h14" />
           </svg>
-          <span class="hidden sm:inline">
-            {props.installing ? 'Встановлення…' : 'Встановити'}
-          </span>
+          <span class="hidden sm:inline">{props.installing ? 'Встановлення…' : 'Встановити'}</span>
           <span class="sr-only sm:hidden">Встановити застосунок</span>
         </button>
       </Show>
