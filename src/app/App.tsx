@@ -99,8 +99,8 @@ export function App() {
             <div class="brand-wordmark shrink-0">
               <img
                 class="brand-logo-image"
-                src="/branding/proaudio-player-logo.jpg"
-                alt="ProAudio Player"
+                src="/branding/proaudio-logo.jpg"
+                alt="PRO Audio"
                 width="1536"
                 height="768"
                 decoding="async"
