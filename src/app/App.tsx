@@ -114,10 +114,7 @@ export function App() {
           onThemeChange={theme.setMode}
         />
 
-        <PrimaryNav
-          page={page()}
-          alertActive={player.status()?.priority.active === true}
-        />
+        <PrimaryNav page={page()} alertActive={player.status()?.priority.active === true} />
 
         <main class="app-content min-w-0">
           <Show when={player.error()}>
@@ -196,4 +193,3 @@ export function App() {
     </div>
   );
 }
-
