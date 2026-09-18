@@ -26,8 +26,8 @@ export const AlertMediaSection: Component<AlertMediaSectionProps> = (props) => (
         <p class="alert-eyebrow">Файли сповіщень</p>
         <h2>Файли сповіщень</h2>
         <p>
-          Власні MP3 зберігаються у постійному сховищі та не губляться після оновлення
-          прошивки. Максимальний розмір одного файла — {formatBytes(props.files.max_size_bytes)}.
+          Власні MP3 зберігаються у постійному сховищі та не губляться після оновлення прошивки.
+          Максимальний розмір одного файла — {formatBytes(props.files.max_size_bytes)}.
         </p>
       </div>
       <button
@@ -57,9 +57,7 @@ export const AlertMediaSection: Component<AlertMediaSectionProps> = (props) => (
                   <p>{item.file_name}</p>
                 </div>
                 <span
-                  class={
-                    item.configured ? 'alert-ready-badge' : 'alert-ready-badge is-missing'
-                  }
+                  class={item.configured ? 'alert-ready-badge' : 'alert-ready-badge is-missing'}
                 >
                   {item.configured ? 'Готово' : 'Відсутній'}
                 </span>
