@@ -41,9 +41,9 @@ function sameText(left: string, right: string): boolean {
 
 export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const [clock, setClock] = createSignal(performance.now());
+  const [pageVisible, setPageVisible] = createSignal(document.visibilityState === 'visible');
   let positionAnchor = 0;
   let positionAnchorAt = performance.now();
-  let clockTimer: number | undefined;
 
   createEffect(() => {
     const player = props.status?.player;
@@ -53,11 +53,22 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   });
 
   onMount(() => {
-    clockTimer = window.setInterval(() => setClock(performance.now()), 250);
+    const syncVisibility = () => {
+      const visible = document.visibilityState === 'visible';
+      setPageVisible(visible);
+      if (visible) setClock(performance.now());
+    };
+
+    syncVisibility();
+    document.addEventListener('visibilitychange', syncVisibility);
+    onCleanup(() => document.removeEventListener('visibilitychange', syncVisibility));
   });
 
-  onCleanup(() => {
-    if (clockTimer !== undefined) window.clearInterval(clockTimer);
+  createEffect(() => {
+    if (props.status?.player.state !== 'playing' || !pageVisible()) return;
+
+    const timer = window.setInterval(() => setClock(performance.now()), 250);
+    onCleanup(() => window.clearInterval(timer));
   });
 
   const isRadio = () =>
