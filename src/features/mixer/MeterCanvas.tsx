@@ -189,7 +189,6 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       laneWidth: number,
       level: number,
       meterBottom: number,
-      meterHeight: number,
       segmentGap: number,
       segmentHeight: number,
       activeAlpha = 1,
@@ -278,7 +277,6 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         peakWidth,
         displayedPeak[0]!,
         meterBottom,
-        meterHeight,
         segmentGap,
         segmentHeight,
       );
@@ -287,7 +285,6 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         rmsWidth,
         displayedRms,
         meterBottom,
-        meterHeight,
         segmentGap,
         segmentHeight,
         0.72,
@@ -297,7 +294,6 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         peakWidth,
         displayedPeak[1]!,
         meterBottom,
-        meterHeight,
         segmentGap,
         segmentHeight,
       );
