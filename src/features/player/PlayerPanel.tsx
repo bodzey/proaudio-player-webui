@@ -223,7 +223,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
             >
               <div class="h-1 overflow-hidden rounded-full bg-white/[0.07] sm:h-1.5">
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-[#fe642a] via-[#ff7a45] to-[#f59e0b] transition-[width] duration-300 ease-linear"
+                  class="h-full rounded-full bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 transition-[width] duration-300 ease-linear"
                   style={{ width: `${progress()}%` }}
                 />
               </div>
