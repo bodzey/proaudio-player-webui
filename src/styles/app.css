@@ -4591,42 +4591,33 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 
 /* Exact ProAudio source logo ------------------------------------------- */
 
+.redesign-shell .brand-lockup {
+  flex: 0 1 auto;
+}
+
 .redesign-shell .brand-wordmark {
-  position: relative;
-  width: clamp(205px, 22vw, 285px);
-  max-width: 46vw;
-  aspect-ratio: 1455 / 443;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  width: clamp(220px, 24vw, 310px);
+  max-width: 48vw;
   line-height: 0;
-  background: #000;
 }
 
 .redesign-shell .brand-logo-image {
-  position: absolute;
-  top: -35.7%;
-  left: -3.3%;
   display: block;
-  width: 105.57%;
-  max-width: none;
+  width: 100%;
   height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
 }
 
-/*
- * The approved source artwork is supplied on black. Keeping the crop on the same
- * black surface preserves the exact grey/orange logo pixels without reconstructing
- * the mark from text, icons or fonts.
- */
-:root[data-theme='light'] .redesign-shell .brand-wordmark {
-  border-radius: 7px;
-  box-shadow: 0 0 0 1px rgb(27 43 45 / 8%);
-}
-
 @media (max-width: 639px) {
   .redesign-shell .brand-wordmark {
-    width: min(218px, 55vw);
-    max-width: 55vw;
+    width: min(250px, 58vw);
+    max-width: 58vw;
   }
 }
