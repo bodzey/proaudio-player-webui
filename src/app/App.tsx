@@ -299,8 +299,8 @@ function NavButton(props: NavButtonProps) {
       type="button"
       class={
         props.active
-          ? 'nav-button nav-button--active flex min-h-11 min-w-0 w-full items-center justify-center gap-2 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-11 sm:px-3'
-          : 'nav-button flex min-h-11 min-w-0 w-full items-center justify-center gap-2 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-11 sm:px-3'
+          ? 'nav-button nav-button--active flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-11 sm:px-3'
+          : 'nav-button flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-11 sm:px-3'
       }
       aria-current={props.active ? 'page' : undefined}
       onClick={() => props.onClick()}
