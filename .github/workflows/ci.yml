@@ -36,19 +36,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Preview formatted shell files
-        run: |
-          for file in \
-            src/app/App.tsx \
-            src/app/AppHeader.tsx \
-            src/app/ThemeMenu.tsx \
-            src/features/outputs/OutputsPanel.tsx \
-            src/features/sources/SourcesPanel.tsx
-          do
-            echo "===== $file ====="
-            npx prettier "$file"
-          done
-
       - name: Formatting
         run: npm run format:check
 
