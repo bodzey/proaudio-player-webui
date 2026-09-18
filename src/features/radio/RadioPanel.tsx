@@ -1,10 +1,11 @@
-import { For, Show, createSignal, type Component } from 'solid-js';
+import { For, Show, createSignal, onMount, type Component } from 'solid-js';
 
 import { api } from '../../api/client';
 import type { PlayerStatus } from '../../api/types';
 import { StationArtwork } from './StationArtwork';
+import { radioStations, refreshRadioStations } from './catalog';
 import { activeRadioStreamUrl } from './presentation';
-import { RADIO_STATIONS, isSameRadioStream } from './stations';
+import { isSameRadioStream } from './stations';
 
 interface RadioPanelProps {
   status: PlayerStatus | undefined;
@@ -20,6 +21,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
   );
 
   const currentStreamUrl = () => activeRadioStreamUrl(props.status);
+
+  onMount(() => void refreshRadioStations());
 
   const play = async (url: string, name: string) => {
     const trimmed = url.trim();
@@ -86,7 +89,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
         </div>
 
         <ul class="radio-station-grid mt-6" role="list">
-          <For each={RADIO_STATIONS}>
+          <For each={radioStations()}>
             {(station) => {
               const active = () => isSameRadioStream(currentStreamUrl(), station.url);
               const pending = () => pendingUrl() === station.url;
