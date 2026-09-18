@@ -82,6 +82,16 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   let providerForm!: HTMLFormElement;
   let audioForm!: HTMLFormElement;
 
+  function markProviderDirty(): void {
+    setProviderDirty(true);
+    setProviderMessage(undefined);
+  }
+
+  function markAudioDirty(): void {
+    setAudioDirty(true);
+    setAudioMessage(undefined);
+  }
+
   async function loadSettings(): Promise<void> {
     setLoading(true);
     setLoadError(undefined);
@@ -400,8 +410,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
               }}
               class="alert-provider-form"
               aria-busy={providerBusy() !== null}
-              onInput={() => setProviderDirty(true)}
-              onChange={() => setProviderDirty(true)}
+              onInput={markProviderDirty}
+              onChange={markProviderDirty}
               onSubmit={(event) => {
                 event.preventDefault();
                 void saveProvider();
@@ -484,67 +494,79 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                   <span class={HELP_CLASS}>Залиште порожнім, щоб не змінювати поточний токен.</span>
                 </label>
 
-                <div class="alert-provider-timing alert-span-full">
-                  <label class={LABEL_CLASS}>
-                    Інтервал опитування, с
-                    <input
-                      class={INPUT_CLASS}
-                      name="poll_interval_seconds"
-                      type="number"
-                      min="8"
-                      max="3600"
-                      step="1"
-                      required
-                      value={settings.poll_interval_seconds}
-                    />
-                    <span class={HELP_CLASS}>Як часто перевіряти стан тривог.</span>
-                  </label>
+                <details class="alert-advanced alert-span-full">
+                  <summary>
+                    <span>
+                      <b>Розширені параметри API</b>
+                      <small>
+                        Інтервал {settings.poll_interval_seconds} с · timeout{' '}
+                        {settings.request_timeout_seconds} с · HTTP 429{' '}
+                        {settings.rate_limit_backoff_seconds} с
+                      </small>
+                    </span>
+                  </summary>
+                  <div class="alert-provider-timing">
+                    <label class={LABEL_CLASS}>
+                      Інтервал опитування, с
+                      <input
+                        class={INPUT_CLASS}
+                        name="poll_interval_seconds"
+                        type="number"
+                        min="8"
+                        max="3600"
+                        step="1"
+                        required
+                        value={settings.poll_interval_seconds}
+                      />
+                      <span class={HELP_CLASS}>Як часто перевіряти стан тривог.</span>
+                    </label>
 
-                  <label class={LABEL_CLASS}>
-                    Очікування відповіді, с
-                    <input
-                      class={INPUT_CLASS}
-                      name="request_timeout_seconds"
-                      type="number"
-                      min="0.1"
-                      max="120"
-                      step="0.1"
-                      required
-                      value={settings.request_timeout_seconds}
-                    />
-                    <span class={HELP_CLASS}>Скільки чекати на відповідь сервера.</span>
-                  </label>
+                    <label class={LABEL_CLASS}>
+                      Очікування відповіді, с
+                      <input
+                        class={INPUT_CLASS}
+                        name="request_timeout_seconds"
+                        type="number"
+                        min="0.1"
+                        max="120"
+                        step="0.1"
+                        required
+                        value={settings.request_timeout_seconds}
+                      />
+                      <span class={HELP_CLASS}>Скільки чекати на відповідь сервера.</span>
+                    </label>
 
-                  <label class={LABEL_CLASS}>
-                    Пауза після HTTP 429, с
-                    <input
-                      class={INPUT_CLASS}
-                      name="rate_limit_backoff_seconds"
-                      type="number"
-                      min="60"
-                      max="86400"
-                      step="1"
-                      required
-                      value={settings.rate_limit_backoff_seconds}
-                    />
-                    <span class={HELP_CLASS}>Затримка після перевищення ліміту.</span>
-                  </label>
+                    <label class={LABEL_CLASS}>
+                      Пауза після HTTP 429, с
+                      <input
+                        class={INPUT_CLASS}
+                        name="rate_limit_backoff_seconds"
+                        type="number"
+                        min="60"
+                        max="86400"
+                        step="1"
+                        required
+                        value={settings.rate_limit_backoff_seconds}
+                      />
+                      <span class={HELP_CLASS}>Затримка після перевищення ліміту.</span>
+                    </label>
 
-                  <label class={LABEL_CLASS}>
-                    Підтверджень відбою
-                    <input
-                      class={INPUT_CLASS}
-                      name="clear_confirmations"
-                      type="number"
-                      min="1"
-                      max="100"
-                      step="1"
-                      required
-                      value={settings.clear_confirmations}
-                    />
-                    <span class={HELP_CLASS}>Кількість послідовних відповідей про відбій.</span>
-                  </label>
-                </div>
+                    <label class={LABEL_CLASS}>
+                      Підтверджень відбою
+                      <input
+                        class={INPUT_CLASS}
+                        name="clear_confirmations"
+                        type="number"
+                        min="1"
+                        max="100"
+                        step="1"
+                        required
+                        value={settings.clear_confirmations}
+                      />
+                      <span class={HELP_CLASS}>Кількість послідовних відповідей про відбій.</span>
+                    </label>
+                  </div>
+                </details>
               </fieldset>
 
               <div class="alert-form-actions alert-span-full">
@@ -715,8 +737,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
               }}
               class="alert-audio-form"
               aria-busy={audioBusy()}
-              onInput={() => setAudioDirty(true)}
-              onChange={() => setAudioDirty(true)}
+              onInput={markAudioDirty}
+              onChange={markAudioDirty}
               onSubmit={(event) => {
                 event.preventDefault();
                 void saveAudio();
@@ -822,6 +844,26 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                       <span class={HELP_CLASS}>Час, за який музика досягне цільового рівня.</span>
                     </label>
                   </div>
+
+                  <label class="alert-behavior-check">
+                    <input
+                      name="duck_only_during_announcement"
+                      type="checkbox"
+                      checked={settings.duck_only_during_announcement}
+                    />
+                    <span class="alert-check-box" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <path d="m6.5 12.5 3.2 3.2 7.8-8" />
+                      </svg>
+                    </span>
+                    <span>
+                      <b>Приглушувати лише під час оголошення</b>
+                      <small>
+                        Після завершення аудіофайлу музика повертається до попереднього рівня,
+                        навіть якщо тривога ще триває.
+                      </small>
+                    </span>
+                  </label>
                 </div>
 
                 <div class="alert-config-group">
@@ -974,28 +1016,12 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                   </div>
                 </div>
 
-                <label class="alert-behavior-check">
-                  <input
-                    name="duck_only_during_announcement"
-                    type="checkbox"
-                    checked={settings.duck_only_during_announcement}
-                  />
-                  <span class="alert-check-box" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <path d="m6.5 12.5 3.2 3.2 7.8-8" />
-                    </svg>
-                  </span>
-                  <span>
-                    <b>Приглушувати лише під час сповіщення про тривогу та відбій</b>
-                    <small>
-                      Після завершення аудіофайлу музика повертається до попереднього рівня, навіть
-                      якщо сама тривога ще триває.
-                    </small>
-                  </span>
-                </label>
               </fieldset>
 
-              <div class="alert-audio-savebar">
+              <div
+                class="alert-audio-savebar"
+                classList={{ 'is-dirty': audioDirty() || audioBusy() }}
+              >
                 <div>
                   <span class="alert-savebar-icon" aria-hidden="true">
                     i
