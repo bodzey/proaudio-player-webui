@@ -147,6 +147,23 @@ export interface AudioOutputSelectionResponse {
   applied: boolean;
 }
 
+export interface RadioDirectoryStation {
+  id: string;
+  name: string;
+  url: string;
+  homepage: string | null;
+  favicon: string | null;
+  tags: string[];
+  codec: string | null;
+  bitrate: number | null;
+  votes: number;
+}
+
+export interface RadioDirectoryResponse {
+  source: string;
+  items: RadioDirectoryStation[];
+}
+
 export interface AlertProviderSettings {
   endpoint: string;
   location_uid: number;
