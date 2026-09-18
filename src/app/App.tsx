@@ -10,6 +10,7 @@ import { OutputsPanel } from '../features/outputs/OutputsPanel';
 import { PlayerPanel } from '../features/player/PlayerPanel';
 import { RadioPanel } from '../features/radio/RadioPanel';
 import { SourcesPanel } from '../features/sources/SourcesPanel';
+import { createPwaInstallController } from '../pwa/install';
 import { MeterBuffer } from '../realtime/meter-buffer';
 import { createPlayerState } from '../state/player';
 import { createThemeController, type ThemeMode } from '../state/theme';
@@ -24,6 +25,7 @@ function pageFromHash(): AppPage {
 
 export function App() {
   const player = createPlayerState();
+  const pwa = createPwaInstallController();
   const theme = createThemeController();
   const [capabilities] = createResource(api.capabilities);
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
@@ -119,6 +121,31 @@ export function App() {
                   API {version()}
                 </span>
               )}
+            </Show>
+            <Show when={pwa.canInstall()}>
+              <button
+                type="button"
+                class="install-app-button"
+                disabled={pwa.installing()}
+                onClick={() => void pwa.install()}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  class="size-4 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3v12" />
+                  <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
+                  <path d="M5 20h14" />
+                </svg>
+                <span class="hidden sm:inline">{pwa.installing() ? 'Встановлення…' : 'Встановити'}</span>
+                <span class="sr-only sm:hidden">Встановити застосунок</span>
+              </button>
             </Show>
             <ThemeSelect value={theme.mode()} onChange={theme.setMode} />
             <ConnectionBadge state={player.connection()} />

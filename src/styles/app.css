@@ -735,3 +735,58 @@ textarea:focus-visible,
     width: min(78vw, 260px);
   }
 }
+
+
+/* Installed app ----------------------------------------------------------- */
+
+.install-app-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid var(--pa-accent-border);
+  border-radius: 0.6rem;
+  background: var(--pa-accent-soft);
+  padding: 0.4rem 0.65rem;
+  color: var(--pa-accent-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.install-app-button:hover {
+  border-color: var(--pa-accent);
+  background: var(--pa-accent);
+  color: var(--pa-on-accent);
+}
+
+.install-app-button:active {
+  transform: translateY(1px);
+}
+
+.install-app-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 639px) {
+  .install-app-button {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+@media (display-mode: standalone) {
+  .app-frame {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+  }
+}

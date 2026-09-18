@@ -1,7 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="108" fill="#0b0e13"/>
-  <path d="M112 176h64v160h-64zM224 112h64v288h-64zM336 160h64v192h-64z" fill="#62e39a"/>
-  <circle cx="144" cy="256" r="28" fill="#0b0e13"/>
-  <circle cx="256" cy="256" r="28" fill="#0b0e13"/>
-  <circle cx="368" cy="256" r="28" fill="#0b0e13"/>
+  <rect width="512" height="512" rx="112" fill="#263d3f"/>
+  <rect x="62" y="62" width="388" height="388" rx="96" fill="#18292b" stroke="#ffffff" stroke-opacity=".12" stroke-width="4"/>
+  <g stroke-linecap="round" stroke-width="24">
+    <path d="M110 256v-102" stroke="#fe642a"/>
+    <path d="M158 256V72" stroke="#f5f8f7"/>
+    <path d="M206 256V-20" transform="translate(0 138)" stroke="#fe642a"/>
+    <path d="M254 256V98" stroke="#f5f8f7"/>
+    <path d="M302 256V20" transform="translate(0 118)" stroke="#fe642a"/>
+    <path d="M350 256V124" stroke="#f5f8f7"/>
+    <path d="M398 256v-82" stroke="#fe642a"/>
+  </g>
+  <rect x="148" y="398" width="216" height="10" rx="5" fill="#fe642a"/>
 </svg>
