@@ -23,6 +23,7 @@ export interface ReleaseInfo {
 
 export interface SystemInfoResponse {
   temperature_celsius: number | null;
+  native_version?: string | null | undefined;
   release: ReleaseInfo;
 }
 
