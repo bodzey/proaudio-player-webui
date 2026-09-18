@@ -4589,27 +4589,34 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   transform: none !important;
 }
 
-/* Exact ProAudio source logo ------------------------------------------- */
+/* Exact ProAudio source logo -------------------------------------------
+   The approved source file is kept byte-for-byte unchanged. The source canvas
+   is 1536×768 while the actual mark occupies x=48…1503, y=158…597. Crop only
+   those empty black margins in CSS so the header uses the exact artwork. */
 
 .redesign-shell .brand-lockup {
   flex: 0 1 auto;
+  align-self: flex-start;
 }
 
 .redesign-shell .brand-wordmark {
-  display: flex;
-  align-items: center;
+  position: relative;
   width: clamp(220px, 24vw, 310px);
   max-width: 48vw;
+  aspect-ratio: 1455 / 439;
+  overflow: hidden;
   line-height: 0;
+  background: #000;
 }
 
 .redesign-shell .brand-logo-image {
+  position: absolute;
+  top: -35.99%;
+  left: -3.30%;
   display: block;
-  width: 100%;
+  width: 105.57%;
+  max-width: none;
   height: auto;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: left center;
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
@@ -4617,7 +4624,7 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 
 @media (max-width: 639px) {
   .redesign-shell .brand-wordmark {
-    width: min(250px, 58vw);
+    width: min(238px, 58vw);
     max-width: 58vw;
   }
 }
