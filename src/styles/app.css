@@ -1906,12 +1906,29 @@ body {
   }
 
   .mixer-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-columns: minmax(0, 1fr) !important;
     gap: 4px !important;
+    overflow: hidden;
+  }
+
+  .mixer-grid > .mixer-strip {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden;
   }
 
   .mixer-strip {
     min-width: 0 !important;
-    padding: 10px 4px 8px !important;
+    padding: 10px 3px 8px !important;
+  }
+
+  .mixer-strip-console {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden;
   }
 
   .mixer-strip-console {
