@@ -137,12 +137,20 @@ export function createPlayerState() {
   }
 
   function startFallbackPolling(): void {
-    if (fallbackTimer !== undefined) return;
-    fallbackTimer = window.setInterval(() => void refresh(false), 5000);
+    if (fallbackTimer !== undefined || document.visibilityState !== 'visible') return;
+    fallbackTimer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void refresh(false);
+    }, 5000);
   }
 
-  onMount(() => {
-    void refresh();
+  function disconnectStatusEvents(): void {
+    stopFallbackPolling();
+    unsubscribe?.();
+    unsubscribe = undefined;
+  }
+
+  function connectStatusEvents(): void {
+    if (unsubscribe || document.visibilityState !== 'visible') return;
 
     unsubscribe = subscribeToStatusEvents({
       onStatus: (next) => {
@@ -168,6 +176,10 @@ export function createPlayerState() {
         setConnection('online');
       },
       onError: (cause) => {
+        if (document.visibilityState !== 'visible') {
+          disconnectStatusEvents();
+          return;
+        }
         setConnection((current) => (current === 'online' ? 'reconnecting' : 'offline'));
         startFallbackPolling();
         if (cause instanceof Error) {
@@ -175,11 +187,26 @@ export function createPlayerState() {
         }
       },
     });
-  });
+  }
 
-  onCleanup(() => {
-    stopFallbackPolling();
-    unsubscribe?.();
+  onMount(() => {
+    const resume = () => {
+      if (document.visibilityState !== 'visible') {
+        disconnectStatusEvents();
+        return;
+      }
+
+      setConnection(status() ? 'reconnecting' : 'connecting');
+      void refresh(status() === undefined);
+      connectStatusEvents();
+    };
+
+    resume();
+    document.addEventListener('visibilitychange', resume);
+    onCleanup(() => {
+      document.removeEventListener('visibilitychange', resume);
+      disconnectStatusEvents();
+    });
   });
 
   return {
