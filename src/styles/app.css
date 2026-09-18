@@ -30,9 +30,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 1.2%), transparent 180px),
-    var(--pa-bg);
+  background: linear-gradient(180deg, rgb(255 255 255 / 1.2%), transparent 180px), var(--pa-bg);
 }
 
 button,
@@ -441,8 +439,7 @@ canvas {
 body {
   background:
     radial-gradient(circle at 14% -8%, rgb(254 100 42 / 7%), transparent 31%),
-    radial-gradient(circle at 92% 0%, rgb(38 61 63 / 7%), transparent 28%),
-    var(--pa-bg);
+    radial-gradient(circle at 92% 0%, rgb(38 61 63 / 7%), transparent 28%), var(--pa-bg);
   color: var(--pa-text);
 }
 

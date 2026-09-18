@@ -125,7 +125,10 @@ export function App() {
           </div>
         </header>
 
-        <nav class="app-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border border-white/[0.08] bg-[#0d1117]/95 p-1 shadow-lg shadow-black/10 sm:mb-5 sm:flex sm:w-fit" aria-label="Основні розділи">
+        <nav
+          class="app-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border border-white/[0.08] bg-[#0d1117]/95 p-1 shadow-lg shadow-black/10 sm:mb-5 sm:flex sm:w-fit"
+          aria-label="Основні розділи"
+        >
           <NavButton active={page() === 'player'} onClick={() => navigate('player')}>
             <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
               <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />

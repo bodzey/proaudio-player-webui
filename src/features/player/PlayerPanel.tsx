@@ -140,7 +140,9 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   </div>
                 }
               >
-                {(url) => <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />}
+                {(url) => (
+                  <img src={url()} alt="" class="absolute inset-0 size-full object-cover" />
+                )}
               </Show>
             }
           >
