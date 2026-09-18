@@ -1,5 +1,10 @@
 export function registerPwaServiceWorker(): void {
-  if (!import.meta.env.PROD || !window.isSecureContext || !('serviceWorker' in navigator)) {
+  if (
+    import.meta.env.VITE_DEMO === 'true' ||
+    !import.meta.env.PROD ||
+    !window.isSecureContext ||
+    !('serviceWorker' in navigator)
+  ) {
     return;
   }
 
