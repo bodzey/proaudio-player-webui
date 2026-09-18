@@ -44,10 +44,7 @@ function quality(station: RadioDirectoryStation): string {
 }
 
 function genre(station: RadioDirectoryStation): string {
-  const tags = station.tags
-    .map((tag) => tag.trim())
-    .filter(Boolean)
-    .slice(0, 2);
+  const tags = station.tags.map((tag) => tag.trim()).filter(Boolean).slice(0, 2);
   return tags.length > 0 ? tags.join(' / ') : 'Internet Radio';
 }
 
@@ -86,9 +83,7 @@ export async function refreshRadioStations(): Promise<void> {
   return loading;
 }
 
-export function findCatalogRadioStation(
-  url: string | null | undefined,
-): RadioStation | undefined {
+export function findCatalogRadioStation(url: string | null | undefined): RadioStation | undefined {
   if (!url) return undefined;
   return catalog().find((station) => isSameRadioStream(url, station.url));
 }
