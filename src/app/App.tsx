@@ -118,7 +118,7 @@ export function App() {
   });
 
   return (
-    <main class="app-shell redesign-shell min-h-screen text-slate-100">
+    <div class="app-shell redesign-shell min-h-screen text-slate-100">
       <div class="app-accent-line" aria-hidden="true" />
       <div class="app-ambient" aria-hidden="true" />
 
@@ -235,6 +235,7 @@ export function App() {
           </NavButton>
         </nav>
 
+        <main class="app-content min-w-0">
         <Show when={player.error()}>
           {(message) => (
             <div
@@ -300,12 +301,14 @@ export function App() {
           </div>
         </Show>
 
+        </main>
+
         <footer class="app-footer flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-white/[0.06] text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:text-[10px]">
           <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
           <span title={systemInfo()?.release.native_sha ?? undefined}>{playerVersionLabel()}</span>
         </footer>
       </div>
-    </main>
+    </div>
   );
 }
 
