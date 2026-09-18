@@ -176,7 +176,8 @@ export interface AlertProviderTestResponse {
 }
 
 export interface AudioSettings {
-  notifications_enabled: boolean;
+  air_raid_alerts_enabled: boolean;
+  notifications_enabled?: boolean | undefined;
   duck_db: number;
   duck_fade_seconds: number;
   restore_fade_seconds: number;
@@ -196,7 +197,8 @@ export interface AudioSettings {
 }
 
 export interface AudioSettingsUpdate {
-  notifications_enabled: boolean;
+  air_raid_alerts_enabled: boolean;
+  notifications_enabled?: boolean | undefined;
   duck_db: number;
   duck_fade_seconds: number;
   restore_fade_seconds: number;

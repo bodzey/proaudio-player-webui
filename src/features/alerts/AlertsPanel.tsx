@@ -621,11 +621,12 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 Alert audio
               </p>
               <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
-                Поведінка звуку під час тривоги
+                Оповіщення та хвилина мовчання
               </h2>
               <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
-                Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT задається
-                одним фейдером у мікшері та зберігається автоматично.
+                Два незалежні сценарії: оповіщення про повітряну тривогу та щоденна хвилина
+                мовчання. Вимкнення одного не вимикає інший. Рівень ALERT задається одним
+                фейдером у мікшері та зберігається автоматично.
               </p>
             </div>
 
@@ -658,17 +659,20 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                 <label class="flex cursor-pointer gap-3 rounded-2xl border border-white/[0.065] bg-black/15 p-4 md:col-span-2 xl:col-span-3">
                   <input
                     class="mt-0.5 size-4 accent-sky-400"
-                    name="notifications_enabled"
+                    name="air_raid_alerts_enabled"
                     type="checkbox"
-                    checked={settings.notifications_enabled}
+                    checked={
+                      settings.air_raid_alerts_enabled ?? settings.notifications_enabled ?? true
+                    }
                   />
                   <span>
                     <b class="block text-xs font-semibold text-slate-300">
-                      Увімкнути систему сповіщень
+                      Оповіщення про повітряну тривогу
                     </b>
                     <span class="mt-1 block text-[10px] leading-4 text-slate-600">
-                      Якщо вимкнути, плеєр припинить опитування API, завершить активне сповіщення та
-                      відновить попередній рівень музики.
+                      Керує лише alerts.in.ua: якщо вимкнути, плеєр припинить опитування API,
+                      завершить активну тривогу та відновить музику. Хвилина мовчання працює
+                      незалежно.
                     </span>
                   </span>
                 </label>
@@ -699,7 +703,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
                       Увімкнути хвилину мовчання
                     </b>
                     <span class="mt-1 block text-[10px] leading-4 text-slate-600">
-                      Запуск виконується один раз на добу за вказаним локальним часом.
+                      Незалежний щоденний сценарій. Запускається один раз на добу за вказаним
+                      локальним часом, навіть якщо оповіщення про повітряну тривогу вимкнені.
                     </span>
                   </span>
                 </label>
