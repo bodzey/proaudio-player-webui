@@ -42,7 +42,7 @@ export const AlertMediaSection: Component<AlertMediaSectionProps> = (props) => (
         {props.resetAll ? 'Відновлення…' : 'Відновити стандартні'}
       </button>
     </div>
-  
+
     <div class="alert-media-list">
       <For each={props.files.items}>
         {(item) => (
