@@ -219,10 +219,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 aria-valuenow={Math.round(progress())}
               >
                 <div class="player-progress-track">
-                  <div
-                    class="player-progress-fill"
-                    style={{ width: `${progress()}%` }}
-                  >
+                  <div class="player-progress-fill" style={{ width: `${progress()}%` }}>
                     <span class="player-progress-thumb" aria-hidden="true" />
                   </div>
                 </div>
