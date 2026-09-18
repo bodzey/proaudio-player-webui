@@ -39,6 +39,9 @@ export function App() {
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
+  const [meterPageVisible, setMeterPageVisible] = createSignal(
+    document.visibilityState === 'visible',
+  );
   const meterBuffer = new MeterBuffer();
   const controlsUnavailable = () => !player.status() || player.connection() === 'offline';
   const priorityBlocked = () => player.status()?.priority.blocking ?? false;
@@ -71,8 +74,15 @@ export function App() {
     onCleanup(() => window.clearInterval(timer));
   });
 
+  onMount(() => {
+    const syncVisibility = () => setMeterPageVisible(document.visibilityState === 'visible');
+    syncVisibility();
+    document.addEventListener('visibilitychange', syncVisibility);
+    onCleanup(() => document.removeEventListener('visibilitychange', syncVisibility));
+  });
+
   createEffect(() => {
-    if (page() !== 'player') {
+    if (page() !== 'player' || !meterPageVisible()) {
       meterBuffer.reset();
       setMeterState('idle');
       return;
