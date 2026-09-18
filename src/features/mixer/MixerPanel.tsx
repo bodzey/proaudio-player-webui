@@ -91,17 +91,6 @@ function levelsMatch(left: AudioLevel, right: AudioLevel): boolean {
   return Math.abs(left.db - right.db) <= 0.2 && left.muted === right.muted;
 }
 
-function masterDetail(level: AudioLevel | undefined): string {
-  if (!level) return 'Очікування стану MASTER';
-  const details: string[] = [];
-  if (level.backend) details.push(level.backend);
-  if (level.transport_backend && level.transport_backend !== level.backend) {
-    details.push(level.transport_backend);
-  }
-  const output = level.control ?? level.name ?? level.card_name;
-  if (output) details.push(output);
-  return details.length > 0 ? details.join(' · ') : 'Output gain';
-}
 
 export const MixerPanel: Component<MixerPanelProps> = (props) => {
   const [error, setError] = createSignal<string>();
@@ -226,7 +215,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Мікшер</h2>
           <p class="mt-1.5 text-xs leading-5 text-slate-500">
-            Реальні sample-peak/RMS рівні PCM та абсолютна атенюація шин у dB.
+            Рівні сигналу та гучність каналів.
           </p>
         </div>
         <div
@@ -243,7 +232,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
                 : 'size-1.5 rounded-full bg-amber-300/60'
             }
           />
-          {props.meterLive ? '50 Hz наживо' : 'Метри недоступні'}
+          {props.meterLive ? 'Онлайн' : 'Офлайн'}
         </div>
       </div>
 
@@ -261,7 +250,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
               props.status?.priority.blocking === true
             }
             pending={false}
-            detail="Музична шина"
+            detail="Музика"
             onSet={setLevel}
           />
           <MixerStrip
@@ -276,7 +265,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
               props.status?.priority.blocking === true
             }
             pending={pending('alert')}
-            detail="Шина оповіщень"
+            detail="Оповіщення"
             onSet={setLevel}
           />
           <MixerStrip
@@ -287,7 +276,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             meterLive={props.meterLive}
             blocked={props.disabled || level('master') === undefined}
             pending={pending('master')}
-            detail={masterDetail(level('master'))}
+            detail="Головний вихід"
             onSet={setLevel}
           />
         </div>
@@ -308,9 +297,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
       </Show>
 
       <p class="mt-4 text-xs leading-5 text-slate-500">
-        MUSIC + ALERT → MASTER → вибраний фізичний вихід. MASTER не прив’язаний до конкретного DAC,
-        а MUSIC і регулятор плеєра використовують спільний стан. Shift під час перетягування або
-        прокручування вмикає точне керування. Подвійний клік повертає 0 dB.
+        Shift під час перетягування або прокручування вмикає точне керування. Подвійний клік
+        повертає 0 dB.
       </p>
     </section>
   );
@@ -586,7 +574,7 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
         </button>
       </div>
       <div class="mt-2 h-3 text-center text-[9px] tracking-[0.08em] text-slate-500 uppercase">
-        {props.pending ? 'синхронізація' : props.meterLive ? 'наживо' : ''}
+        {props.pending ? 'Застосування…' : ''}
       </div>
     </div>
   );
