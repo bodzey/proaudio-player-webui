@@ -187,7 +187,6 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             label="MUSIC"
             level={level('music') ?? levelFromPercent(0, true)}
             buffer={props.buffer}
-            meterLive={props.meterLive}
             blocked={
               props.disabled ||
               level('music') === undefined ||
@@ -202,7 +201,6 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             label="ALERT"
             level={level('alert') ?? levelFromPercent(0, true)}
             buffer={props.buffer}
-            meterLive={props.meterLive}
             blocked={
               props.disabled ||
               level('alert') === undefined ||
@@ -217,7 +215,6 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
             label="MASTER"
             level={level('master') ?? levelFromPercent(0, true)}
             buffer={props.buffer}
-            meterLive={props.meterLive}
             blocked={props.disabled || level('master') === undefined}
             pending={pending('master')}
             detail="Головний вихід"
