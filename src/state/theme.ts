@@ -1,4 +1,4 @@
-import { createSignal, onCleanup } from 'solid-js';
+import { createEffect, createSignal, onCleanup } from 'solid-js';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -43,7 +43,6 @@ export function createThemeController() {
   const setMode = (next: ThemeMode) => {
     setModeSignal(next);
     persistTheme(next);
-    apply(next);
   };
 
   const onSystemThemeChange = () => {
@@ -53,7 +52,7 @@ export function createThemeController() {
   media.addEventListener('change', onSystemThemeChange);
   onCleanup(() => media.removeEventListener('change', onSystemThemeChange));
 
-  apply(mode());
+  createEffect(() => apply(mode()));
 
   return { mode, setMode };
 }
