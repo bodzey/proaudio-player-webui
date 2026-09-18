@@ -138,78 +138,80 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
             </p>
           )}
         </Show>
-        <div class="mt-5 grid gap-2.5 sm:grid-cols-2">
+        <ul class="mt-5 grid gap-2.5 sm:grid-cols-2" aria-label="Доступні аудіовиходи">
           <For each={outputs()?.items ?? []}>
             {(output) => {
               const isPending = () => pending() === output.id;
               return (
-                <button
-                  type="button"
-                  class={
-                    output.selected
-                      ? 'output-option is-selected min-h-[76px] rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.055] p-4 text-left shadow-[0_14px_40px_-32px_rgba(34,211,238,0.7)]'
-                      : 'output-option min-h-[76px] rounded-2xl border border-white/[0.06] bg-black/15 p-4 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
-                  }
-                  disabled={
-                    output.selected ||
-                    !output.available ||
-                    props.blocked ||
-                    props.disabled ||
-                    pending() !== null
-                  }
-                  aria-busy={isPending()}
-                  aria-pressed={output.selected}
-                  onClick={() => void select(output.id)}
-                >
-                  <div class="flex items-start gap-3">
-                    <span
-                      class={
-                        output.selected
-                          ? 'mt-1 size-2 shrink-0 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.55)]'
-                          : output.state === 'running'
-                            ? 'mt-1 size-2 shrink-0 rounded-full bg-emerald-400/80'
-                            : 'mt-1 size-2 shrink-0 rounded-full bg-slate-700'
-                      }
-                    />
-                    <div class="min-w-0 flex-1">
-                      <div class="flex min-h-4 items-start justify-between gap-2">
-                        <span class="truncate text-sm font-semibold text-slate-200">
-                          {output.name}
-                        </span>
-                        <span class="shrink-0 text-[9px] font-semibold tracking-[0.1em] uppercase">
-                          <Show
-                            when={isPending()}
-                            fallback={
-                              output.selected ? (
-                                <span class="text-cyan-300/80">Вибрано</span>
-                              ) : !output.available ? (
-                                <span class="text-amber-300/70">Недоступний</span>
-                              ) : null
-                            }
-                          >
-                            <span class="text-cyan-200/70">Перемикання</span>
+                <li class="min-w-0">
+                  <button
+                    type="button"
+                    class={
+                      output.selected
+                        ? 'output-option is-selected min-h-[76px] rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.055] p-4 text-left shadow-[0_14px_40px_-32px_rgba(34,211,238,0.7)]'
+                        : 'output-option min-h-[76px] rounded-2xl border border-white/[0.06] bg-black/15 p-4 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
+                    }
+                    disabled={
+                      output.selected ||
+                      !output.available ||
+                      props.blocked ||
+                      props.disabled ||
+                      pending() !== null
+                    }
+                    aria-busy={isPending()}
+                    aria-pressed={output.selected}
+                    onClick={() => void select(output.id)}
+                  >
+                    <div class="flex items-start gap-3">
+                      <span
+                        class={
+                          output.selected
+                            ? 'mt-1 size-2 shrink-0 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.55)]'
+                            : output.state === 'running'
+                              ? 'mt-1 size-2 shrink-0 rounded-full bg-emerald-400/80'
+                              : 'mt-1 size-2 shrink-0 rounded-full bg-slate-700'
+                        }
+                      />
+                      <div class="min-w-0 flex-1">
+                        <div class="flex min-h-4 items-start justify-between gap-2">
+                          <span class="truncate text-sm font-semibold text-slate-200">
+                            {output.name}
+                          </span>
+                          <span class="shrink-0 text-[9px] font-semibold tracking-[0.1em] uppercase">
+                            <Show
+                              when={isPending()}
+                              fallback={
+                                output.selected ? (
+                                  <span class="text-cyan-300/80">Вибрано</span>
+                                ) : !output.available ? (
+                                  <span class="text-amber-300/70">Недоступний</span>
+                                ) : null
+                              }
+                            >
+                              <span class="text-cyan-200/70">Перемикання</span>
+                            </Show>
+                          </span>
+                        </div>
+                        <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] text-slate-500">
+                          <span>{outputState(output.state)}</span>
+                          <Show when={output.alsa_card !== null}>
+                            <span>ALSA {output.alsa_card}</span>
                           </Show>
-                        </span>
-                      </div>
-                      <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] text-slate-500">
-                        <span>{outputState(output.state)}</span>
-                        <Show when={output.alsa_card !== null}>
-                          <span>ALSA {output.alsa_card}</span>
-                        </Show>
-                        <Show when={output.device_class}>
-                          <span>{output.device_class}</span>
-                        </Show>
-                        <Show when={outputDetails(output)}>
-                          <span>{outputDetails(output)}</span>
-                        </Show>
+                          <Show when={output.device_class}>
+                            <span>{output.device_class}</span>
+                          </Show>
+                          <Show when={outputDetails(output)}>
+                            <span>{outputDetails(output)}</span>
+                          </Show>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
+                </li>
               );
             }}
           </For>
-        </div>
+        </ul>
       </Show>
 
       <Show when={props.blocked}>
