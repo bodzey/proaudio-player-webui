@@ -124,9 +124,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                       </Show>
                     </header>
 
-                    <p class="radio-station-description text-slate-500">
-                      {station.description}
-                    </p>
+                    <p class="radio-station-description text-slate-500">{station.description}</p>
 
                     <footer class="radio-station-footer">
                       <span class="radio-station-quality font-mono text-slate-600">
@@ -135,16 +133,12 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
 
                       <button
                         type="button"
-                        class={
-                          active() ? 'radio-station-control is-stop' : 'radio-station-control'
-                        }
+                        class={active() ? 'radio-station-control is-stop' : 'radio-station-control'}
                         aria-pressed={active()}
                         aria-label={
                           active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`
                         }
-                        disabled={
-                          props.blocked || props.disabled || pendingUrl() !== null
-                        }
+                        disabled={props.blocked || props.disabled || pendingUrl() !== null}
                         onClick={() => void toggleStation(station.url, station.name)}
                       >
                         <Show
