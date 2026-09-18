@@ -11,6 +11,7 @@ import {
 
 import type { PlayerAction, PlayerStatus } from '../../api/types';
 import { StationArtwork } from '../radio/StationArtwork';
+import { isInternetRadioPlayer } from './presentation';
 import { findRadioStation } from '../radio/stations';
 
 interface PlayerPanelProps {
@@ -71,9 +72,8 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
     onCleanup(() => window.clearInterval(timer));
   });
 
-  const isRadio = () =>
-    props.status?.player.source === 'Інтернет-радіо' || props.status?.mpd.is_stream === true;
-  const streamUrl = () => props.status?.mpd.stream_url ?? null;
+  const isRadio = () => isInternetRadioPlayer(props.status?.player);
+  const streamUrl = () => (isRadio() ? (props.status?.mpd.stream_url ?? null) : null);
   const station = createMemo(() => findRadioStation(streamUrl()));
   const stationName = createMemo(() =>
     isRadio() ? station()?.name || props.status?.mpd.station || 'Інтернет-радіо' : '',
