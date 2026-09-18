@@ -138,12 +138,13 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
             </p>
           )}
         </Show>
-        <div class="mt-5 grid gap-2.5 sm:grid-cols-2">
+        <ul class="mt-5 grid gap-2.5 sm:grid-cols-2" aria-label="Доступні аудіовиходи">
           <For each={outputs()?.items ?? []}>
             {(output) => {
               const isPending = () => pending() === output.id;
               return (
-                <button
+                <li class="min-w-0">
+                  <button
                   type="button"
                   class={
                     output.selected
@@ -159,8 +160,8 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
                   }
                   aria-busy={isPending()}
                   aria-pressed={output.selected}
-                  onClick={() => void select(output.id)}
-                >
+                    onClick={() => void select(output.id)}
+                  >
                   <div class="flex items-start gap-3">
                     <span
                       class={
@@ -205,11 +206,12 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
                       </div>
                     </div>
                   </div>
-                </button>
+                  </button>
+                </li>
               );
             }}
           </For>
-        </div>
+        </ul>
       </Show>
 
       <Show when={props.blocked}>
