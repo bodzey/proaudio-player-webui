@@ -789,3 +789,409 @@ textarea:focus-visible,
     padding-left: max(0.75rem, env(safe-area-inset-left));
   }
 }
+
+
+/* Redesign branch ---------------------------------------------------------
+   Professional console-inspired UI. Visual meters never synthesize signal:
+   they animate only the real Peak/RMS snapshots supplied by the native API. */
+
+:root {
+  --rd-bg: #f1f4f3;
+  --rd-surface: #ffffff;
+  --rd-surface-2: #f6f8f7;
+  --rd-inset: #edf2f0;
+  --rd-border: rgb(25 52 54 / 13%);
+  --rd-border-strong: rgb(25 52 54 / 22%);
+  --rd-shadow: rgb(20 42 44 / 13%);
+  --rd-shadow-strong: rgb(20 42 44 / 20%);
+  --rd-text: #17292b;
+  --rd-muted: #627274;
+  --rd-accent: #ff642a;
+  --rd-accent-soft: rgb(255 100 42 / 10%);
+  --rd-accent-border: rgb(255 100 42 / 34%);
+  --rd-track: #ccd6d4;
+  --rd-track-inset: #dfe6e4;
+  --rd-fader-top: #f6f8f8;
+  --rd-fader-bottom: #aab8b7;
+}
+
+:root[data-theme='dark'] {
+  --rd-bg: #091012;
+  --rd-surface: #111819;
+  --rd-surface-2: #151d1f;
+  --rd-inset: #0d1315;
+  --rd-border: rgb(255 255 255 / 9%);
+  --rd-border-strong: rgb(255 255 255 / 15%);
+  --rd-shadow: rgb(0 0 0 / 44%);
+  --rd-shadow-strong: rgb(0 0 0 / 66%);
+  --rd-text: #f4f7f6;
+  --rd-muted: #879596;
+  --rd-track: #263032;
+  --rd-track-inset: #080c0d;
+  --rd-fader-top: #dce5e5;
+  --rd-fader-bottom: #7c8b8c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --rd-bg: #091012;
+    --rd-surface: #111819;
+    --rd-surface-2: #151d1f;
+    --rd-inset: #0d1315;
+    --rd-border: rgb(255 255 255 / 9%);
+    --rd-border-strong: rgb(255 255 255 / 15%);
+    --rd-shadow: rgb(0 0 0 / 44%);
+    --rd-shadow-strong: rgb(0 0 0 / 66%);
+    --rd-text: #f4f7f6;
+    --rd-muted: #879596;
+    --rd-track: #263032;
+    --rd-track-inset: #080c0d;
+    --rd-fader-top: #dce5e5;
+    --rd-fader-bottom: #7c8b8c;
+  }
+}
+
+body {
+  background:
+    radial-gradient(circle at 9% -10%, rgb(255 100 42 / 9%), transparent 30rem),
+    radial-gradient(circle at 92% 0%, rgb(30 70 74 / 7%), transparent 38rem),
+    var(--rd-bg);
+}
+
+.redesign-shell {
+  min-height: 100vh;
+}
+
+.redesign-shell .app-frame {
+  max-width: 1600px !important;
+}
+
+.redesign-shell .app-header {
+  padding-top: 0.15rem;
+}
+
+.pro-nav {
+  border-color: var(--rd-border) !important;
+  background: color-mix(in srgb, var(--rd-surface) 92%, transparent) !important;
+  box-shadow:
+    0 12px 28px -22px var(--rd-shadow-strong),
+    inset 0 1px 0 rgb(255 255 255 / 4%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.nav-button {
+  color: var(--pa-muted);
+}
+
+.nav-button:hover {
+  border-color: var(--rd-border-strong) !important;
+  background: var(--rd-surface-2);
+  color: var(--pa-text);
+}
+
+.nav-button--active {
+  border-color: var(--rd-accent-border) !important;
+  background:
+    linear-gradient(180deg, rgb(255 100 42 / 13%), rgb(255 100 42 / 6%)) !important;
+  color: var(--pa-accent-text) !important;
+  box-shadow:
+    0 8px 22px -18px rgb(255 100 42 / 70%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+}
+
+.connection-badge {
+  border-color: var(--rd-border) !important;
+  background: var(--rd-surface-2) !important;
+  color: var(--pa-muted) !important;
+  min-height: 34px;
+}
+
+.pro-panel,
+.player-card {
+  border-color: var(--rd-border) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--rd-surface) 98%, white 2%), var(--rd-surface))
+    !important;
+  box-shadow:
+    0 26px 70px -52px var(--rd-shadow-strong),
+    0 1px 0 rgb(255 255 255 / 3%) inset;
+}
+
+.player-card {
+  border-radius: 24px !important;
+  overflow: hidden;
+}
+
+.player-art {
+  background: #080d0f !important;
+}
+
+.player-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset -1px 0 0 var(--rd-border);
+}
+
+.player-content {
+  background:
+    radial-gradient(circle at 100% 0%, rgb(255 100 42 / 4%), transparent 42%),
+    var(--rd-surface);
+}
+
+.transport-button {
+  border-color: var(--rd-border) !important;
+  background: var(--rd-surface-2) !important;
+  color: var(--pa-muted) !important;
+  box-shadow: 0 10px 22px -18px var(--rd-shadow-strong);
+}
+
+.transport-button:hover:not(:disabled) {
+  border-color: var(--rd-accent-border) !important;
+  background: var(--rd-accent-soft) !important;
+  color: var(--pa-accent-text) !important;
+}
+
+.transport-button--primary {
+  border: 1px solid rgb(255 255 255 / 7%);
+  background: linear-gradient(145deg, #ff7a45, #ff5722) !important;
+  color: #fff !important;
+  box-shadow:
+    0 14px 30px -12px rgb(255 88 34 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 28%);
+}
+
+.transport-button--primary:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ff8654, #ff642a) !important;
+  color: #fff !important;
+}
+
+.radio-panel,
+.alerts-card,
+.outputs-panel,
+.sources-panel,
+.mixer-panel {
+  border-radius: 24px !important;
+}
+
+.radio-station-card {
+  min-height: 116px;
+  border-color: var(--rd-border) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--rd-surface-2) 92%, transparent), var(--rd-inset))
+    !important;
+  box-shadow: 0 12px 28px -28px var(--rd-shadow-strong);
+}
+
+.radio-station-card:hover:not(:disabled) {
+  border-color: var(--rd-border-strong) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px -30px var(--rd-shadow-strong);
+}
+
+.radio-station-card.is-active {
+  border-color: var(--rd-accent-border) !important;
+  background:
+    linear-gradient(135deg, rgb(255 100 42 / 12%), rgb(255 100 42 / 4%) 45%),
+    var(--rd-surface-2) !important;
+  box-shadow:
+    0 18px 42px -34px rgb(255 100 42 / 72%),
+    inset 0 0 0 1px rgb(255 100 42 / 5%);
+}
+
+.stream-active-badge {
+  border-color: var(--pa-success-border) !important;
+  background: rgb(52 211 153 / 7%) !important;
+  color: var(--pa-success-text) !important;
+}
+
+.alerts-card {
+  box-shadow: 0 18px 50px -46px var(--rd-shadow-strong);
+}
+
+.alerts-page input:not([type='checkbox']):not([type='file']),
+.alerts-page select,
+.radio-page input {
+  border-color: var(--rd-border-strong) !important;
+  background: var(--rd-inset) !important;
+}
+
+.alerts-page input:focus,
+.alerts-page select:focus,
+.radio-page input:focus {
+  border-color: var(--rd-accent-border) !important;
+  box-shadow: 0 0 0 3px rgb(255 100 42 / 8%);
+}
+
+.priority-banner {
+  border-color: var(--pa-danger-border) !important;
+  background:
+    linear-gradient(90deg, rgb(248 113 113 / 10%), rgb(248 113 113 / 4%)),
+    var(--rd-surface) !important;
+  box-shadow: 0 18px 48px -38px rgb(248 113 113 / 45%);
+}
+
+/* Mixer ------------------------------------------------------------------ */
+
+.mixer-panel {
+  background:
+    radial-gradient(circle at 92% 5%, rgb(255 100 42 / 5%), transparent 34%),
+    var(--rd-surface) !important;
+}
+
+.mixer-strip {
+  border-color: var(--rd-border) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--rd-surface-2) 94%, transparent), var(--rd-inset))
+    !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 4%),
+    0 12px 26px -26px var(--rd-shadow-strong);
+}
+
+.mixer-strip:not(.is-blocked):hover {
+  border-color: var(--rd-border-strong) !important;
+}
+
+.mixer-strip-console {
+  min-height: 306px;
+}
+
+.mixer-meter {
+  border-color: var(--rd-border-strong) !important;
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 28%),
+    0 8px 18px -16px var(--rd-shadow-strong);
+}
+
+.mixer-db-mark > span:first-child {
+  color: var(--pa-subtle) !important;
+}
+
+.mixer-db-mark > span:last-child {
+  background: var(--rd-border) !important;
+}
+
+.mixer-db-mark:nth-child(1) > span:first-child,
+.mixer-db-mark:nth-child(3) > span:first-child,
+.mixer-db-mark:nth-child(5) > span:first-child {
+  color: var(--pa-muted) !important;
+}
+
+.mixer-fader-track:focus-visible {
+  outline: 2px solid var(--rd-accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.mixer-fader-rail {
+  border-color: var(--rd-border-strong) !important;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 3%), transparent 40%),
+    var(--rd-track-inset) !important;
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 48%),
+    0 0 0 1px rgb(255 255 255 / 2%);
+}
+
+.mixer-fader-track::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    rgb(255 100 42 / 65%),
+    rgb(255 100 42 / 26%) 38%,
+    rgb(255 100 42 / 8%)
+  );
+  pointer-events: none;
+}
+
+.mixer-fader-thumb {
+  border-color: rgb(255 255 255 / 28%) !important;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 28%), transparent 26%),
+    linear-gradient(180deg, var(--rd-fader-top), var(--rd-fader-bottom)) !important;
+  box-shadow:
+    0 7px 16px rgb(0 0 0 / 38%),
+    inset 0 1px 0 rgb(255 255 255 / 55%),
+    inset 0 -1px 0 rgb(0 0 0 / 18%);
+}
+
+.mixer-fader-track.is-dragging .mixer-fader-thumb {
+  border-color: rgb(255 100 42 / 58%) !important;
+  box-shadow:
+    0 0 0 2px rgb(255 100 42 / 10%),
+    0 8px 20px rgb(0 0 0 / 42%),
+    0 0 18px rgb(255 100 42 / 22%);
+}
+
+.mixer-fader-thumb-line {
+  background: #273334 !important;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 38%);
+}
+
+.mixer-mute-button {
+  border-color: var(--rd-border-strong) !important;
+  background: var(--rd-surface-2) !important;
+  color: var(--pa-muted) !important;
+}
+
+.mixer-mute-button:hover:not(:disabled) {
+  border-color: var(--rd-accent-border) !important;
+  color: var(--pa-accent-text) !important;
+  background: var(--rd-accent-soft) !important;
+}
+
+.mixer-mute-button.is-muted {
+  border-color: var(--pa-danger-border) !important;
+  background: rgb(248 113 113 / 9%) !important;
+  color: var(--pa-danger-text) !important;
+}
+
+@media (min-width: 1280px) {
+  .player-dashboard {
+    grid-template-columns: minmax(0, 1fr) 500px;
+    gap: 1.1rem;
+  }
+
+  .player-card-grid {
+    grid-template-columns: minmax(290px, 36%) minmax(0, 1fr);
+  }
+
+  .player-art {
+    min-height: 340px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .player-dashboard {
+    grid-template-columns: minmax(0, 1fr) 520px;
+  }
+}
+
+@media (max-width: 639px) {
+  .pro-panel,
+  .player-card,
+  .radio-panel,
+  .alerts-card,
+  .outputs-panel,
+  .sources-panel,
+  .mixer-panel {
+    border-radius: 18px !important;
+  }
+
+  .radio-station-card {
+    min-height: 104px;
+  }
+
+  .mixer-strip-console {
+    min-height: 314px;
+  }
+}

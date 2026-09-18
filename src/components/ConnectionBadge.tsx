@@ -15,7 +15,7 @@ const labels: Record<ConnectionState, string> = {
 
 export const ConnectionBadge: Component<ConnectionBadgeProps> = (props) => (
   <span
-    class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300"
+    class="connection-badge inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
     data-state={props.state}
     role="status"
     aria-live="polite"

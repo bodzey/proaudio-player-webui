@@ -247,8 +247,8 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   });
 
   return (
-    <div class="space-y-5">
-      <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+    <div class="alerts-page space-y-5">
+      <section class="pro-panel alerts-card rounded-[28px] border p-5 sm:p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
@@ -365,7 +365,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
         keyed
       >
         {(settings) => (
-          <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+          <section class="pro-panel alerts-card rounded-[28px] border p-5 sm:p-6">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
@@ -549,7 +549,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
 
       <Show when={media()} keyed>
         {(files) => (
-          <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+          <section class="pro-panel alerts-card rounded-[28px] border p-5 sm:p-6">
             <div>
               <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
                 Alert media
@@ -642,7 +642,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
 
       <Show when={audio()} keyed>
         {(settings) => (
-          <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+          <section class="pro-panel alerts-card rounded-[28px] border p-5 sm:p-6">
             <div>
               <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
                 Alert audio
@@ -923,7 +923,7 @@ const StatusItem: Component<StatusItemProps> = (props) => (
 );
 
 const LoadingCard: Component = () => (
-  <div class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-6">
+  <div class="pro-panel alerts-card rounded-[28px] border p-6">
     <div class="h-3 w-24 animate-pulse rounded bg-white/[0.055]" />
     <div class="mt-3 h-5 w-56 animate-pulse rounded bg-white/[0.055]" />
     <div class="mt-7 grid gap-4 md:grid-cols-2">

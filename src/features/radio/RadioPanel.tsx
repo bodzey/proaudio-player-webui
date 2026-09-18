@@ -40,8 +40,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
   };
 
   return (
-    <div class="space-y-5">
-      <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)] sm:p-6">
+    <div class="radio-page space-y-5">
+      <section class="pro-panel radio-panel rounded-[28px] border p-5 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)] sm:p-6">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
@@ -56,7 +56,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
             </p>
           </div>
           <Show when={currentStreamUrl()}>
-            <span class="w-fit rounded-xl border border-emerald-400/15 bg-emerald-400/[0.06] px-3 py-2 text-[10px] font-semibold tracking-[0.1em] text-emerald-300/80 uppercase">
+            <span class="stream-active-badge w-fit rounded-xl border px-3 py-2 text-[10px] font-semibold tracking-[0.1em] uppercase">
               Потік активний
             </span>
           </Show>
@@ -73,8 +73,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                   type="button"
                   class={
                     active()
-                      ? 'group overflow-hidden rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.055] text-left shadow-[0_16px_45px_-34px_rgba(52,211,153,0.7)] transition'
-                      : 'group overflow-hidden rounded-2xl border border-white/[0.065] bg-black/15 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
+                      ? 'radio-station-card is-active group overflow-hidden rounded-2xl border text-left transition'
+                      : 'radio-station-card group overflow-hidden rounded-2xl border text-left transition'
                   }
                   disabled={props.blocked || props.disabled || pendingUrl() !== null}
                   onClick={() => void play(station.url, station.name)}
@@ -123,7 +123,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
         </Show>
       </section>
 
-      <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+      <section class="pro-panel radio-panel rounded-[28px] border p-5 sm:p-6">
         <div>
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
             Власний потік

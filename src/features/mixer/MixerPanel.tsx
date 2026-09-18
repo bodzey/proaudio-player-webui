@@ -17,15 +17,21 @@ import { MeterCanvas } from './MeterCanvas';
 type MixerTarget = 'master' | 'music' | 'alert';
 type DirectTarget = Exclude<MixerTarget, 'music'>;
 
-const CONTROL_INTERVAL_MS = 32;
-const FADER_MARKS = [0, -6, -12, -24, -36, -48, -60] as const;
+const CONTROL_INTERVAL_MS = 20;
+const FADER_MARKS = [
+  0, -3, -6, -9, -12, -18, -24, -30, -36, -48, -60,
+] as const;
 const FADER_SCALE = [
   { db: 0, position: 0 },
-  { db: -6, position: 0.16 },
-  { db: -12, position: 0.3 },
-  { db: -24, position: 0.52 },
-  { db: -36, position: 0.7 },
-  { db: -48, position: 0.85 },
+  { db: -3, position: 0.09 },
+  { db: -6, position: 0.17 },
+  { db: -9, position: 0.25 },
+  { db: -12, position: 0.33 },
+  { db: -18, position: 0.47 },
+  { db: -24, position: 0.59 },
+  { db: -30, position: 0.69 },
+  { db: -36, position: 0.77 },
+  { db: -48, position: 0.90 },
   { db: -60, position: 1 },
 ] as const;
 
@@ -216,7 +222,7 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
   };
 
   return (
-    <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.9)] sm:p-6">
+    <section class="pro-panel mixer-panel rounded-[28px] border p-5 sm:p-6">
       <div class="mb-5 flex items-start justify-between gap-4">
         <div>
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
@@ -305,8 +311,8 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
 
       <p class="mt-4 text-xs leading-5 text-slate-500">
         MUSIC + ALERT → MASTER → вибраний фізичний вихід. MASTER не прив’язаний до конкретного DAC,
-        а MUSIC і регулятор плеєра використовують спільний стан. Shift під час перетягування вмикає
-        точне керування.
+        а MUSIC і регулятор плеєра використовують спільний стан. Shift під час перетягування або
+        прокручування вмикає точне керування. Подвійний клік повертає 0 dB.
       </p>
     </section>
   );
@@ -450,8 +456,8 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
     <div
       class={
         props.blocked
-          ? 'min-w-0 rounded-2xl border border-white/[0.045] bg-black/10 p-3 opacity-45'
-          : 'min-w-0 rounded-2xl border border-white/[0.06] bg-black/15 p-3'
+          ? 'mixer-strip is-blocked min-w-0 rounded-2xl border p-3 opacity-45'
+          : 'mixer-strip min-w-0 rounded-2xl border p-3'
       }
     >
       <div class="text-center text-[10px] font-bold tracking-[0.16em] text-slate-300">
@@ -461,13 +467,13 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
         {props.detail}
       </div>
 
-      <div class="mt-4 flex items-center justify-center gap-2">
+      <div class="mixer-strip-console mt-4 flex items-center justify-center gap-2.5">
         <MeterCanvas buffer={props.buffer} bus={bus()} />
-        <div class="relative h-64 w-16 shrink-0 select-none">
+        <div class="mixer-fader relative h-[292px] w-[72px] shrink-0 select-none">
           <For each={FADER_MARKS}>
             {(mark) => (
               <div
-                class="pointer-events-none absolute inset-x-0 flex -translate-y-1/2 items-center"
+                class="mixer-db-mark pointer-events-none absolute inset-x-0 flex -translate-y-1/2 items-center"
                 style={{ top: `${dbToFaderPosition(mark) * 100}%` }}
               >
                 <span class="w-6 pr-1 text-right font-mono text-[9px] text-slate-500 tabular-nums">
@@ -484,10 +490,10 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             }}
             class={
               props.blocked
-                ? 'absolute inset-y-0 right-0 left-7 cursor-not-allowed touch-none opacity-45'
+                ? 'mixer-fader-track absolute inset-y-0 right-0 left-7 cursor-not-allowed touch-none opacity-45'
                 : dragging()
-                  ? 'absolute inset-y-0 right-0 left-7 cursor-grabbing touch-none outline-none'
-                  : 'absolute inset-y-0 right-0 left-7 cursor-grab touch-none outline-none'
+                  ? 'mixer-fader-track is-dragging absolute inset-y-0 right-0 left-7 cursor-grabbing touch-none outline-none'
+                  : 'mixer-fader-track absolute inset-y-0 right-0 left-7 cursor-grab touch-none outline-none'
             }
             role="slider"
             tabIndex={props.blocked ? -1 : 0}
@@ -500,13 +506,20 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             }`}
             aria-disabled={props.blocked}
             onKeyDown={handleKeyDown}
+            onWheel={(event) => {
+              if (props.blocked) return;
+              event.preventDefault();
+              const step = event.shiftKey ? 0.1 : 0.5;
+              const direction = event.deltaY < 0 ? 1 : -1;
+              setKeyboardValue(draft() + direction * step);
+            }}
             onDblClick={() => !props.blocked && setKeyboardValue(0)}
             onPointerDown={(event) => {
               if (props.blocked) return;
               event.preventDefault();
               dragStartY = event.clientY;
               dragStartPosition = dbToFaderPosition(draft());
-              dragSensitivity = event.shiftKey ? 0.25 : 1;
+              dragSensitivity = event.shiftKey ? 0.12 : 1;
               track.setPointerCapture(event.pointerId);
               setDragging(true);
             }}
@@ -534,12 +547,12 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
             }}
             onLostPointerCapture={() => setDragging(false)}
           >
-            <div class="pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 rounded-full border border-white/[0.06] bg-[#090c11] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]" />
+            <div class="mixer-fader-rail pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 rounded-full border" />
             <div
-              class="pointer-events-none absolute left-1/2 h-7 w-9 rounded-[5px] border border-white/25 bg-[linear-gradient(180deg,#d9e1eb,#7c8998)] shadow-[0_5px_12px_rgba(0,0,0,0.45)] will-change-transform"
+              class="mixer-fader-thumb pointer-events-none absolute left-1/2 h-8 w-10 rounded-[6px] border will-change-transform"
               style={{ top: thumbPosition(), transform: 'translate(-50%, -50%)' }}
             >
-              <span class="absolute top-1/2 left-1/2 h-px w-5 -translate-x-1/2 -translate-y-1/2 bg-slate-800/90" />
+              <span class="mixer-fader-thumb-line absolute top-1/2 left-1/2 h-px w-6 -translate-x-1/2 -translate-y-1/2" />
             </div>
           </div>
         </div>
@@ -559,8 +572,8 @@ const MixerStrip: Component<MixerStripProps> = (props) => {
         disabled={props.blocked}
         class={
           props.level.muted
-            ? 'mt-3 w-full rounded-lg border border-red-400/25 bg-red-400/[0.12] px-2 py-2 text-[10px] font-bold tracking-[0.12em] text-red-200 uppercase transition'
-            : 'mt-3 w-full rounded-lg border border-white/[0.07] bg-white/[0.025] px-2 py-2 text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase transition hover:bg-white/[0.06] hover:text-slate-200'
+            ? 'mixer-mute-button is-muted mt-3 w-full rounded-lg border px-2 py-2 text-[10px] font-bold tracking-[0.12em] uppercase transition'
+            : 'mixer-mute-button mt-3 w-full rounded-lg border px-2 py-2 text-[10px] font-bold tracking-[0.12em] uppercase transition'
         }
         onClick={() => props.onSet(props.target, draft(), !props.level.muted)}
       >

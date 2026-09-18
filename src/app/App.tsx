@@ -77,7 +77,7 @@ export function App() {
   });
 
   return (
-    <main class="app-shell min-h-screen text-slate-100">
+    <main class="app-shell redesign-shell min-h-screen text-slate-100">
       <div class="app-accent-line" aria-hidden="true" />
       <div class="app-ambient" aria-hidden="true" />
 
@@ -155,7 +155,7 @@ export function App() {
         </header>
 
         <nav
-          class="app-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border border-white/[0.08] bg-[#0d1117]/95 p-1 shadow-lg shadow-black/10 sm:mb-5 sm:flex sm:w-fit"
+          class="app-nav pro-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border p-1 sm:mb-5 sm:flex sm:w-fit"
           aria-label="Основні розділи"
         >
           <NavButton active={page() === 'player'} onClick={() => navigate('player')}>
@@ -281,8 +281,8 @@ function NavButton(props: NavButtonProps) {
       type="button"
       class={
         props.active
-          ? 'flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-sky-400/20 bg-sky-400/[0.09] px-2 py-2 text-[11px] font-semibold text-sky-100 shadow-sm shadow-black/20 sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
-          : 'flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium text-slate-500 transition hover:border-white/[0.06] hover:bg-white/[0.045] hover:text-slate-300 sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
+          ? 'nav-button nav-button--active flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
+          : 'nav-button flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
       }
       aria-current={props.active ? 'page' : undefined}
       onClick={() => props.onClick()}

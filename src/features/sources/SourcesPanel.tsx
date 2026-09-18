@@ -7,7 +7,7 @@ interface SourcesPanelProps {
 }
 
 export const SourcesPanel: Component<SourcesPanelProps> = (props) => (
-  <section class="rounded-[28px] border border-white/[0.08] bg-[#11161e] p-5 sm:p-6">
+  <section class="pro-panel sources-panel rounded-[28px] border p-5 sm:p-6">
     <div class="flex items-start justify-between gap-4">
       <div>
         <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Джерела</p>

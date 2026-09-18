@@ -9,7 +9,7 @@ interface PriorityBannerProps {
 export const PriorityBanner: Component<PriorityBannerProps> = (props) => (
   <Show when={props.priority?.active}>
     <section
-      class="mb-5 flex flex-col gap-3 rounded-2xl border border-red-400/25 bg-red-500/[0.08] px-4 py-3.5 shadow-[0_18px_60px_-36px_rgba(248,113,113,0.7)] sm:flex-row sm:items-center sm:justify-between"
+      class="priority-banner mb-5 flex flex-col gap-3 rounded-2xl border px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
       role="status"
     >
       <div class="flex items-center gap-3">

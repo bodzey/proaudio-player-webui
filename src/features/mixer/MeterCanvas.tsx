@@ -9,14 +9,14 @@ interface MeterCanvasProps {
 
 const MIN_DB = -60;
 const MAX_DB = 0;
-const SEGMENTS = 30;
-const RMS_ATTACK_SECONDS = 0.045;
-const RMS_RELEASE_SECONDS = 0.32;
-const PEAK_ATTACK_SECONDS = 0.012;
-const PEAK_RELEASE_SECONDS = 0.16;
-const PEAK_HOLD_MS = 900;
-const PEAK_DECAY_DB_PER_SECOND = 18;
-const CLIP_HOLD_MS = 1500;
+const SEGMENTS = 48;
+const RMS_ATTACK_SECONDS = 0.032;
+const RMS_RELEASE_SECONDS = 0.28;
+const PEAK_ATTACK_SECONDS = 0.006;
+const PEAK_RELEASE_SECONDS = 0.19;
+const PEAK_HOLD_MS = 1050;
+const PEAK_DECAY_DB_PER_SECOND = 20;
+const CLIP_HOLD_MS = 1800;
 const BUS_LABELS: Record<MeterBus, string> = {
   master: 'MASTER',
   music: 'MUSIC',
@@ -123,14 +123,15 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       context.fillRect(0, 0, width, height);
 
       const labelHeight = 18;
-      const meterTop = 6;
+      const clipHeight = 5;
+      const meterTop = 10;
       const meterBottom = height - labelHeight;
       const meterHeight = Math.max(1, meterBottom - meterTop);
       const gap = 5;
       const barWidth = Math.max(5, (width - gap * 3) / 2);
       const xs = [gap, gap * 2 + barWidth];
-      const segmentGap = 2;
-      const segmentHeight = Math.max(2, (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS);
+      const segmentGap = 1;
+      const segmentHeight = Math.max(1.5, (meterHeight - segmentGap * (SEGMENTS - 1)) / SEGMENTS);
 
       for (let channel = 0; channel < 2; channel += 1) {
         const targetPeak = snapshot.available ? clampDb(snapshot.peak[channel] ?? MIN_DB) : MIN_DB;
@@ -151,9 +152,12 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
           RMS_RELEASE_SECONDS,
         );
 
-        if (snapshot.clip[channel]) {
+        if (snapshot.clip[channel] || targetPeak >= -0.1) {
           clipUntil[channel] = now + CLIP_HOLD_MS;
         }
+
+        context.fillStyle = now < clipUntil[channel]! ? palette.clip : palette.inactive;
+        context.fillRect(xs[channel]!, 2, barWidth, clipHeight);
 
         if (displayedPeak[channel]! >= heldPeak[channel]!) {
           heldPeak[channel] = displayedPeak[channel]!;
@@ -214,7 +218,7 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       ref={(element) => {
         canvas = element;
       }}
-      class="h-64 w-11 rounded-lg border border-[var(--pa-border)] bg-[var(--pa-meter-bg)]"
+      class="mixer-meter h-[292px] w-12 rounded-lg border bg-[var(--pa-meter-bg)]"
       aria-label={`Стереорівень ${BUS_LABELS[props.bus]}`}
       role="img"
     />

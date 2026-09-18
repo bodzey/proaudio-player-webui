@@ -111,7 +111,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   return (
     <section
-      class="player-card overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#10141b] shadow-[0_24px_80px_-48px_rgba(0,0,0,0.95)] sm:rounded-[26px]"
+      class="pro-panel player-card overflow-hidden rounded-[22px] border sm:rounded-[26px]"
       aria-busy={props.status === undefined}
     >
       <div class="player-card-grid grid min-h-[300px] lg:grid-cols-[300px_minmax(0,1fr)]">
@@ -309,8 +309,8 @@ const TransportButton: Component<TransportButtonProps> = (props) => (
     type="button"
     class={
       props.primary
-        ? 'flex size-14 items-center justify-center rounded-xl bg-sky-400 text-slate-950 shadow-lg shadow-sky-950/25 transition hover:bg-sky-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-16 sm:rounded-2xl'
-        : 'flex size-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-slate-300 transition hover:border-sky-400/20 hover:bg-sky-400/[0.055] hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-12'
+        ? 'transport-button transport-button--primary flex size-14 items-center justify-center rounded-xl transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-16 sm:rounded-2xl'
+        : 'transport-button flex size-11 items-center justify-center rounded-xl border transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-25 sm:size-12'
     }
     aria-label={props.label}
     disabled={props.disabled || props.pending}
