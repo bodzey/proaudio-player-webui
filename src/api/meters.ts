@@ -1,4 +1,5 @@
 import type { MeterSnapshot, StereoMeterSnapshot } from '../realtime/meter-buffer';
+import { DEMO_MODE } from './demo';
 import type { MeterBuffer } from '../realtime/meter-buffer';
 
 interface MeterSubscriptionOptions {
@@ -73,6 +74,40 @@ function snapshot(value: unknown): MeterSnapshot | undefined {
 }
 
 export function subscribeToMeterEvents(options: MeterSubscriptionOptions): () => void {
+  if (DEMO_MODE) {
+    let sequence = 0;
+    const frame = () => {
+      const time = performance.now() / 1000;
+      const stereo = (
+        base: number,
+        swing: number,
+        phase: number,
+      ): StereoMeterSnapshot => {
+        const left = base + Math.sin(time * 3.2 + phase) * swing;
+        const right = base + Math.sin(time * 2.7 + phase + 0.7) * swing;
+        return {
+          peak: [Math.min(-0.8, left + 6), Math.min(-0.8, right + 6)],
+          rms: [left, right],
+          clip: [false, false],
+          available: true,
+        };
+      };
+      options.buffer.write({
+        sequence: sequence++,
+        music: stereo(-18, 7, 0),
+        alert: stereo(-34, 3, 1.4),
+        master: stereo(-12, 6, 0.45),
+      });
+    };
+    frame();
+    options.onOpen?.();
+    const timer = window.setInterval(frame, 40);
+    return () => {
+      window.clearInterval(timer);
+      options.buffer.reset();
+    };
+  }
+
   const source = new EventSource('/api/v1/meters');
 
   source.addEventListener('meter', (event) => {
