@@ -688,10 +688,6 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
               </For>
             </div>
 
-            <p class="alert-media-api-note">
-              Попередній перегляд не показується, оскільки поточний Native API повертає для цих
-              файлів лише метадані та підтримує заміну/відновлення, але не віддає MP3 через GET.
-            </p>
           </section>
         )}
       </Show>
