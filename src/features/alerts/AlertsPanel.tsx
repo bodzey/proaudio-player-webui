@@ -1039,51 +1039,47 @@ const StatusItem: Component<StatusItemProps> = (props) => (
   </div>
 );
 
-const StatusIcon: Component<{ kind: StatusIconKind }> = (props) => {
-  switch (props.kind) {
-    case 'api':
-      return (
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="8.3" />
-          <path d="M12 7v5l3 2" />
-        </svg>
-      );
-    case 'change':
-      return (
-        <svg viewBox="0 0 24 24">
-          <path d="M19 8a7.5 7.5 0 1 0 .5 7M19 8V3.8M19 8h-4.2" />
-        </svg>
-      );
-    case 'location':
-      return (
-        <svg viewBox="0 0 24 24">
-          <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" />
-          <circle cx="12" cy="10" r="2" />
-        </svg>
-      );
-    default:
-      return (
-        <svg viewBox="0 0 24 24">
-          <path d="M4 12h3l2-5 3 10 2-7 2 4h4" />
-        </svg>
-      );
-  }
-};
+const StatusIcon: Component<{ kind: StatusIconKind }> = (props) => (
+  <>
+    <Show when={props.kind === 'api'}>
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.3" />
+        <path d="M12 7v5l3 2" />
+      </svg>
+    </Show>
+    <Show when={props.kind === 'change'}>
+      <svg viewBox="0 0 24 24">
+        <path d="M19 8a7.5 7.5 0 1 0 .5 7M19 8V3.8M19 8h-4.2" />
+      </svg>
+    </Show>
+    <Show when={props.kind === 'location'}>
+      <svg viewBox="0 0 24 24">
+        <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" />
+        <circle cx="12" cy="10" r="2" />
+      </svg>
+    </Show>
+    <Show when={props.kind === 'mode'}>
+      <svg viewBox="0 0 24 24">
+        <path d="M4 12h3l2-5 3 10 2-7 2 4h4" />
+      </svg>
+    </Show>
+  </>
+);
 
-const AlertMediaIcon: Component<{ kind: AlertMediaKind }> = (props) => {
-  if (props.kind === 'minute_silence') {
-    return (
+const AlertMediaIcon: Component<{ kind: AlertMediaKind }> = (props) => (
+  <>
+    <Show when={props.kind === 'minute_silence'}>
       <svg viewBox="0 0 24 24">
         <path d="M9 4h6v4l2 2v9H7v-9l2-2zM9 14h6" />
       </svg>
-    );
-  }
-  return (
-    <svg viewBox="0 0 24 24">
-      <path d="M18 9a6 6 0 0 0-12 0c0 6-2.5 6.5-2.5 8h17c0-1.5-2.5-2-2.5-8M10 20h4" />
-    </svg>
-  );
-};
+    </Show>
+    <Show when={props.kind !== 'minute_silence'}>
+      <svg viewBox="0 0 24 24">
+        <path d="M18 9a6 6 0 0 0-12 0c0 6-2.5 6.5-2.5 8h17c0-1.5-2.5-2-2.5-8M10 20h4" />
+      </svg>
+    </Show>
+  </>
+);
 
 const LoadingCard: Component = () => (
   <div class="pro-panel alerts-card alert-loading-card rounded-[28px] border">
