@@ -143,7 +143,9 @@ export function App() {
                   <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
                   <path d="M5 20h14" />
                 </svg>
-                <span class="hidden sm:inline">{pwa.installing() ? 'Встановлення…' : 'Встановити'}</span>
+                <span class="hidden sm:inline">
+                  {pwa.installing() ? 'Встановлення…' : 'Встановити'}
+                </span>
                 <span class="sr-only sm:hidden">Встановити застосунок</span>
               </button>
             </Show>

@@ -36,17 +36,7 @@ jobs:
         run: npm run lint
 
       - name: Formatting
-        run: |
-          npm run format
-          echo '__PWA_APP_BEGIN__'
-          base64 -w0 src/app/App.tsx
-          echo
-          echo '__PWA_APP_END__'
-          echo '__PWA_CSS_BEGIN__'
-          base64 -w0 src/styles/app.css
-          echo
-          echo '__PWA_CSS_END__'
-          exit 1
+        run: npm run format:check
 
       - name: Build
         run: npm run build
