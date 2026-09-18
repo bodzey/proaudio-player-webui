@@ -38,7 +38,7 @@ jobs:
         run: npm run build
         env:
           PROAUDIO_BASE: /proaudio-player-webui/
-          VITE_DEMO: "true"
+          VITE_DEMO: 'true'
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
