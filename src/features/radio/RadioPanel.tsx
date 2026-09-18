@@ -92,64 +92,74 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
               const pending = () => pendingUrl() === station.url;
 
               return (
-                <button
-                  type="button"
+                <article
                   class={
                     active()
-                      ? 'radio-station-card is-active group overflow-hidden rounded-2xl border text-left transition'
-                      : 'radio-station-card group overflow-hidden rounded-2xl border text-left transition'
+                      ? 'radio-station-card is-active overflow-hidden rounded-2xl border'
+                      : 'radio-station-card overflow-hidden rounded-2xl border'
                   }
-                  disabled={props.blocked || props.disabled || pendingUrl() !== null}
-                  onClick={() => void toggleStation(station.url, station.name)}
                 >
-                  <div class="radio-station-layout grid grid-cols-[96px_minmax(0,1fr)_64px]">
-                    <StationArtwork
-                      station={station}
-                      compact
-                      class="radio-station-art aspect-square"
-                    />
-                    <div class="min-w-0 px-4 py-3.5">
+                  <StationArtwork station={station} compact class="radio-station-art" />
+
+                  <div class="radio-station-content min-w-0">
+                    <header class="radio-station-header min-w-0">
                       <div class="min-w-0">
-                        <div class="truncate text-sm font-semibold text-slate-100">
+                        <h3 class="radio-station-name font-semibold text-slate-100">
                           {station.name}
-                        </div>
-                        <div class="mt-0.5 truncate text-[10px] font-medium tracking-[0.08em] text-slate-600 uppercase">
+                        </h3>
+                        <p class="radio-station-genre font-medium tracking-[0.08em] text-slate-600 uppercase">
                           {station.genre}
-                        </div>
+                        </p>
                       </div>
-                      <p class="mt-2 line-clamp-1 text-[11px] leading-5 text-slate-500">
-                        {station.description}
-                      </p>
-                      <span class="mt-1.5 block font-mono text-[10px] text-slate-600">
-                        {station.quality}
-                      </span>
-                    </div>
-                    <div class="radio-station-action flex flex-col items-center justify-center gap-2">
-                      <Show
-                        when={active()}
-                        fallback={
-                          <span class="radio-action-button" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" class="size-4" fill="currentColor">
-                              <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
-                            </svg>
+
+                      <Show when={active()}>
+                        <span class="radio-station-live">
+                          <span class="radio-eq" aria-hidden="true">
+                            <i />
+                            <i />
+                            <i />
                           </span>
-                        }
-                      >
-                        <span class="radio-eq" aria-hidden="true">
-                          <i />
-                          <i />
-                          <i />
-                        </span>
-                        <span class="radio-action-button is-stop" aria-hidden="true">
-                          <span />
+                          В ефірі
                         </span>
                       </Show>
-                      <span class="radio-action-label text-[9px] font-semibold tracking-[0.08em] uppercase">
-                        {pending() ? 'Підключення' : active() ? 'В ефірі' : 'Слухати'}
+                    </header>
+
+                    <p class="radio-station-description text-slate-500">
+                      {station.description}
+                    </p>
+
+                    <footer class="radio-station-footer">
+                      <span class="radio-station-quality font-mono text-slate-600">
+                        {station.quality}
                       </span>
-                    </div>
+
+                      <button
+                        type="button"
+                        class={active() ? 'radio-station-control is-stop' : 'radio-station-control'}
+                        aria-pressed={active()}
+                        aria-label={
+                          active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`
+                        }
+                        disabled={props.blocked || props.disabled || pendingUrl() !== null}
+                        onClick={() => void toggleStation(station.url, station.name)}
+                      >
+                        <Show
+                          when={active()}
+                          fallback={
+                            <svg viewBox="0 0 24 24" class="size-4" fill="currentColor" aria-hidden="true">
+                              <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
+                            </svg>
+                          }
+                        >
+                          <span class="radio-stop-icon" aria-hidden="true" />
+                        </Show>
+                        <span class="radio-station-control-label">
+                          {pending() ? 'Підключення' : active() ? 'Зупинити' : 'Слухати'}
+                        </span>
+                      </button>
+                    </footer>
                   </div>
-                </button>
+                </article>
               );
             }}
           </For>
