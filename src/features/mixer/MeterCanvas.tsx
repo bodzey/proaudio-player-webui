@@ -77,6 +77,11 @@ function smoothDb(
 export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
   let canvas!: HTMLCanvasElement;
   let animationFrame = 0;
+  let resizeFrame = 0;
+  let settleFrame = 0;
+  let logicalWidth = 0;
+  let logicalHeight = 0;
+  let renderedDpr = 0;
   const displayedRms = [MIN_DB, MIN_DB];
   const displayedPeak = [MIN_DB, MIN_DB];
   const heldPeak = [MIN_DB, MIN_DB];
@@ -90,15 +95,58 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const scale = window.devicePixelRatio || 1;
-      canvas.width = Math.max(1, Math.round(rect.width * scale));
-      canvas.height = Math.max(1, Math.round(rect.height * scale));
+
+      // Mobile browsers can briefly report a 0/1 px layout while restoring a
+      // standalone PWA or switching back from the background. Never replace a
+      // valid backing store with that transient size: it would then be stretched
+      // by CSS and the stereo bars would look abnormally thin until a reload.
+      if (rect.width < 4 || rect.height < 4) return false;
+
+      const scale = Math.max(1, window.devicePixelRatio || 1);
+      const width = Math.max(1, Math.round(rect.width * scale));
+      const height = Math.max(1, Math.round(rect.height * scale));
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
       context.setTransform(scale, 0, 0, scale, 0, 0);
+      logicalWidth = rect.width;
+      logicalHeight = rect.height;
+      renderedDpr = scale;
+      return true;
     };
 
-    const observer = new ResizeObserver(resize);
+    const queueResize = () => {
+      window.cancelAnimationFrame(resizeFrame);
+      window.cancelAnimationFrame(settleFrame);
+
+      resizeFrame = window.requestAnimationFrame(() => {
+        resize();
+        // Android/Chromium can restore the visual viewport one frame after the
+        // document becomes visible. Recheck once after layout has settled.
+        settleFrame = window.requestAnimationFrame(() => {
+          resize();
+        });
+      });
+    };
+
+    const observer = new ResizeObserver(queueResize);
     observer.observe(canvas);
     resize();
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') queueResize();
+    };
+    const onPageShow = () => queueResize();
+    const onViewportResize = () => queueResize();
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('pageshow', onPageShow);
+    window.addEventListener('resize', onViewportResize);
+    window.addEventListener('orientationchange', onViewportResize);
+    window.visualViewport?.addEventListener('resize', onViewportResize);
 
     let palette = readMeterPalette();
     const refreshPalette = () => {
@@ -107,14 +155,23 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
     const themeObserver = new MutationObserver(refreshPalette);
     themeObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme', 'style'],
+      attributeFilter: ['data-theme', 'data-resolved-theme', 'style'],
     });
     const scheme = window.matchMedia('(prefers-color-scheme: dark)');
     scheme.addEventListener('change', refreshPalette);
 
     const draw = (now: number) => {
-      const width = canvas.clientWidth;
-      const height = canvas.clientHeight;
+      const currentDpr = Math.max(1, window.devicePixelRatio || 1);
+      if (
+        logicalWidth < 4 ||
+        logicalHeight < 4 ||
+        Math.abs(currentDpr - renderedDpr) > 0.01
+      ) {
+        resize();
+      }
+
+      const width = logicalWidth || canvas.clientWidth;
+      const height = logicalHeight || canvas.clientHeight;
       const snapshot = props.buffer.read(props.bus);
       const dt = Math.min(0.1, Math.max(0, now - lastFrameAt) / 1000);
       lastFrameAt = now;
@@ -209,7 +266,14 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
       observer.disconnect();
       themeObserver.disconnect();
       scheme.removeEventListener('change', refreshPalette);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pageshow', onPageShow);
+      window.removeEventListener('resize', onViewportResize);
+      window.removeEventListener('orientationchange', onViewportResize);
+      window.visualViewport?.removeEventListener('resize', onViewportResize);
       cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(resizeFrame);
+      cancelAnimationFrame(settleFrame);
     });
   });
 
@@ -219,6 +283,8 @@ export const MeterCanvas: Component<MeterCanvasProps> = (props) => {
         canvas = element;
       }}
       class="mixer-meter h-[292px] w-12 rounded-lg border bg-[var(--pa-meter-bg)]"
+      width={44}
+      height={286}
       aria-label={`Стереорівень ${BUS_LABELS[props.bus]}`}
       role="img"
     />
