@@ -62,9 +62,7 @@ export const AlertStatusSection: Component<AlertStatusSectionProps> = (props) =>
       <StatusItem
         kind="location"
         label="UID у тривозі"
-        value={
-          props.priority?.matched_uids?.length ? props.priority.matched_uids.join(', ') : '—'
-        }
+        value={props.priority?.matched_uids?.length ? props.priority.matched_uids.join(', ') : '—'}
       />
     </div>
 
