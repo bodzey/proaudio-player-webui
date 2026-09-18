@@ -85,32 +85,19 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
           </Show>
         </div>
 
-        <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <ul class="radio-station-grid mt-6" role="list">
           <For each={RADIO_STATIONS}>
             {(station) => {
               const active = () => isSameRadioStream(currentStreamUrl(), station.url);
               const pending = () => pendingUrl() === station.url;
 
               return (
-                <article
-                  class={
-                    active()
-                      ? 'radio-station-card is-active overflow-hidden rounded-2xl border'
-                      : 'radio-station-card overflow-hidden rounded-2xl border'
-                  }
-                >
-                  <StationArtwork station={station} compact class="radio-station-art" />
-
-                  <div class="radio-station-content min-w-0">
-                    <header class="radio-station-header min-w-0">
-                      <div class="min-w-0">
-                        <h3 class="radio-station-name font-semibold text-slate-100">
-                          {station.name}
-                        </h3>
-                        <p class="radio-station-genre font-medium tracking-[0.08em] text-slate-600 uppercase">
-                          {station.genre}
-                        </p>
-                      </div>
+                <li class="min-w-0">
+                  <article
+                    class={active() ? 'radio-station-card is-active' : 'radio-station-card'}
+                  >
+                    <div class="radio-station-visual">
+                      <StationArtwork station={station} compact class="radio-station-art" />
 
                       <Show when={active()}>
                         <span class="radio-station-live">
@@ -122,14 +109,6 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                           В ефірі
                         </span>
                       </Show>
-                    </header>
-
-                    <p class="radio-station-description text-slate-500">{station.description}</p>
-
-                    <footer class="radio-station-footer">
-                      <span class="radio-station-quality font-mono text-slate-600">
-                        {station.quality}
-                      </span>
 
                       <button
                         type="button"
@@ -146,7 +125,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                           fallback={
                             <svg
                               viewBox="0 0 24 24"
-                              class="size-4"
+                              class="size-5"
                               fill="currentColor"
                               aria-hidden="true"
                             >
@@ -156,17 +135,26 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                         >
                           <span class="radio-stop-icon" aria-hidden="true" />
                         </Show>
-                        <span class="radio-station-control-label">
+                        <span class="sr-only">
                           {pending() ? 'Підключення' : active() ? 'Зупинити' : 'Слухати'}
                         </span>
                       </button>
-                    </footer>
-                  </div>
-                </article>
+                    </div>
+
+                    <header class="radio-station-meta">
+                      <h3 class="radio-station-name">{station.name}</h3>
+                      <p class="radio-station-submeta">
+                        <span>{station.genre}</span>
+                        <span aria-hidden="true">•</span>
+                        <span>{station.quality}</span>
+                      </p>
+                    </header>
+                  </article>
+                </li>
               );
             }}
           </For>
-        </div>
+        </ul>
 
         <Show when={props.blocked}>
           <div class="mt-5 rounded-2xl border border-red-400/15 bg-red-400/[0.045] px-4 py-3 text-xs text-red-200/70">
