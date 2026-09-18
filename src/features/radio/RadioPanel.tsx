@@ -93,9 +93,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
 
               return (
                 <li class="min-w-0">
-                  <article
-                    class={active() ? 'radio-station-card is-active' : 'radio-station-card'}
-                  >
+                  <article class={active() ? 'radio-station-card is-active' : 'radio-station-card'}>
                     <div class="radio-station-visual">
                       <StationArtwork station={station} compact class="radio-station-art" />
 
