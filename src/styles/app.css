@@ -1938,6 +1938,8 @@ body {
 
   .mixer-meter {
     width: 28px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
     height: 260px !important;
   }
 
