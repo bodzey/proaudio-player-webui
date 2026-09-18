@@ -94,6 +94,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
               return (
                 <button
                   type="button"
+                  aria-pressed={active()}
+                  aria-label={active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`}
                   class={
                     active()
                       ? 'radio-station-card is-active group overflow-hidden rounded-2xl border text-left transition'
@@ -102,25 +104,21 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                   disabled={props.blocked || props.disabled || pendingUrl() !== null}
                   onClick={() => void toggleStation(station.url, station.name)}
                 >
-                  <div class="radio-station-layout grid grid-cols-[96px_minmax(0,1fr)_64px]">
-                    <StationArtwork
-                      station={station}
-                      compact
-                      class="radio-station-art aspect-square"
-                    />
-                    <div class="min-w-0 px-4 py-3.5">
+                  <div class="radio-station-layout grid">
+                    <StationArtwork station={station} compact class="radio-station-art" />
+                    <div class="radio-station-copy min-w-0">
                       <div class="min-w-0">
-                        <div class="truncate text-sm font-semibold text-slate-100">
+                        <div class="radio-station-name font-semibold text-slate-100">
                           {station.name}
                         </div>
-                        <div class="mt-0.5 truncate text-[10px] font-medium tracking-[0.08em] text-slate-600 uppercase">
+                        <div class="radio-station-genre font-medium tracking-[0.08em] text-slate-600 uppercase">
                           {station.genre}
                         </div>
                       </div>
-                      <p class="mt-2 line-clamp-1 text-[11px] leading-5 text-slate-500">
+                      <p class="radio-station-description text-slate-500">
                         {station.description}
                       </p>
-                      <span class="mt-1.5 block font-mono text-[10px] text-slate-600">
+                      <span class="radio-station-quality block font-mono text-slate-600">
                         {station.quality}
                       </span>
                     </div>
