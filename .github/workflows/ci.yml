@@ -36,6 +36,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Preview formatted mixer panel
+        run: npx prettier src/features/mixer/MixerPanel.tsx
+
       - name: Formatting
         run: npm run format:check
 
