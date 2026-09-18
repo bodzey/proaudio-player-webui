@@ -4,13 +4,14 @@ export type ThemeMode = 'system' | 'light' | 'dark';
 
 const STORAGE_KEY = 'proaudio-player-theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
+const DEFAULT_THEME: ThemeMode = import.meta.env.VITE_DEMO === 'true' ? 'dark' : 'system';
 
 function storedTheme(): ThemeMode {
   try {
     const value = window.localStorage.getItem(STORAGE_KEY);
-    return value === 'light' || value === 'dark' || value === 'system' ? value : 'system';
+    return value === 'light' || value === 'dark' || value === 'system' ? value : DEFAULT_THEME;
   } catch {
-    return 'system';
+    return DEFAULT_THEME;
   }
 }
 
