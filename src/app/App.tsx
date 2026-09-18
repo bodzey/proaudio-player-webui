@@ -118,7 +118,7 @@ export function App() {
   });
 
   return (
-    <main class="app-shell redesign-shell min-h-screen text-slate-100">
+    <div class="app-shell redesign-shell min-h-screen text-slate-100">
       <div class="app-accent-line" aria-hidden="true" />
       <div class="app-ambient" aria-hidden="true" />
 
@@ -235,77 +235,79 @@ export function App() {
           </NavButton>
         </nav>
 
-        <Show when={player.error()}>
-          {(message) => (
-            <div
-              class="mb-4 flex items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.055] px-3.5 py-3 text-xs text-amber-100/80 sm:mb-5 sm:px-4 sm:py-3.5 sm:text-sm"
-              role="alert"
-              aria-live="assertive"
-            >
-              <span class="mt-1 size-1.5 shrink-0 rounded-full bg-amber-300" />
-              <span>{message()}</span>
+        <main class="app-content min-w-0">
+          <Show when={player.error()}>
+            {(message) => (
+              <div
+                class="mb-4 flex items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.055] px-3.5 py-3 text-xs text-amber-100/80 sm:mb-5 sm:px-4 sm:py-3.5 sm:text-sm"
+                role="alert"
+                aria-live="assertive"
+              >
+                <span class="mt-1 size-1.5 shrink-0 rounded-full bg-amber-300" />
+                <span>{message()}</span>
+              </div>
+            )}
+          </Show>
+
+          <PriorityBanner priority={player.status()?.priority} />
+
+          <Show when={page() === 'player'}>
+            <div class="page-stage page-stage--player">
+              <div class="player-dashboard grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
+                <div class="dashboard-player min-w-0">
+                  <PlayerPanel
+                    status={player.status()}
+                    pendingAction={player.pendingAction()}
+                    onAction={(action) => void player.playerAction(action)}
+                    disabled={controlsUnavailable()}
+                  />
+                </div>
+
+                <div class="dashboard-mixer min-w-0">
+                  <MixerPanel
+                    status={player.status()}
+                    buffer={meterBuffer}
+                    meterLive={meterState() === 'live'}
+                    onMusicVolume={(percent) => void player.setVolume(percent)}
+                    onMusicMute={(muted) => void player.setMute(muted)}
+                    disabled={controlsUnavailable()}
+                  />
+                </div>
+
+                <div class="dashboard-outputs min-w-0">
+                  <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
+                </div>
+
+                <div class="dashboard-sources min-w-0">
+                  <SourcesPanel sources={player.status()?.sources} />
+                </div>
+              </div>
             </div>
-          )}
-        </Show>
+          </Show>
 
-        <PriorityBanner priority={player.status()?.priority} />
-
-        <Show when={page() === 'player'}>
-          <div class="page-stage page-stage--player">
-            <div class="player-dashboard grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_480px]">
-              <div class="dashboard-player min-w-0">
-                <PlayerPanel
-                  status={player.status()}
-                  pendingAction={player.pendingAction()}
-                  onAction={(action) => void player.playerAction(action)}
-                  disabled={controlsUnavailable()}
-                />
-              </div>
-
-              <div class="dashboard-mixer min-w-0">
-                <MixerPanel
-                  status={player.status()}
-                  buffer={meterBuffer}
-                  meterLive={meterState() === 'live'}
-                  onMusicVolume={(percent) => void player.setVolume(percent)}
-                  onMusicMute={(muted) => void player.setMute(muted)}
-                  disabled={controlsUnavailable()}
-                />
-              </div>
-
-              <div class="dashboard-outputs min-w-0">
-                <OutputsPanel blocked={priorityBlocked()} disabled={controlsUnavailable()} />
-              </div>
-
-              <div class="dashboard-sources min-w-0">
-                <SourcesPanel sources={player.status()?.sources} />
-              </div>
+          <Show when={page() === 'radio'}>
+            <div class="page-stage page-stage--radio">
+              <RadioPanel
+                status={player.status()}
+                blocked={priorityBlocked()}
+                disabled={controlsUnavailable()}
+              />
             </div>
-          </div>
-        </Show>
+          </Show>
 
-        <Show when={page() === 'radio'}>
-          <div class="page-stage page-stage--radio">
-            <RadioPanel
-              status={player.status()}
-              blocked={priorityBlocked()}
-              disabled={controlsUnavailable()}
-            />
-          </div>
-        </Show>
-
-        <Show when={page() === 'alerts'}>
-          <div class="page-stage page-stage--alerts">
-            <AlertsPanel priority={player.status()?.priority} />
-          </div>
-        </Show>
+          <Show when={page() === 'alerts'}>
+            <div class="page-stage page-stage--alerts">
+              <AlertsPanel priority={player.status()?.priority} />
+            </div>
+          </Show>
+        </main>
 
         <footer class="app-footer flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-t border-white/[0.06] text-[9px] tracking-[0.08em] text-slate-500 uppercase sm:text-[10px]">
           <span title={systemInfo()?.release.build_id ?? undefined}>{firmwareLabel()}</span>
           <span title={systemInfo()?.release.native_sha ?? undefined}>{playerVersionLabel()}</span>
         </footer>
       </div>
-    </main>
+    </div>
   );
 }
 
