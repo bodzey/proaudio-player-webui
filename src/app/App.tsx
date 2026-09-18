@@ -114,9 +114,7 @@ export function App() {
                 />
               </div>
               <div class="brand-tagline" aria-hidden="true">
-                <span>NETWORK</span>
-                <span>STREAMING</span>
-                <span>PLAYER</span>
+                <span>NETWORK STREAMING PLAYER</span>
               </div>
             </div>
           </div>
