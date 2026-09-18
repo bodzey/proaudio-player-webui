@@ -157,13 +157,6 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
             <div class="rounded-lg border border-white/10 bg-black/45 px-2.5 py-1.5 text-[10px] font-bold tracking-[0.12em] text-white/80 uppercase backdrop-blur-xl sm:rounded-full sm:px-3 sm:text-[11px]">
               {props.status?.player.source ?? 'Без джерела'}
             </div>
-            <Show when={props.status?.player.backend}>
-              {(backend) => (
-                <div class="rounded-lg border border-white/[0.08] bg-black/45 px-2 py-1 font-mono text-[9px] text-slate-400 backdrop-blur-xl lg:hidden">
-                  {backend()}
-                </div>
-              )}
-            </Show>
           </div>
         </div>
 
@@ -205,7 +198,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
             </div>
           </div>
 
-          <div class="player-controls mt-auto pt-6 sm:pt-8">
+          <div class="player-controls pt-5 sm:pt-6">
             <Show
               when={!isRadio()}
               fallback={
@@ -217,15 +210,26 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                 </div>
               }
             >
-              <div class="h-1 overflow-hidden rounded-full bg-white/[0.07] sm:h-1.5">
-                <div
-                  class="h-full rounded-full bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 transition-[width] duration-300 ease-linear"
-                  style={{ width: `${progress()}%` }}
-                />
-              </div>
-              <div class="mt-2 flex justify-between font-mono text-[10px] text-slate-500 sm:mt-2.5 sm:text-[11px]">
-                <span>{formatClock(position())}</span>
-                <span>{formatClock(props.status?.player.duration_seconds ?? null)}</span>
+              <div
+                class="player-progress"
+                role="progressbar"
+                aria-label="Прогрес відтворення"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progress())}
+              >
+                <div class="player-progress-track">
+                  <div
+                    class="player-progress-fill"
+                    style={{ width: `${progress()}%` }}
+                  >
+                    <span class="player-progress-thumb" aria-hidden="true" />
+                  </div>
+                </div>
+                <div class="player-progress-times">
+                  <span>{formatClock(position())}</span>
+                  <span>{formatClock(props.status?.player.duration_seconds ?? null)}</span>
+                </div>
               </div>
             </Show>
 
