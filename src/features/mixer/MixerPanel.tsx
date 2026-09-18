@@ -8,6 +8,20 @@ import { MixerStrip, type MixerTarget } from './MixerStrip';
 
 type DirectTarget = Exclude<MixerTarget, 'music'>;
 
+interface MixerPanelProps {
+  status: PlayerStatus | undefined;
+  buffer: MeterBuffer;
+  meterLive: boolean;
+  onMusicVolume: (percent: number) => void;
+  onMusicMute: (muted: boolean) => void;
+  disabled: boolean;
+}
+
+interface DirectRequest {
+  db: number;
+  muted?: boolean;
+}
+
 function levelFromPercent(percent: number, muted: boolean): AudioLevel {
   return {
     volume: percent,
@@ -166,7 +180,11 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
         </div>
       </div>
 
-      <div class="mixer-channels overflow-hidden pb-1" aria-label="Канали мікшера">
+      <div
+        class="mixer-channels overflow-hidden pb-1"
+        role="group"
+        aria-label="Канали мікшера"
+      >
         <div class="mixer-grid grid min-w-0 grid-cols-3 gap-2.5">
           <MixerStrip
             target="music"
