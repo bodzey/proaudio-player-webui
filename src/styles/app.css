@@ -236,32 +236,6 @@ canvas {
     min-height: 44px;
   }
 
-  [aria-label='Канали мікшера'] {
-    margin-right: -1.25rem;
-    margin-left: -1.25rem;
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
-    scroll-padding-inline: 1.25rem;
-    scroll-snap-type: x mandatory;
-    overscroll-behavior-inline: contain;
-    scrollbar-width: none;
-  }
-
-  [aria-label='Канали мікшера']::-webkit-scrollbar {
-    display: none;
-  }
-
-  [aria-label='Канали мікшера'] > div {
-    display: flex !important;
-    min-width: max-content !important;
-    gap: 0.75rem !important;
-  }
-
-  [aria-label='Канали мікшера'] > div > div {
-    width: min(74vw, 248px);
-    flex: 0 0 auto;
-    scroll-snap-align: center;
-  }
 }
 
 @media (min-width: 640px) and (max-width: 1279px) {
