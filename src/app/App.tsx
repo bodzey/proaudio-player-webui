@@ -39,6 +39,8 @@ export function App() {
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>('player');
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
+  const pageScroll = new Map<AppPage, number>();
+  let appNav!: HTMLElement;
   const meterBuffer = new MeterBuffer();
   const controlsUnavailable = () => !player.status() || player.connection() === 'offline';
   const priorityBlocked = () => player.status()?.priority.blocking ?? false;
@@ -49,17 +51,78 @@ export function App() {
     return `Firmware ${release.version}${flavor ? ` · ${flavor}` : ''}`;
   };
 
-  const navigate = (next: AppPage) => {
-    setPage(next);
-    const hash = `#${next}`;
-    if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+  const staticNavTop = () => {
+    let top = 0;
+    let node: HTMLElement | null = appNav;
+    while (node) {
+      top += node.offsetTop;
+      node = node.offsetParent as HTMLElement | null;
+    }
+    return Math.max(0, top - 6);
   };
 
+  const clampScroll = (value: number) =>
+    Math.max(0, Math.min(value, Math.max(0, document.documentElement.scrollHeight - innerHeight)));
+
+  const commitPage = (next: AppPage, pushHistory: boolean) => {
+    setPage(next);
+    const hash = `#${next}`;
+    if (pushHistory && window.location.hash !== hash) {
+      window.history.pushState(null, '', hash);
+    }
+  };
+
+  const switchPage = (next: AppPage, pushHistory = true) => {
+    const current = page();
+    if (next === current) return;
+
+    pageScroll.set(current, window.scrollY);
+    const targetScroll = pageScroll.get(next) ?? staticNavTop();
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const documentWithTransition = document as Document & {
+      startViewTransition?: (
+        update: () => void | Promise<void>,
+      ) => { finished: Promise<void> };
+    };
+
+    const update = () => {
+      commitPage(next, pushHistory);
+      return new Promise<void>((resolve) => {
+        queueMicrotask(() => {
+          window.scrollTo({ top: clampScroll(targetScroll), behavior: 'instant' });
+          resolve();
+        });
+      });
+    };
+
+    if (!reduceMotion && documentWithTransition.startViewTransition) {
+      document.documentElement.classList.add('is-page-transitioning');
+      const transition = documentWithTransition.startViewTransition(update);
+      void transition.finished.finally(() => {
+        document.documentElement.classList.remove('is-page-transitioning');
+      });
+      return;
+    }
+
+    void update();
+  };
+
+  const navigate = (next: AppPage) => switchPage(next, true);
+
   onMount(() => {
-    const syncPage = () => setPage(pageFromHash());
-    syncPage();
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    const initialPage = pageFromHash();
+    setPage(initialPage);
+    pageScroll.set(initialPage, window.scrollY);
+
+    const syncPage = () => switchPage(pageFromHash(), false);
     window.addEventListener('popstate', syncPage);
-    onCleanup(() => window.removeEventListener('popstate', syncPage));
+    onCleanup(() => {
+      window.history.scrollRestoration = previousRestoration;
+      window.removeEventListener('popstate', syncPage);
+    });
   });
 
   onMount(() => {
@@ -161,6 +224,9 @@ export function App() {
         </header>
 
         <nav
+          ref={(element) => {
+            appNav = element;
+          }}
           class="app-nav pro-nav mb-4 grid grid-cols-3 gap-1 rounded-xl border p-1 sm:mb-5 sm:flex sm:w-fit"
           aria-label="Основні розділи"
         >
