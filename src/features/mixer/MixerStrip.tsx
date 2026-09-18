@@ -2,7 +2,7 @@ import { For, createEffect, createSignal, onCleanup, type Component } from 'soli
 
 import type { AudioLevel } from '../../api/types';
 import { MAX_DB, MIN_DB, dbToPercent, roundDb } from '../../audio/scale';
-import type { MeterBuffer, MeterBus } from '../../realtime/meter-buffer';
+import type { MeterBuffer } from '../../realtime/meter-buffer';
 import { MeterCanvas } from './MeterCanvas';
 import { FADER_MARKS, dbToFaderPosition, faderPositionToDb } from './fader-scale';
 
@@ -15,7 +15,6 @@ interface MixerStripProps {
   label: string;
   level: AudioLevel;
   buffer: MeterBuffer;
-  meterLive: boolean;
   blocked: boolean;
   pending: boolean;
   detail: string;
@@ -140,7 +139,6 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
     setKeyboardValue(next);
   };
 
-  const bus = (): MeterBus => props.target;
   const displayDb = () => (draft() <= MIN_DB ? '−∞' : draft().toFixed(1));
   const thumbPosition = () => `${dbToFaderPosition(draft()) * 100}%`;
 
@@ -160,7 +158,7 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
       </div>
 
       <div class="mixer-strip-console mt-4 flex items-center justify-center gap-2.5">
-        <MeterCanvas buffer={props.buffer} bus={bus()} />
+        <MeterCanvas buffer={props.buffer} bus={props.target} />
         <div class="mixer-fader relative h-[292px] w-[72px] shrink-0 select-none">
           <div class="mixer-fader-scale pointer-events-none absolute inset-x-0">
             <For each={FADER_MARKS}>
