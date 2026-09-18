@@ -4205,3 +4205,125 @@ html {
     animation: none !important;
   }
 }
+
+
+/* Navigation + live-content stability ----------------------------------- */
+
+.page-stage {
+  min-height: max(420px, calc(100dvh - 190px));
+}
+
+html.is-page-transitioning {
+  scroll-behavior: auto !important;
+}
+
+html.is-page-transitioning .page-stage,
+html.is-page-transitioning .page-stage--player .player-dashboard > *,
+html.is-page-transitioning .page-stage--radio .radio-page > *,
+html.is-page-transitioning .page-stage--alerts .alerts-page > * {
+  animation: none !important;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: var(--ui-ease-standard);
+}
+
+::view-transition-old(root) {
+  animation-name: ui-root-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: ui-root-fade-in;
+}
+
+@keyframes ui-root-fade-out {
+  to {
+    opacity: 0.72;
+    filter: saturate(0.94);
+  }
+}
+
+@keyframes ui-root-fade-in {
+  from {
+    opacity: 0.7;
+    filter: saturate(0.94);
+  }
+}
+
+/*
+ * Realtime data updates must not become browser scroll anchors. Without this,
+ * changing source metadata or session rows can make Chromium compensate the
+ * document scroll position while the sticky navigation is active.
+ */
+.player-card,
+.mixer-panel,
+.outputs-panel,
+.sources-panel,
+.radio-panel,
+.priority-banner {
+  overflow-anchor: none;
+}
+
+.player-meta {
+  min-height: 116px;
+}
+
+.sources-panel > div:last-child {
+  min-height: 112px;
+}
+
+.source-session {
+  transform-origin: 50% 50%;
+  animation: ui-source-session-enter 220ms var(--ui-ease-emphasized) both;
+}
+
+@keyframes ui-source-session-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.output-option.is-selected,
+.source-session.is-active,
+.radio-station-card.is-active {
+  transition:
+    color var(--ui-motion-fast) ease,
+    background-color 260ms var(--ui-ease-standard),
+    border-color 260ms var(--ui-ease-standard),
+    box-shadow 300ms var(--ui-ease-standard),
+    transform var(--ui-motion-fast) var(--ui-ease-standard);
+}
+
+@media (max-width: 639px) {
+  .page-stage {
+    min-height: calc(100dvh - 150px);
+  }
+
+  .player-meta {
+    min-height: 124px;
+  }
+
+  .sources-panel > div:last-child {
+    min-height: 118px;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 180ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  .source-session {
+    animation: none !important;
+  }
+}
