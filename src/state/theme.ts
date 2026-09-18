@@ -35,10 +35,11 @@ export function createThemeController() {
     root.dataset.themeMode = next;
 
     const resolved = next === 'system' ? (media.matches ? 'dark' : 'light') : next;
+    root.dataset.resolvedTheme = resolved;
     root.style.colorScheme = resolved;
 
     const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (themeColor) themeColor.content = resolved === 'dark' ? '#091012' : '#f1f4f3';
+    if (themeColor) themeColor.content = resolved === 'dark' ? '#091012' : '#f3f5f7';
   };
 
   const setMode = (next: ThemeMode) => {
