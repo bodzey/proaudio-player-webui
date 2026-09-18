@@ -1194,3 +1194,682 @@ body {
     min-height: 314px;
   }
 }
+
+
+/* Reference-match pass ----------------------------------------------------
+   Matches the approved dark control-room mockups while keeping the existing
+   API, responsive behavior and light theme intact. */
+
+.redesign-shell {
+  background:
+    radial-gradient(circle at 8% -14%, rgb(255 92 38 / 10%), transparent 33rem),
+    radial-gradient(circle at 93% 1%, rgb(0 111 148 / 8%), transparent 42rem),
+    var(--rd-bg);
+}
+
+.redesign-shell .app-ambient {
+  opacity: 0.72;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 1.1%), transparent 150px),
+    radial-gradient(circle at 53% 0%, rgb(10 45 58 / 8%), transparent 32rem);
+}
+
+.redesign-shell .app-frame {
+  max-width: 1588px !important;
+  padding-top: 12px !important;
+}
+
+.redesign-shell .app-header {
+  min-height: 42px;
+  margin-bottom: 8px !important;
+}
+
+.brand-pro,
+.brand-audio {
+  font-size: 1.25rem;
+}
+
+.brand-subline {
+  margin-top: 0.28rem;
+  font-size: 0.57rem;
+}
+
+.status-cluster {
+  align-self: flex-start;
+}
+
+.status-chip,
+.theme-control,
+.connection-badge {
+  min-height: 32px !important;
+  border-radius: 9px !important;
+  background: rgb(17 26 30 / 86%) !important;
+  border-color: rgb(255 255 255 / 10%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 2%);
+}
+
+:root:not([data-theme='dark']) .status-chip,
+:root:not([data-theme='dark']) .theme-control,
+:root:not([data-theme='dark']) .connection-badge {
+  background: var(--rd-surface-2) !important;
+}
+
+.pro-nav {
+  margin-bottom: 16px !important;
+  padding: 3px !important;
+  border-radius: 10px !important;
+  background: rgb(13 20 23 / 92%) !important;
+}
+
+.nav-button {
+  min-width: 106px;
+  min-height: 38px !important;
+  border-radius: 8px !important;
+  font-size: 0.78rem !important;
+}
+
+.nav-button--active {
+  border-color: rgb(255 100 42 / 62%) !important;
+  background:
+    linear-gradient(180deg, rgb(255 100 42 / 13%), rgb(255 100 42 / 7%)),
+    rgb(18 22 24 / 96%) !important;
+  box-shadow:
+    0 0 0 1px rgb(255 100 42 / 7%) inset,
+    0 8px 24px -16px rgb(255 100 42 / 68%);
+}
+
+.pro-panel,
+.player-card {
+  border-color: rgb(133 156 161 / 18%) !important;
+  background:
+    linear-gradient(180deg, rgb(16 24 27 / 97%), rgb(11 18 21 / 98%)) !important;
+  box-shadow:
+    0 28px 70px -54px rgb(0 0 0 / 88%),
+    inset 0 1px 0 rgb(255 255 255 / 2%);
+}
+
+:root[data-theme='light'] .pro-panel,
+:root[data-theme='light'] .player-card {
+  border-color: var(--rd-border) !important;
+  background: var(--rd-surface) !important;
+}
+
+/* Player ----------------------------------------------------------------- */
+
+.player-card {
+  border-radius: 20px !important;
+}
+
+.player-card-grid {
+  min-height: 438px !important;
+}
+
+.player-art {
+  min-height: 438px !important;
+}
+
+.player-content {
+  padding: 28px 30px !important;
+  background:
+    radial-gradient(circle at 100% 4%, rgb(255 100 42 / 5%), transparent 38%),
+    linear-gradient(180deg, rgb(15 23 26 / 98%), rgb(10 17 20 / 98%)) !important;
+}
+
+:root[data-theme='light'] .player-content {
+  background: var(--rd-surface) !important;
+}
+
+.player-meta h2 {
+  max-width: 92%;
+  font-size: clamp(1.8rem, 2.15vw, 2.65rem) !important;
+  line-height: 1.04;
+}
+
+.player-meta p {
+  max-width: 92%;
+}
+
+.player-controls {
+  padding-top: 30px !important;
+}
+
+.player-live-row {
+  margin-top: 2px;
+}
+
+.player-live-label {
+  color: #ff7960 !important;
+}
+
+.player-live-track {
+  height: 4px !important;
+  background: rgb(255 255 255 / 8%) !important;
+}
+
+.player-live-fill {
+  background: linear-gradient(90deg, #ff7544, #ff5c2b);
+  box-shadow: 0 0 12px rgb(255 93 43 / 34%);
+}
+
+.transport-controls {
+  margin-top: 58px !important;
+  gap: 12px !important;
+}
+
+.transport-button {
+  border-radius: 12px !important;
+  background: rgb(18 26 29 / 96%) !important;
+  border-color: rgb(255 255 255 / 10%) !important;
+}
+
+.transport-button--primary {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(145deg, #ff7843, #ff5725) !important;
+  box-shadow:
+    0 12px 34px -8px rgb(255 82 30 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 26%) !important;
+}
+
+/* Station artwork -------------------------------------------------------- */
+
+.station-artwork--hero {
+  isolation: isolate;
+}
+
+.station-artwork--hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 25% 28%, rgb(255 43 91 / 28%), transparent 27%),
+    radial-gradient(circle at 72% 60%, rgb(88 40 210 / 25%), transparent 36%),
+    linear-gradient(140deg, transparent 20%, rgb(0 0 0 / 20%));
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.station-artwork--hero .station-artwork-logo {
+  font-size: clamp(2.6rem, 4vw, 4rem) !important;
+  letter-spacing: -0.06em;
+  text-shadow: 0 7px 28px rgb(0 0 0 / 46%);
+}
+
+.station-artwork--compact .station-artwork-orb,
+.station-artwork--compact .station-artwork-kicker {
+  display: none;
+}
+
+.station-artwork--compact .station-artwork-content {
+  align-items: center;
+  justify-content: center;
+  padding: 10px !important;
+  text-align: center;
+}
+
+.station-artwork--compact .station-artwork-content > div:last-child {
+  width: 100%;
+}
+
+.station-artwork--compact .station-artwork-logo {
+  font-size: 1.35rem !important;
+  line-height: 1;
+  text-shadow: 0 3px 14px rgb(0 0 0 / 35%);
+}
+
+.station-artwork--compact .station-artwork-logo + div {
+  margin-top: 8px !important;
+  font-size: 0.48rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* Mixer ------------------------------------------------------------------ */
+
+.mixer-panel {
+  min-height: 566px;
+  padding: 18px 20px 14px !important;
+  border-radius: 20px !important;
+}
+
+.mixer-panel > div:first-child {
+  margin-bottom: 14px !important;
+}
+
+.mixer-panel h2 {
+  font-size: 1.22rem !important;
+}
+
+.mixer-panel [aria-label='Канали мікшера'] > div {
+  gap: 9px !important;
+}
+
+.mixer-strip {
+  padding: 12px 10px 10px !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(180deg, rgb(15 23 26 / 96%), rgb(10 17 20 / 96%)) !important;
+  border-color: rgb(255 255 255 / 9%) !important;
+}
+
+.mixer-strip-console {
+  min-height: 286px !important;
+  margin-top: 12px !important;
+  gap: 8px !important;
+}
+
+.mixer-meter {
+  width: 44px !important;
+  height: 286px !important;
+  border-radius: 7px !important;
+}
+
+.mixer-fader {
+  width: 68px !important;
+  height: 286px !important;
+}
+
+.mixer-fader-rail {
+  width: 3px !important;
+}
+
+.mixer-fader-track::before {
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    rgb(255 108 52 / 74%),
+    rgb(255 91 35 / 48%) 42%,
+    rgb(255 91 35 / 16%)
+  );
+}
+
+.mixer-fader-thumb {
+  width: 36px !important;
+  height: 31px !important;
+  border-radius: 5px !important;
+}
+
+.mixer-mute-button {
+  min-height: 38px;
+  border-color: rgb(255 102 63 / 42%) !important;
+  color: #ff9b84 !important;
+  background: rgb(255 83 52 / 5%) !important;
+}
+
+.mixer-mute-button:hover:not(:disabled) {
+  background: rgb(255 100 42 / 11%) !important;
+}
+
+.mixer-panel > p:last-child {
+  margin-top: 10px !important;
+  font-size: 0.68rem !important;
+  line-height: 1.35 !important;
+}
+
+/* Radio ------------------------------------------------------------------ */
+
+.radio-page {
+  gap: 12px !important;
+}
+
+.radio-panel {
+  border-radius: 19px !important;
+  padding: 22px 24px !important;
+}
+
+.radio-page > .radio-panel:first-child {
+  min-height: 622px;
+}
+
+.radio-page > .radio-panel:first-child > div:first-child {
+  align-items: center !important;
+}
+
+.radio-page .grid.xl\:grid-cols-3 {
+  margin-top: 12px !important;
+  gap: 12px !important;
+}
+
+.radio-station-card {
+  min-height: 116px !important;
+  overflow: hidden;
+  border-radius: 14px !important;
+  border-color: rgb(255 255 255 / 10%) !important;
+  background:
+    linear-gradient(180deg, rgb(14 22 25 / 98%), rgb(11 18 21 / 98%)) !important;
+  transform: none !important;
+}
+
+.radio-station-card:hover:not(:disabled) {
+  border-color: rgb(255 255 255 / 17%) !important;
+  background:
+    linear-gradient(180deg, rgb(17 26 29 / 100%), rgb(12 20 23 / 100%)) !important;
+}
+
+.radio-station-card.is-active {
+  border-color: #ff6a2a !important;
+  background:
+    radial-gradient(circle at 82% 50%, rgb(255 92 33 / 11%), transparent 38%),
+    linear-gradient(180deg, rgb(23 23 23 / 99%), rgb(17 20 21 / 99%)) !important;
+  box-shadow:
+    0 0 0 1px rgb(255 100 42 / 11%) inset,
+    0 0 24px -11px rgb(255 93 35 / 64%) !important;
+}
+
+.radio-station-layout {
+  min-height: 114px;
+}
+
+.radio-station-art {
+  width: 96px;
+  height: 100%;
+  min-height: 114px;
+  border-right: 1px solid rgb(255 255 255 / 7%);
+}
+
+.radio-station-action {
+  padding: 8px 8px 8px 0;
+}
+
+.radio-action-button {
+  display: inline-flex;
+  width: 38px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 9px;
+  background: rgb(255 255 255 / 2%);
+  color: #f0f4f4;
+}
+
+.radio-action-button.is-stop {
+  border-color: rgb(255 100 42 / 58%);
+  background: linear-gradient(145deg, #ff7542, #ff5724);
+  color: white;
+  box-shadow: 0 8px 18px -9px rgb(255 82 25 / 75%);
+}
+
+.radio-action-button.is-stop > span {
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid currentColor;
+  border-radius: 1px;
+}
+
+.radio-action-label {
+  color: #aab4b5;
+}
+
+.radio-station-card.is-active .radio-action-label {
+  color: #ff8d65;
+}
+
+.radio-eq {
+  display: flex;
+  height: 16px;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.radio-eq i {
+  display: block;
+  width: 3px;
+  border-radius: 2px 2px 0 0;
+  background: #ff6a2a;
+  box-shadow: 0 0 7px rgb(255 106 42 / 40%);
+  animation: radio-eq 720ms ease-in-out infinite alternate;
+}
+
+.radio-eq i:nth-child(1) {
+  height: 7px;
+}
+
+.radio-eq i:nth-child(2) {
+  height: 15px;
+  animation-delay: -220ms;
+}
+
+.radio-eq i:nth-child(3) {
+  height: 11px;
+  animation-delay: -440ms;
+}
+
+@keyframes radio-eq {
+  0% { transform: scaleY(0.45); opacity: 0.72; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+.radio-play-button {
+  min-width: 128px;
+  border-color: rgb(255 100 42 / 40%) !important;
+  background: rgb(255 100 42 / 7%) !important;
+  color: #ff8d65 !important;
+}
+
+.radio-play-button:hover:not(:disabled) {
+  background: rgb(255 100 42 / 14%) !important;
+  border-color: rgb(255 100 42 / 68%) !important;
+}
+
+.radio-now-playing {
+  border-color: rgb(36 194 142 / 28%) !important;
+  background: rgb(36 194 142 / 7%) !important;
+  color: #77dabb !important;
+}
+
+/* Alerts ----------------------------------------------------------------- */
+
+.alerts-page {
+  gap: 10px !important;
+}
+
+.alerts-card {
+  border-radius: 18px !important;
+  padding: 16px 18px !important;
+}
+
+.alerts-page > .alerts-card:first-child {
+  padding-top: 15px !important;
+  padding-bottom: 14px !important;
+}
+
+.alerts-page > .alerts-card:first-child > div:first-child {
+  align-items: center !important;
+}
+
+.alert-duty-badge {
+  border-color: rgb(37 193 140 / 32%) !important;
+  background: rgb(37 193 140 / 7%) !important;
+  color: #79ddbf !important;
+}
+
+.alert-duty-badge > span {
+  background: #26d79b;
+  box-shadow: 0 0 10px rgb(38 215 155 / 44%);
+}
+
+.alert-duty-badge.is-active {
+  border-color: rgb(248 113 113 / 34%) !important;
+  background: rgb(248 113 113 / 8%) !important;
+  color: #ffabab !important;
+}
+
+.alert-duty-badge.is-active > span {
+  background: #f87171;
+}
+
+.alert-duty-badge.is-disabled {
+  border-color: rgb(251 191 36 / 28%) !important;
+  background: rgb(251 191 36 / 7%) !important;
+  color: #e6c86e !important;
+}
+
+.alert-duty-badge.is-disabled > span {
+  background: #fbbf24;
+}
+
+.alert-status-item {
+  min-height: 66px;
+  border-color: rgb(255 255 255 / 9%) !important;
+  background: rgb(5 11 13 / 19%) !important;
+}
+
+.alert-status-icon {
+  border: 1px solid rgb(255 255 255 / 8%);
+  background: rgb(255 255 255 / 3%);
+  color: #c4d0d1;
+}
+
+.alerts-page form {
+  gap: 10px !important;
+}
+
+.alerts-page label {
+  font-size: 0.67rem;
+}
+
+.alerts-page input:not([type='checkbox']):not([type='file']),
+.alerts-page select {
+  min-height: 34px !important;
+  border-radius: 8px !important;
+  border-color: rgb(255 100 42 / 44%) !important;
+  background: rgb(8 14 17 / 84%) !important;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+}
+
+.alerts-page input[type='checkbox'] {
+  accent-color: #ff642a !important;
+}
+
+.alert-media-card {
+  min-height: 112px;
+  border-color: rgb(255 255 255 / 9%) !important;
+  background: rgb(8 14 17 / 62%) !important;
+}
+
+.alert-media-card label,
+.alert-media-card button {
+  border-radius: 9px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.alert-media-card label {
+  background: linear-gradient(145deg, #ff7542, #ff5724) !important;
+  color: #fff !important;
+}
+
+.alerts-page button[type='submit'] {
+  background: linear-gradient(145deg, #ff7542, #ff5724) !important;
+  color: white !important;
+  box-shadow: 0 9px 20px -13px rgb(255 82 30 / 68%);
+}
+
+/* Bottom cards ----------------------------------------------------------- */
+
+.outputs-panel,
+.sources-panel {
+  min-height: 168px;
+  border-radius: 18px !important;
+}
+
+.sources-panel .rounded-2xl {
+  border-color: rgb(255 100 42 / 38%) !important;
+}
+
+/* Desktop proportions from the approved 1664 px reference ---------------- */
+
+@media (min-width: 1280px) {
+  .player-dashboard {
+    grid-template-columns: minmax(0, 1fr) 570px !important;
+    gap: 14px !important;
+  }
+
+  .player-card-grid {
+    grid-template-columns: minmax(310px, 36%) minmax(0, 1fr) !important;
+  }
+
+  .radio-page .grid.xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .player-dashboard {
+    grid-template-columns: minmax(0, 1fr) 585px !important;
+  }
+
+  .player-card-grid {
+    grid-template-columns: 335px minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .player-card-grid {
+    min-height: 0 !important;
+  }
+
+  .player-art {
+    min-height: 0 !important;
+  }
+
+  .player-content {
+    padding: 20px !important;
+  }
+
+  .transport-controls {
+    margin-top: 28px !important;
+  }
+
+  .radio-station-layout {
+    grid-template-columns: 88px minmax(0, 1fr) 56px !important;
+  }
+
+  .radio-station-art {
+    width: 88px;
+  }
+}
+
+@media (max-width: 639px) {
+  .redesign-shell .app-frame {
+    padding-top: 9px !important;
+  }
+
+  .nav-button {
+    min-width: 0;
+  }
+
+  .radio-panel,
+  .alerts-card,
+  .mixer-panel,
+  .outputs-panel,
+  .sources-panel,
+  .player-card {
+    border-radius: 15px !important;
+  }
+
+  .radio-station-layout {
+    grid-template-columns: 76px minmax(0, 1fr) 48px !important;
+    min-height: 98px;
+  }
+
+  .radio-station-art {
+    width: 76px;
+    min-height: 98px;
+  }
+
+  .radio-station-action {
+    padding-right: 5px;
+  }
+
+  .radio-action-label {
+    display: none;
+  }
+
+  .alerts-card {
+    padding: 14px !important;
+  }
+}

@@ -255,61 +255,29 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
               Оповіщення
             </p>
             <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
-              Стан сценаріїв
+              Стан системи тривог
             </h2>
             <p class="mt-1.5 max-w-2xl text-xs leading-5 text-slate-600">
-              Повітряна тривога та хвилина мовчання працюють і вмикаються незалежно.
+              Поточний статус роботи системи оповіщень та останні події.
             </p>
           </div>
-          <div class="flex flex-wrap gap-2">
-            <div
-              class={
-                audio()?.air_raid_alerts_enabled === false
-                  ? 'flex w-fit items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-medium text-amber-200'
-                  : props.priority?.active && !props.priority?.minute_silence_active
-                    ? 'flex w-fit items-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.07] px-3 py-2 text-xs font-medium text-red-200'
-                    : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
-              }
-            >
-              <span
-                class={
-                  audio()?.air_raid_alerts_enabled === false
-                    ? 'size-2 rounded-full bg-amber-400'
-                    : props.priority?.active && !props.priority?.minute_silence_active
-                      ? 'size-2 rounded-full bg-red-400'
-                      : 'size-2 rounded-full bg-emerald-400/70'
-                }
-              />
-              {audio()?.air_raid_alerts_enabled === false
-                ? 'Тривоги вимкнено'
-                : props.priority?.active && !props.priority?.minute_silence_active
-                  ? 'Тривога активна'
-                  : 'Тривоги увімкнено'}
-            </div>
-            <div
-              class={
-                audio()?.minute_silence_enabled === false
-                  ? 'flex w-fit items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-medium text-amber-200'
-                  : props.priority?.minute_silence_active
-                    ? 'flex w-fit items-center gap-2 rounded-xl border border-sky-400/20 bg-sky-400/[0.07] px-3 py-2 text-xs font-medium text-sky-200'
-                    : 'flex w-fit items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-medium text-emerald-200/80'
-              }
-            >
-              <span
-                class={
-                  audio()?.minute_silence_enabled === false
-                    ? 'size-2 rounded-full bg-amber-400'
-                    : props.priority?.minute_silence_active
-                      ? 'size-2 rounded-full bg-sky-400'
-                      : 'size-2 rounded-full bg-emerald-400/70'
-                }
-              />
-              {audio()?.minute_silence_enabled === false
-                ? 'Хвилину мовчання вимкнено'
-                : props.priority?.minute_silence_active
-                  ? 'Хвилина мовчання активна'
-                  : 'Хвилина мовчання увімкнена'}
-            </div>
+          <div
+            class={
+              props.priority?.active
+                ? 'alert-duty-badge is-active flex w-fit items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium'
+                : audio()?.air_raid_alerts_enabled === false
+                  ? 'alert-duty-badge is-disabled flex w-fit items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium'
+                  : 'alert-duty-badge flex w-fit items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium'
+            }
+          >
+            <span class="size-2 rounded-full" />
+            {props.priority?.minute_silence_active
+              ? 'Хвилина мовчання'
+              : props.priority?.active
+                ? 'Тривога активна'
+                : audio()?.air_raid_alerts_enabled === false
+                  ? 'Система вимкнена'
+                  : 'Черговий режим'}
           </div>
         </div>
 
@@ -566,7 +534,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
             <div class="mt-5 grid gap-3 lg:grid-cols-3">
               <For each={files.items}>
                 {(item) => (
-                  <article class="flex flex-col rounded-2xl border border-white/[0.065] bg-black/15 p-4">
+                  <article class="alert-media-card flex flex-col rounded-2xl border p-4">
                     <div class="flex items-start justify-between gap-3">
                       <div>
                         <h3 class="text-sm font-semibold text-slate-200">{item.label}</h3>
@@ -914,11 +882,26 @@ interface StatusItemProps {
 }
 
 const StatusItem: Component<StatusItemProps> = (props) => (
-  <div class="rounded-2xl border border-white/[0.055] bg-black/15 px-3.5 py-3">
-    <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">
-      {props.label}
+  <div class="alert-status-item flex min-w-0 items-center gap-3 rounded-2xl border px-3.5 py-3">
+    <span class="alert-status-icon flex size-9 shrink-0 items-center justify-center rounded-xl" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        class="size-4.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M4 12h3l2-5 3 10 2-7 2 4h4" />
+      </svg>
+    </span>
+    <div class="min-w-0">
+      <div class="text-[9px] font-medium tracking-[0.12em] text-slate-600 uppercase">
+        {props.label}
+      </div>
+      <div class="mt-1 font-mono text-[11px] break-words text-slate-400">{props.value}</div>
     </div>
-    <div class="mt-1.5 font-mono text-[11px] break-words text-slate-400">{props.value}</div>
   </div>
 );
 

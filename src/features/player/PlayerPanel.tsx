@@ -215,11 +215,13 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
             <Show
               when={!isRadio()}
               fallback={
-                <div class="flex items-center gap-3">
-                  <span class="font-mono text-[9px] font-bold tracking-[0.16em] text-red-300/75 uppercase sm:text-[10px]">
+                <div class="player-live-row flex items-center gap-3">
+                  <span class="player-live-label font-mono text-[9px] font-bold tracking-[0.16em] uppercase sm:text-[10px]">
                     Наживо
                   </span>
-                  <div class="h-px flex-1 bg-gradient-to-r from-red-400/45 via-white/10 to-transparent" />
+                  <div class="player-live-track relative h-1 flex-1 overflow-hidden rounded-full">
+                    <span class="player-live-fill absolute inset-y-0 left-0 w-[52%] rounded-full" />
+                  </div>
                 </div>
               }
             >
