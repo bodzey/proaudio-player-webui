@@ -99,8 +99,8 @@ export function App() {
             <div class="brand-wordmark shrink-0">
               <img
                 class="brand-logo-image"
-                src="/branding/proaudio-logo.jpg"
-                alt="PRO Audio"
+                src="/branding/proaudio-player-logo.jpg"
+                alt="ProAudio Player"
                 width="1536"
                 height="768"
                 decoding="async"
@@ -289,8 +289,8 @@ function NavButton(props: NavButtonProps) {
       type="button"
       class={
         props.active
-          ? 'nav-button nav-button--active flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
-          : 'nav-button flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3.5 sm:text-xs'
+          ? 'nav-button nav-button--active flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-[11px] font-semibold sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3'
+          : 'nav-button flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium transition sm:min-h-0 sm:justify-start sm:gap-2 sm:px-3'
       }
       aria-current={props.active ? 'page' : undefined}
       onClick={() => props.onClick()}
