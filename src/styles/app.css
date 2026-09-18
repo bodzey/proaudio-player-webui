@@ -4588,3 +4588,31 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 .redesign-shell .nav-button:active:not(:disabled) {
   transform: none !important;
 }
+
+
+/* Exact ProAudio source logo ------------------------------------------- */
+
+.redesign-shell .brand-wordmark {
+  width: clamp(210px, 22vw, 280px);
+  max-width: 42vw;
+  overflow: hidden;
+  line-height: 0;
+  background: #000;
+}
+
+.redesign-shell .brand-logo-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@media (max-width: 639px) {
+  .redesign-shell .brand-wordmark {
+    width: 236px;
+    max-width: 58vw;
+  }
+}
