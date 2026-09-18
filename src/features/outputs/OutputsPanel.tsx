@@ -145,24 +145,24 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
               return (
                 <li class="min-w-0">
                   <button
-                  type="button"
-                  class={
+                    type="button"
+                    class={
                     output.selected
                       ? 'output-option is-selected min-h-[76px] rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.055] p-4 text-left shadow-[0_14px_40px_-32px_rgba(34,211,238,0.7)]'
                       : 'output-option min-h-[76px] rounded-2xl border border-white/[0.06] bg-black/15 p-4 text-left transition hover:border-white/[0.12] hover:bg-white/[0.035]'
                   }
-                  disabled={
-                    output.selected ||
-                    !output.available ||
-                    props.blocked ||
-                    props.disabled ||
-                    pending() !== null
-                  }
-                  aria-busy={isPending()}
-                  aria-pressed={output.selected}
+                    disabled={
+                      output.selected ||
+                      !output.available ||
+                      props.blocked ||
+                      props.disabled ||
+                      pending() !== null
+                    }
+                    aria-busy={isPending()}
+                    aria-pressed={output.selected}
                     onClick={() => void select(output.id)}
                   >
-                  <div class="flex items-start gap-3">
+                    <div class="flex items-start gap-3">
                     <span
                       class={
                         output.selected
@@ -205,7 +205,7 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
                         </Show>
                       </div>
                     </div>
-                  </div>
+                    </div>
                   </button>
                 </li>
               );
