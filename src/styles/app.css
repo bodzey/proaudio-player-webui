@@ -4548,7 +4548,6 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   }
 }
 
-
 /* Final tab-switching behavior -------------------------------------------
    Tab changes must not animate page geometry or page opacity. Only the tab
    control itself transitions. This prevents the whole content column from

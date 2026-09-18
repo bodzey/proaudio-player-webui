@@ -59,7 +59,6 @@ export function App() {
     }
   };
 
-
   onMount(() => {
     const syncPage = () => setPage(pageFromHash());
     syncPage();
