@@ -4600,6 +4600,15 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
 }
 
 .redesign-shell .brand-wordmark {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 0;
+}
+
+.redesign-shell .brand-logo-frame {
   position: relative;
   width: clamp(220px, 24vw, 310px);
   max-width: 48vw;
@@ -4621,9 +4630,34 @@ html.is-page-transitioning .page-stage--alerts .alerts-page > * {
   -webkit-user-drag: none;
 }
 
+.redesign-shell .brand-tagline {
+  margin-left: 2px;
+  color: rgb(186 197 199 / 72%);
+  font-size: clamp(9px, 0.72vw, 11px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+:root[data-theme='light'] .redesign-shell .brand-tagline {
+  color: rgb(73 92 94 / 68%);
+}
+
 @media (max-width: 639px) {
   .redesign-shell .brand-wordmark {
+    gap: 5px;
+  }
+
+  .redesign-shell .brand-logo-frame {
     width: min(238px, 58vw);
     max-width: 58vw;
+  }
+
+  .redesign-shell .brand-tagline {
+    margin-left: 1px;
+    font-size: 9px;
+    letter-spacing: 0.2em;
   }
 }
