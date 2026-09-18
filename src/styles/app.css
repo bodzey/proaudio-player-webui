@@ -1890,6 +1890,65 @@ body {
     padding-top: 9px !important;
   }
 
+  .mixer-panel {
+    overflow: hidden;
+    padding: 14px 8px 12px !important;
+  }
+
+  .mixer-panel > div:first-child {
+    padding-inline: 4px;
+  }
+
+  .mixer-channels,
+  .mixer-grid {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .mixer-grid {
+    gap: 4px !important;
+  }
+
+  .mixer-strip {
+    min-width: 0 !important;
+    padding: 10px 4px 8px !important;
+  }
+
+  .mixer-strip-console {
+    min-height: 260px !important;
+    gap: 3px !important;
+  }
+
+  .mixer-meter {
+    width: 28px !important;
+    height: 260px !important;
+  }
+
+  .mixer-fader {
+    width: 46px !important;
+    height: 260px !important;
+  }
+
+  .mixer-fader-track {
+    left: 18px !important;
+  }
+
+  .mixer-db-mark > span:first-child {
+    width: 18px !important;
+    padding-right: 2px !important;
+    font-size: 7px !important;
+  }
+
+  .mixer-fader-thumb {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .mixer-mute-button {
+    min-width: 58px;
+    padding-inline: 7px;
+  }
+
   .nav-button {
     min-width: 0;
   }
