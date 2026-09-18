@@ -3237,7 +3237,6 @@ body {
   }
 }
 
-
 /* Unified motion + surface system -----------------------------------------
    Final interaction pass: one motion language across Player / Radio /
    Alerts, tuned to the approved ProAudio control-room direction. */
@@ -3531,8 +3530,7 @@ html {
 .alerts-v2 .alert-media-card.alert-media-row {
   border-radius: var(--ui-radius-inner) !important;
   border-color: rgb(133 156 161 / 15%) !important;
-  background:
-    linear-gradient(180deg, rgb(15 23 26 / 92%), rgb(9 16 19 / 94%)) !important;
+  background: linear-gradient(180deg, rgb(15 23 26 / 92%), rgb(9 16 19 / 94%)) !important;
 }
 
 .output-option.is-selected,
