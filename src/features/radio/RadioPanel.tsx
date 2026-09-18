@@ -3,6 +3,7 @@ import { For, Show, createSignal, type Component } from 'solid-js';
 import { api } from '../../api/client';
 import type { PlayerStatus } from '../../api/types';
 import { StationArtwork } from './StationArtwork';
+import { activeRadioStreamUrl } from './presentation';
 import { RADIO_STATIONS, isSameRadioStream } from './stations';
 
 interface RadioPanelProps {
@@ -18,7 +19,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
     null,
   );
 
-  const currentStreamUrl = () => props.status?.mpd.stream_url ?? null;
+  const currentStreamUrl = () => activeRadioStreamUrl(props.status);
 
   const play = async (url: string, name: string) => {
     const trimmed = url.trim();
