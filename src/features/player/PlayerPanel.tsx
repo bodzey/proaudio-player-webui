@@ -181,10 +181,10 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                     <p class="player-kicker font-bold tracking-[0.18em] text-sky-400/70 uppercase">
                       Зараз відтворюється
                     </p>
-                    <h2 class="player-track-title mt-2 line-clamp-2 font-semibold tracking-[-0.03em] text-white sm:mt-3">
+                    <h2 class="player-track-title mt-2 font-semibold tracking-[-0.03em] text-white sm:mt-3">
                       {props.status?.player.title || 'Немає активного потоку'}
                     </h2>
-                    <p class="player-track-subtitle mt-1.5 line-clamp-2 text-slate-400 sm:mt-2">
+                    <p class="player-track-subtitle mt-1.5 text-slate-400 sm:mt-2">
                       {props.status?.player.artist ||
                         props.status?.player.album ||
                         'ProAudio Player'}
@@ -199,10 +199,10 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
                   <span class="size-2 shrink-0 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]" />
                   <span class="truncate">{stationName()}</span>
                 </div>
-                <h2 class="player-track-title mt-2 line-clamp-2 font-semibold tracking-[-0.03em] text-white sm:mt-3">
+                <h2 class="player-track-title mt-2 font-semibold tracking-[-0.03em] text-white sm:mt-3">
                   {radioMetadata().title || 'Радіоефір'}
                 </h2>
-                <p class="player-track-subtitle mt-1.5 line-clamp-2 text-slate-400 sm:mt-2">
+                <p class="player-track-subtitle mt-1.5 text-slate-400 sm:mt-2">
                   {radioMetadata().artist || 'Метадані поточного треку не передаються станцією'}
                 </p>
               </Show>
