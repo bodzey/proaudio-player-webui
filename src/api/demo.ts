@@ -494,7 +494,7 @@ function fileSize(init?: RequestInit): number | null {
   return typeof Blob !== 'undefined' && body instanceof Blob ? body.size : null;
 }
 
-function fileName(init?: RequestInit, fallback: string): string {
+function fileName(fallback: string, init?: RequestInit): string {
   const body = init?.body;
   if (typeof File !== 'undefined' && body instanceof File && body.name.trim()) return body.name;
   return fallback;
@@ -690,7 +690,7 @@ export async function demoRequest<T>(path: string, init?: RequestInit): Promise<
         return {
           ...item,
           configured: true,
-          file_name: fileName(init, item.file_name),
+          file_name: fileName(item.file_name, init),
           size_bytes: fileSize(init) ?? item.size_bytes,
           modified_unix_seconds: Math.floor(Date.now() / 1000),
           content_type: 'audio/mpeg',
