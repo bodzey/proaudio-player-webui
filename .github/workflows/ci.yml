@@ -36,6 +36,16 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Preview formatted player files
+        run: |
+          for file in \
+            src/features/player/PlayerPanel.tsx \
+            src/features/player/TransportControls.tsx
+          do
+            echo "===== $file ====="
+            npx prettier "$file"
+          done
+
       - name: Formatting
         run: npm run format:check
 
