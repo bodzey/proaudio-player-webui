@@ -99,7 +99,7 @@ export function App() {
   });
 
   return (
-    <div class="app-shell app-shell min-h-screen text-slate-100">
+    <div class="app-shell min-h-screen text-slate-100">
       <div class="app-accent-line" aria-hidden="true" />
       <div class="app-ambient" aria-hidden="true" />
 
