@@ -25,11 +25,12 @@ afterEach(() => {
 
 describe('demo API', () => {
   it('covers every route used by the web interface and publishes state changes', async () => {
-    const fetchMock = vi.fn(async () =>
-      new Response(JSON.stringify(Array.from({ length: 80 }, (_, index) => station(index))), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      }),
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(JSON.stringify(Array.from({ length: 80 }, (_, index) => station(index))), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
     );
     vi.stubGlobal('fetch', fetchMock);
 
@@ -119,9 +120,12 @@ describe('demo API', () => {
   });
 
   it('keeps a bundled radio catalog when the public directory is unavailable', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => {
-      throw new Error('offline');
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('offline');
+      }),
+    );
 
     const directory = await demoRadioDirectory();
     expect(directory.source).toBe('bundled-demo');
