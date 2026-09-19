@@ -49,7 +49,6 @@ export function radioTrackMetadata(
   return { title, artist };
 }
 
-
 export interface PlayerTimelineState {
   backend: string;
   source: string;
