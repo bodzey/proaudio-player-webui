@@ -43,7 +43,6 @@ describe('radioTrackMetadata', () => {
   });
 });
 
-
 describe('shouldResyncPlayerPosition', () => {
   const playing: PlayerTimelineState = {
     backend: 'dlna-upnp',
