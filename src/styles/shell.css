@@ -4,15 +4,15 @@ body {
     radial-gradient(circle at 92% 0%, rgb(30 70 74 / 7%), transparent 38rem), var(--rd-bg);
 }
 
-.redesign-shell {
+.app-shell {
   min-height: 100vh;
 }
 
-.redesign-shell .app-frame {
+.app-shell .app-frame {
   max-width: 1600px !important;
 }
 
-.redesign-shell .app-header {
+.app-shell .app-header {
   padding-top: 0.15rem;
 }
 
@@ -340,25 +340,25 @@ body {
   }
 }
 
-.redesign-shell {
+.app-shell {
   background:
     radial-gradient(circle at 8% -14%, rgb(255 92 38 / 10%), transparent 33rem),
     radial-gradient(circle at 93% 1%, rgb(0 111 148 / 8%), transparent 42rem), var(--rd-bg);
 }
 
-.redesign-shell .app-ambient {
+.app-shell .app-ambient {
   opacity: 0.72;
   background:
     linear-gradient(180deg, rgb(255 255 255 / 1.1%), transparent 150px),
     radial-gradient(circle at 53% 0%, rgb(10 45 58 / 8%), transparent 32rem);
 }
 
-.redesign-shell .app-frame {
+.app-shell .app-frame {
   max-width: 1588px !important;
   padding-top: 12px !important;
 }
 
-.redesign-shell .app-header {
+.app-shell .app-header {
   min-height: 42px;
   margin-bottom: 8px !important;
 }
@@ -1030,7 +1030,7 @@ body {
 }
 
 @media (max-width: 639px) {
-  .redesign-shell .app-frame {
+  .app-shell .app-frame {
     padding-top: 9px !important;
   }
 
@@ -1153,11 +1153,11 @@ body {
   }
 }
 
-.redesign-shell {
+.app-shell {
   min-height: 100dvh;
 }
 
-.redesign-shell .app-frame {
+.app-shell .app-frame {
   width: 100%;
   max-width: 1588px !important;
   min-height: 100dvh !important;
