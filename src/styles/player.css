@@ -1,19 +1,19 @@
-.redesign-shell .mixer-meter {
+.app-shell .mixer-meter {
   width: 50px !important;
 }
 
 @media (max-width: 639px) {
-  .redesign-shell .mixer-meter {
+  .app-shell .mixer-meter {
     width: 34px !important;
   }
 }
 
-.redesign-shell .player-kicker {
+.app-shell .player-kicker {
   font-size: clamp(0.625rem, 0.59rem + 0.12vw, 0.6875rem);
   line-height: 1.4;
 }
 
-.redesign-shell .player-track-title {
+.app-shell .player-track-title {
   max-inline-size: 100%;
   font-size: clamp(1.5rem, 1.22rem + 0.85vw, 2.125rem);
   line-height: 1.2;
@@ -22,47 +22,47 @@
   text-wrap: balance;
 }
 
-.redesign-shell .player-track-subtitle {
+.app-shell .player-track-subtitle {
   max-inline-size: 100%;
   font-size: clamp(0.8125rem, 0.75rem + 0.22vw, 1rem);
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
-.redesign-shell .player-content {
+.app-shell .player-content {
   justify-content: center;
 }
 
-.redesign-shell .player-meta,
-.redesign-shell .player-controls {
+.app-shell .player-meta,
+.app-shell .player-controls {
   width: 100%;
 }
 
 @media (min-width: 1024px) {
-  .redesign-shell .player-card-grid {
+  .app-shell .player-card-grid {
     grid-template-columns: minmax(0, 42fr) minmax(0, 58fr) !important;
   }
 
-  .redesign-shell .player-art {
+  .app-shell .player-art {
     width: 100%;
     min-width: 0;
   }
 
-  .redesign-shell .player-content {
+  .app-shell .player-content {
     min-width: 0;
     padding-inline: clamp(1.75rem, 3vw, 3rem) !important;
   }
 }
 
-.redesign-shell .player-controls {
+.app-shell .player-controls {
   margin-top: 0 !important;
 }
 
-.redesign-shell .player-progress {
+.app-shell .player-progress {
   width: 100%;
 }
 
-.redesign-shell .player-progress-track {
+.app-shell .player-progress-track {
   position: relative;
   height: 7px;
   overflow: visible;
@@ -74,7 +74,7 @@
     0 1px 0 rgb(255 255 255 / 2%);
 }
 
-.redesign-shell .player-progress-fill {
+.app-shell .player-progress-fill {
   position: relative;
   height: 100%;
   min-width: 0;
@@ -86,7 +86,7 @@
   transition: width 240ms linear;
 }
 
-.redesign-shell .player-progress-thumb {
+.app-shell .player-progress-thumb {
   position: absolute;
   top: 50%;
   right: -5px;
@@ -101,7 +101,7 @@
     0 2px 8px rgb(0 0 0 / 35%);
 }
 
-.redesign-shell .player-progress-times {
+.app-shell .player-progress-times {
   display: flex;
   justify-content: space-between;
   margin-top: 8px;
@@ -112,44 +112,44 @@
   font-variant-numeric: tabular-nums;
 }
 
-.redesign-shell .transport-controls {
+.app-shell .transport-controls {
   margin-top: 20px !important;
 }
 
 @media (max-width: 639px) {
-  .redesign-shell .player-content {
+  .app-shell .player-content {
     padding: 18px 20px 20px !important;
   }
 
-  .redesign-shell .player-meta {
+  .app-shell .player-meta {
     min-height: 0 !important;
   }
 
-  .redesign-shell .player-controls {
+  .app-shell .player-controls {
     padding-top: 18px !important;
   }
 
-  .redesign-shell .player-progress-track {
+  .app-shell .player-progress-track {
     height: 6px;
   }
 
-  .redesign-shell .player-progress-times {
+  .app-shell .player-progress-times {
     margin-top: 9px;
     font-size: 10px;
   }
 
-  .redesign-shell .transport-controls {
+  .app-shell .transport-controls {
     margin-top: 18px !important;
   }
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .player-progress-track {
+:root[data-resolved-theme='light'] .app-shell .player-progress-track {
   border-color: rgb(36 51 59 / 8%);
   background: #e2e7e9;
   box-shadow: inset 0 1px 2px rgb(33 46 54 / 8%);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .player-progress-thumb {
+:root[data-resolved-theme='light'] .app-shell .player-progress-thumb {
   background: #fff;
   box-shadow:
     0 0 0 3px rgb(255 107 54 / 10%),
