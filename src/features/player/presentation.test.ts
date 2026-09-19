@@ -56,17 +56,11 @@ describe('shouldResyncPlayerPosition', () => {
   });
 
   it('resynchronizes seeks and transport/source changes', () => {
+    const paused = { ...playing, state: 'paused' };
+    const radio = { ...playing, backend: 'mpd', source: 'Інтернет-радіо' };
+
     expect(shouldResyncPlayerPosition(playing, playing, 140.8, 146)).toBe(true);
-    expect(
-      shouldResyncPlayerPosition(playing, { ...playing, state: 'paused' }, 140.8, 141),
-    ).toBe(true);
-    expect(
-      shouldResyncPlayerPosition(
-        playing,
-        { ...playing, backend: 'mpd', source: 'Інтернет-радіо' },
-        140.8,
-        0,
-      ),
-    ).toBe(true);
+    expect(shouldResyncPlayerPosition(playing, paused, 140.8, 141)).toBe(true);
+    expect(shouldResyncPlayerPosition(playing, radio, 140.8, 0)).toBe(true);
   });
 });
