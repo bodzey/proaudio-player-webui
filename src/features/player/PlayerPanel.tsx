@@ -57,12 +57,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
     positionAnchor =
       !timelineAvailable ||
-      shouldResyncPlayerPosition(
-        timelineState,
-        nextTimeline,
-        estimated,
-        player.position_seconds,
-      )
+      shouldResyncPlayerPosition(timelineState, nextTimeline, estimated, player.position_seconds)
         ? player.position_seconds
         : estimated;
     positionAnchorAt = now;
