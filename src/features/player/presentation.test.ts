@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatClock, isInternetRadioPlayer, radioTrackMetadata } from './presentation';
+import {
+  formatClock,
+  isInternetRadioPlayer,
+  radioTrackMetadata,
+  shouldResyncPlayerPosition,
+  type PlayerTimelineState,
+} from './presentation';
 
 describe('isInternetRadioPlayer', () => {
   it('uses the canonical active player identity', () => {
@@ -34,5 +40,27 @@ describe('radioTrackMetadata', () => {
       title: 'Blinding Lights',
       artist: 'The Weeknd',
     });
+  });
+});
+
+describe('shouldResyncPlayerPosition', () => {
+  const playing: PlayerTimelineState = {
+    backend: 'dlna-upnp',
+    source: 'DLNA / UPnP',
+    state: 'playing',
+    durationSeconds: 9260,
+  };
+
+  it('ignores coarse one-second transport updates while local progress is continuous', () => {
+    expect(shouldResyncPlayerPosition(playing, playing, 140.82, 140)).toBe(false);
+  });
+
+  it('resynchronizes seeks and transport/source changes', () => {
+    const paused = { ...playing, state: 'paused' };
+    const radio = { ...playing, backend: 'mpd', source: 'Інтернет-радіо' };
+
+    expect(shouldResyncPlayerPosition(playing, playing, 140.8, 146)).toBe(true);
+    expect(shouldResyncPlayerPosition(playing, paused, 140.8, 141)).toBe(true);
+    expect(shouldResyncPlayerPosition(playing, radio, 140.8, 0)).toBe(true);
   });
 });

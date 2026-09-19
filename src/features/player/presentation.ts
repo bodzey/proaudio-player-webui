@@ -48,3 +48,33 @@ export function radioTrackMetadata(
 
   return { title, artist };
 }
+
+export interface PlayerTimelineState {
+  backend: string;
+  source: string;
+  state: string;
+  durationSeconds: number | null;
+}
+
+export function playerTimelineState(player: PlayerView): PlayerTimelineState {
+  return {
+    backend: player.backend,
+    source: player.source,
+    state: player.state,
+    durationSeconds: player.duration_seconds,
+  };
+}
+
+export function shouldResyncPlayerPosition(
+  previous: PlayerTimelineState | undefined,
+  next: PlayerTimelineState,
+  estimatedPosition: number,
+  reportedPosition: number,
+  thresholdSeconds = 1.25,
+): boolean {
+  if (!previous) return true;
+  if (previous.backend !== next.backend || previous.source !== next.source) return true;
+  if (previous.state !== next.state) return true;
+  if (previous.durationSeconds !== next.durationSeconds) return true;
+  return Math.abs(reportedPosition - estimatedPosition) > thresholdSeconds;
+}

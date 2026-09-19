@@ -12,7 +12,14 @@ import type { PlayerAction, PlayerStatus } from '../../api/types';
 import { findCatalogRadioStation } from '../radio/catalog';
 import { PlayerArtwork } from './PlayerArtwork';
 import { TransportControls } from './TransportControls';
-import { formatClock, isInternetRadioPlayer, radioTrackMetadata } from './presentation';
+import {
+  formatClock,
+  isInternetRadioPlayer,
+  playerTimelineState,
+  radioTrackMetadata,
+  shouldResyncPlayerPosition,
+  type PlayerTimelineState,
+} from './presentation';
 
 interface PlayerPanelProps {
   status: PlayerStatus | undefined;
@@ -26,12 +33,37 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
   const [pageVisible, setPageVisible] = createSignal(document.visibilityState === 'visible');
   let positionAnchor = 0;
   let positionAnchorAt = performance.now();
+  let timelineState: PlayerTimelineState | undefined;
+  let timelineAvailable = false;
 
   createEffect(() => {
     const player = props.status?.player;
-    positionAnchor = player?.position_seconds ?? 0;
-    positionAnchorAt = performance.now();
-    setClock(positionAnchorAt);
+    const now = performance.now();
+
+    if (!player || player.position_seconds === null) {
+      timelineState = player ? playerTimelineState(player) : undefined;
+      timelineAvailable = false;
+      positionAnchor = 0;
+      positionAnchorAt = now;
+      setClock(now);
+      return;
+    }
+
+    const nextTimeline = playerTimelineState(player);
+    const estimated =
+      timelineAvailable && timelineState?.state === 'playing'
+        ? positionAnchor + Math.max(0, now - positionAnchorAt) / 1000
+        : positionAnchor;
+
+    positionAnchor =
+      !timelineAvailable ||
+      shouldResyncPlayerPosition(timelineState, nextTimeline, estimated, player.position_seconds)
+        ? player.position_seconds
+        : estimated;
+    positionAnchorAt = now;
+    timelineState = nextTimeline;
+    timelineAvailable = true;
+    setClock(now);
   });
 
   onMount(() => {
@@ -68,8 +100,8 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   const position = createMemo(() => {
     const player = props.status?.player;
-    if (!player || player.position_seconds === null) return null;
-    if (player.state !== 'playing') return player.position_seconds;
+    if (!player || !timelineAvailable) return null;
+    if (player.state !== 'playing') return positionAnchor;
     const estimated = positionAnchor + Math.max(0, clock() - positionAnchorAt) / 1000;
     return player.duration_seconds === null
       ? estimated
