@@ -33,19 +33,19 @@
   color: var(--lt-text);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell {
+:root[data-resolved-theme='light'] .app-shell {
   color: var(--lt-text);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .app-ambient {
+:root[data-resolved-theme='light'] .app-shell .app-ambient {
   background:
     linear-gradient(180deg, rgb(255 255 255 / 44%), transparent 220px),
     radial-gradient(circle at 17% 0%, rgb(255 100 31 / 5%), transparent 30%);
   opacity: 1;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .status-chip,
-:root[data-resolved-theme='light'] .redesign-shell .connection-badge {
+:root[data-resolved-theme='light'] .app-shell .status-chip,
+:root[data-resolved-theme='light'] .app-shell .connection-badge {
   border-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 88%) !important;
   color: var(--lt-text-soft) !important;
@@ -54,47 +54,47 @@
     inset 0 1px 0 rgb(255 255 255 / 80%);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .connection-badge[data-state='online'] {
+:root[data-resolved-theme='light'] .app-shell .connection-badge[data-state='online'] {
   border-color: rgb(18 150 107 / 22%) !important;
   background: var(--lt-success-soft) !important;
   color: #26765e !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .theme-button {
+:root[data-resolved-theme='light'] .app-shell .theme-button {
   border-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 90%) !important;
   color: var(--lt-text-soft) !important;
   box-shadow: var(--lt-shadow-soft);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .theme-button:hover {
+:root[data-resolved-theme='light'] .app-shell .theme-button:hover {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .theme-menu {
+:root[data-resolved-theme='light'] .app-shell .theme-menu {
   border-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 98%) !important;
   box-shadow: 0 24px 55px -24px rgb(39 58 67 / 28%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .theme-option {
+:root[data-resolved-theme='light'] .app-shell .theme-option {
   color: var(--lt-text-soft);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .theme-option:hover {
+:root[data-resolved-theme='light'] .app-shell .theme-option:hover {
   background: var(--lt-surface-muted);
   color: var(--lt-text);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .theme-option.is-selected {
+:root[data-resolved-theme='light'] .app-shell .theme-option.is-selected {
   border-color: rgb(255 100 31 / 22%);
   background: var(--lt-accent-soft);
   color: var(--lt-accent-strong);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .pro-nav {
+:root[data-resolved-theme='light'] .app-shell .pro-nav {
   border-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 92%) !important;
   box-shadow:
@@ -104,17 +104,17 @@
   -webkit-backdrop-filter: blur(18px);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .nav-button {
+:root[data-resolved-theme='light'] .app-shell .nav-button {
   color: var(--lt-text-soft) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .nav-button:hover {
+:root[data-resolved-theme='light'] .app-shell .nav-button:hover {
   border-color: var(--lt-border-strong) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .nav-button--active {
+:root[data-resolved-theme='light'] .app-shell .nav-button--active {
   border-color: var(--lt-accent-border) !important;
   background: linear-gradient(180deg, #fff8f3, #fff2e9) !important;
   color: var(--lt-accent-strong) !important;
@@ -123,7 +123,7 @@
     0 10px 24px -17px rgb(255 100 31 / 34%);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .nav-button::after {
+:root[data-resolved-theme='light'] .app-shell .nav-button::after {
   background: linear-gradient(
     90deg,
     transparent,
@@ -133,13 +133,13 @@
   );
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .pro-panel,
-:root[data-resolved-theme='light'] .redesign-shell .player-card,
-:root[data-resolved-theme='light'] .redesign-shell .alerts-card,
-:root[data-resolved-theme='light'] .redesign-shell .radio-panel,
-:root[data-resolved-theme='light'] .redesign-shell .mixer-panel,
-:root[data-resolved-theme='light'] .redesign-shell .outputs-panel,
-:root[data-resolved-theme='light'] .redesign-shell .sources-panel {
+:root[data-resolved-theme='light'] .app-shell .pro-panel,
+:root[data-resolved-theme='light'] .app-shell .player-card,
+:root[data-resolved-theme='light'] .app-shell .alerts-card,
+:root[data-resolved-theme='light'] .app-shell .radio-panel,
+:root[data-resolved-theme='light'] .app-shell .mixer-panel,
+:root[data-resolved-theme='light'] .app-shell .outputs-panel,
+:root[data-resolved-theme='light'] .app-shell .sources-panel {
   border-color: var(--lt-border) !important;
   background: linear-gradient(180deg, var(--lt-surface), var(--lt-surface-soft)) !important;
   box-shadow:
@@ -147,45 +147,45 @@
     inset 0 1px 0 rgb(255 255 255 / 90%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell h1,
-:root[data-resolved-theme='light'] .redesign-shell h2,
-:root[data-resolved-theme='light'] .redesign-shell h3,
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-white'],
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-100'],
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-200'] {
+:root[data-resolved-theme='light'] .app-shell h1,
+:root[data-resolved-theme='light'] .app-shell h2,
+:root[data-resolved-theme='light'] .app-shell h3,
+:root[data-resolved-theme='light'] .app-shell [class*='text-white'],
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-100'],
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-200'] {
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-300'],
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-400'],
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-500'] {
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-300'],
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-400'],
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-500'] {
   color: var(--lt-text-soft) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-600'],
-:root[data-resolved-theme='light'] .redesign-shell [class*='text-slate-700'] {
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-600'],
+:root[data-resolved-theme='light'] .app-shell [class*='text-slate-700'] {
   color: var(--lt-text-muted) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .player-art [class*='text-white'],
-:root[data-resolved-theme='light'] .redesign-shell .transport-button--primary,
-:root[data-resolved-theme='light'] .redesign-shell .alert-button-primary,
-:root[data-resolved-theme='light'] .redesign-shell .alert-upload-button {
+:root[data-resolved-theme='light'] .app-shell .player-art [class*='text-white'],
+:root[data-resolved-theme='light'] .app-shell .transport-button--primary,
+:root[data-resolved-theme='light'] .app-shell .alert-button-primary,
+:root[data-resolved-theme='light'] .app-shell .alert-upload-button {
   color: #fff !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .player-content {
+:root[data-resolved-theme='light'] .app-shell .player-content {
   background:
     radial-gradient(circle at 100% 0%, rgb(255 100 31 / 5%), transparent 38%),
     linear-gradient(180deg, #fff, #fafcfc) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .player-content .player-meta {
+:root[data-resolved-theme='light'] .app-shell .player-content .player-meta {
   color: var(--lt-text);
 }
 
 :root[data-resolved-theme='light']
-  .redesign-shell
+  .app-shell
   .transport-button:not(.transport-button--primary) {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
@@ -194,106 +194,106 @@
 }
 
 :root[data-resolved-theme='light']
-  .redesign-shell
+  .app-shell
   .transport-button:not(.transport-button--primary):hover:not(:disabled) {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .transport-button--primary {
+:root[data-resolved-theme='light'] .app-shell .transport-button--primary {
   border-color: rgb(255 100 31 / 48%) !important;
   background: linear-gradient(180deg, #ff7d45, #ff5e1d) !important;
   box-shadow: 0 14px 30px -15px rgb(255 100 31 / 56%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .mixer-strip {
+:root[data-resolved-theme='light'] .app-shell .mixer-strip {
   border-color: var(--lt-border) !important;
   background: linear-gradient(180deg, #fbfcfd, #f2f5f6) !important;
   box-shadow: inset 0 1px 0 #fff;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .mixer-db-mark > span:last-child {
+:root[data-resolved-theme='light'] .app-shell .mixer-db-mark > span:last-child {
   background: #dce3e6 !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .mixer-mute-button {
+:root[data-resolved-theme='light'] .app-shell .mixer-mute-button {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
   color: #66747a !important;
   box-shadow: var(--lt-shadow-soft);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .mixer-mute-button.is-muted {
+:root[data-resolved-theme='light'] .app-shell .mixer-mute-button.is-muted {
   border-color: rgb(207 81 81 / 26%) !important;
   background: var(--lt-danger-soft) !important;
   color: var(--lt-danger) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .panel-action-button {
+:root[data-resolved-theme='light'] .app-shell .panel-action-button {
   border-color: var(--lt-border) !important;
   background: #fff !important;
   color: var(--lt-text-soft) !important;
   box-shadow: var(--lt-shadow-soft);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .panel-action-button:hover:not(:disabled) {
+:root[data-resolved-theme='light'] .app-shell .panel-action-button:hover:not(:disabled) {
   border-color: var(--lt-border-strong) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .output-option,
-:root[data-resolved-theme='light'] .redesign-shell .source-session {
+:root[data-resolved-theme='light'] .app-shell .output-option,
+:root[data-resolved-theme='light'] .app-shell .source-session {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text) !important;
   box-shadow: none !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .output-option:hover:not(:disabled),
-:root[data-resolved-theme='light'] .redesign-shell .source-session:hover {
+:root[data-resolved-theme='light'] .app-shell .output-option:hover:not(:disabled),
+:root[data-resolved-theme='light'] .app-shell .source-session:hover {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .output-option.is-selected,
-:root[data-resolved-theme='light'] .redesign-shell .source-session.is-active {
+:root[data-resolved-theme='light'] .app-shell .output-option.is-selected,
+:root[data-resolved-theme='light'] .app-shell .source-session.is-active {
   border-color: var(--lt-accent-border) !important;
   background: linear-gradient(180deg, #fff9f5, #fffdfb) !important;
   box-shadow: 0 12px 26px -18px rgb(255 100 31 / 32%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .sources-panel > div:first-child > span {
+:root[data-resolved-theme='light'] .app-shell .sources-panel > div:first-child > span {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text-muted) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .radio-station-card {
+:root[data-resolved-theme='light'] .app-shell .radio-station-card {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
   box-shadow: none !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .radio-station-card:hover {
+:root[data-resolved-theme='light'] .app-shell .radio-station-card:hover {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
   box-shadow: var(--lt-shadow-soft) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .radio-station-card.is-active {
+:root[data-resolved-theme='light'] .app-shell .radio-station-card.is-active {
   border-color: var(--lt-accent-border) !important;
   background: linear-gradient(180deg, #fff9f5, #fffdfb) !important;
   box-shadow: 0 12px 30px -20px rgb(255 100 31 / 38%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .radio-station-action {
+:root[data-resolved-theme='light'] .app-shell .radio-station-action {
   border-left-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 48%);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .radio-action-button {
+:root[data-resolved-theme='light'] .app-shell .radio-action-button {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
   color: var(--lt-text-soft) !important;
@@ -301,7 +301,7 @@
 }
 
 :root[data-resolved-theme='light']
-  .redesign-shell
+  .app-shell
   .radio-station-card.is-active
   .radio-action-button {
   border-color: rgb(255 100 31 / 34%) !important;
@@ -309,18 +309,18 @@
   color: #fff !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .stream-active-badge {
+:root[data-resolved-theme='light'] .app-shell .stream-active-badge {
   border-color: rgb(18 150 107 / 20%) !important;
   background: var(--lt-success-soft) !important;
   color: #26765e !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-input,
+:root[data-resolved-theme='light'] .app-shell .alert-input,
 :root[data-resolved-theme='light']
-  .redesign-shell
+  .app-shell
   input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
-:root[data-resolved-theme='light'] .redesign-shell select,
-:root[data-resolved-theme='light'] .redesign-shell textarea {
+:root[data-resolved-theme='light'] .app-shell select,
+:root[data-resolved-theme='light'] .app-shell textarea {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text) !important;
@@ -329,77 +329,77 @@
     0 1px 0 rgb(30 48 57 / 2%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell input::placeholder,
-:root[data-resolved-theme='light'] .redesign-shell textarea::placeholder {
+:root[data-resolved-theme='light'] .app-shell input::placeholder,
+:root[data-resolved-theme='light'] .app-shell textarea::placeholder {
   color: #98a3a8 !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-input:focus,
-:root[data-resolved-theme='light'] .redesign-shell input:focus,
-:root[data-resolved-theme='light'] .redesign-shell select:focus,
-:root[data-resolved-theme='light'] .redesign-shell textarea:focus {
+:root[data-resolved-theme='light'] .app-shell .alert-input:focus,
+:root[data-resolved-theme='light'] .app-shell input:focus,
+:root[data-resolved-theme='light'] .app-shell select:focus,
+:root[data-resolved-theme='light'] .app-shell textarea:focus {
   border-color: rgb(255 100 31 / 54%) !important;
   background: #fff !important;
   box-shadow: 0 0 0 3px rgb(255 100 31 / 10%) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-field {
+:root[data-resolved-theme='light'] .app-shell .alert-field {
   color: var(--lt-text-soft) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-help {
+:root[data-resolved-theme='light'] .app-shell .alert-help {
   color: var(--lt-text-muted) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-status-item,
-:root[data-resolved-theme='light'] .redesign-shell .alert-config-group,
-:root[data-resolved-theme='light'] .redesign-shell .alert-media-card,
-:root[data-resolved-theme='light'] .redesign-shell .alert-switch-row,
-:root[data-resolved-theme='light'] .redesign-shell .alert-behavior-check,
-:root[data-resolved-theme='light'] .redesign-shell .alert-advanced {
+:root[data-resolved-theme='light'] .app-shell .alert-status-item,
+:root[data-resolved-theme='light'] .app-shell .alert-config-group,
+:root[data-resolved-theme='light'] .app-shell .alert-media-card,
+:root[data-resolved-theme='light'] .app-shell .alert-switch-row,
+:root[data-resolved-theme='light'] .app-shell .alert-behavior-check,
+:root[data-resolved-theme='light'] .app-shell .alert-advanced {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-media-card:hover,
-:root[data-resolved-theme='light'] .redesign-shell .alert-switch-row:hover {
+:root[data-resolved-theme='light'] .app-shell .alert-media-card:hover,
+:root[data-resolved-theme='light'] .app-shell .alert-switch-row:hover {
   border-color: var(--lt-border-strong) !important;
   background: #fff !important;
 }
 
 :root[data-resolved-theme='light']
-  .redesign-shell
+  .app-shell
   .alert-duty-badge:not(.is-active):not(.is-disabled),
-:root[data-resolved-theme='light'] .redesign-shell .alert-token-badge.is-configured,
-:root[data-resolved-theme='light'] .redesign-shell .alert-ready-badge {
+:root[data-resolved-theme='light'] .app-shell .alert-token-badge.is-configured,
+:root[data-resolved-theme='light'] .app-shell .alert-ready-badge {
   border-color: rgb(18 150 107 / 18%) !important;
   background: var(--lt-success-soft) !important;
   color: #26765e !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-button-secondary {
+:root[data-resolved-theme='light'] .app-shell .alert-button-secondary {
   border-color: var(--lt-border) !important;
   background: #fff !important;
   color: var(--lt-text-soft) !important;
   box-shadow: var(--lt-shadow-soft);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-button-secondary:hover:not(:disabled) {
+:root[data-resolved-theme='light'] .app-shell .alert-button-secondary:hover:not(:disabled) {
   border-color: var(--lt-border-strong) !important;
   background: var(--lt-surface-muted) !important;
   color: var(--lt-text) !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-button-primary,
-:root[data-resolved-theme='light'] .redesign-shell .radio-play-button:not(:disabled) {
+:root[data-resolved-theme='light'] .app-shell .alert-button-primary,
+:root[data-resolved-theme='light'] .app-shell .radio-play-button:not(:disabled) {
   border-color: rgb(255 100 31 / 42%) !important;
   background: linear-gradient(180deg, #ff7d45, #ff5e1d) !important;
   color: #fff !important;
   box-shadow: 0 10px 24px -14px rgb(255 100 31 / 42%);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-audio-savebar {
+:root[data-resolved-theme='light'] .app-shell .alert-audio-savebar {
   border-color: var(--lt-border) !important;
   background: rgb(255 255 255 / 94%) !important;
   box-shadow: 0 -16px 38px -28px rgb(35 54 63 / 30%) !important;
@@ -407,33 +407,33 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-inline-error,
-:root[data-resolved-theme='light'] .redesign-shell .alert-load-error {
+:root[data-resolved-theme='light'] .app-shell .alert-inline-error,
+:root[data-resolved-theme='light'] .app-shell .alert-load-error {
   border-color: rgb(207 81 81 / 18%) !important;
   background: var(--lt-danger-soft) !important;
   color: #a74646 !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell .alert-form-message.is-success,
-:root[data-resolved-theme='light'] .redesign-shell .radio-feedback-message.border-emerald-400\/15 {
+:root[data-resolved-theme='light'] .app-shell .alert-form-message.is-success,
+:root[data-resolved-theme='light'] .app-shell .radio-feedback-message.border-emerald-400\/15 {
   border-color: rgb(18 150 107 / 18%) !important;
   background: var(--lt-success-soft) !important;
   color: #26765e !important;
 }
 
-:root[data-resolved-theme='light'] .redesign-shell footer {
+:root[data-resolved-theme='light'] .app-shell footer {
   border-top-color: var(--lt-border) !important;
   color: var(--lt-text-muted) !important;
 }
 
 @media (max-width: 639px) {
-  :root[data-resolved-theme='light'] .redesign-shell .pro-panel,
-  :root[data-resolved-theme='light'] .redesign-shell .player-card,
-  :root[data-resolved-theme='light'] .redesign-shell .alerts-card,
-  :root[data-resolved-theme='light'] .redesign-shell .radio-panel,
-  :root[data-resolved-theme='light'] .redesign-shell .mixer-panel,
-  :root[data-resolved-theme='light'] .redesign-shell .outputs-panel,
-  :root[data-resolved-theme='light'] .redesign-shell .sources-panel {
+  :root[data-resolved-theme='light'] .app-shell .pro-panel,
+  :root[data-resolved-theme='light'] .app-shell .player-card,
+  :root[data-resolved-theme='light'] .app-shell .alerts-card,
+  :root[data-resolved-theme='light'] .app-shell .radio-panel,
+  :root[data-resolved-theme='light'] .app-shell .mixer-panel,
+  :root[data-resolved-theme='light'] .app-shell .outputs-panel,
+  :root[data-resolved-theme='light'] .app-shell .sources-panel {
     box-shadow:
       0 12px 30px rgb(29 47 56 / 6%),
       inset 0 1px 0 rgb(255 255 255 / 90%) !important;
