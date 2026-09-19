@@ -81,9 +81,7 @@ export const TransportControls: Component<TransportControlsProps> = (props) => {
         primary
         label={playing() ? 'Пауза' : 'Відтворити'}
         action={primaryAction()}
-        disabled={
-          props.disabled || (playing() ? !controls()?.pause : !controls()?.play)
-        }
+        disabled={props.disabled || (playing() ? !controls()?.pause : !controls()?.play)}
         pending={props.pendingAction === primaryAction()}
         onClick={props.onAction}
       >
