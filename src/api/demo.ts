@@ -45,7 +45,7 @@ const DEMO_TRACKS = [
 ] as const;
 
 let demoTrackIndex = 0;
-let statusListeners = new Set<(status: PlayerStatus) => void>();
+const statusListeners = new Set<(status: PlayerStatus) => void>();
 let statusClock: number | undefined;
 let lastClockAt = 0;
 
