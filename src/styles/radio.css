@@ -1,4 +1,4 @@
-.redesign-shell .radio-station-grid {
+.app-shell .radio-station-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 7rem), 1fr));
   gap: clamp(0.8rem, 2vw, 1.15rem);
@@ -6,7 +6,7 @@
   list-style: none;
 }
 
-.redesign-shell .radio-station-card {
+.app-shell .radio-station-card {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -17,11 +17,11 @@
   transform: none !important;
 }
 
-.redesign-shell .radio-station-card:hover {
+.app-shell .radio-station-card:hover {
   transform: none !important;
 }
 
-.redesign-shell .radio-station-visual {
+.app-shell .radio-station-visual {
   position: relative;
   overflow: hidden;
   aspect-ratio: 1;
@@ -36,21 +36,21 @@
 }
 
 @media (hover: hover) {
-  .redesign-shell .radio-station-card:hover .radio-station-visual {
+  .app-shell .radio-station-card:hover .radio-station-visual {
     border-color: rgb(255 255 255 / 18%);
     box-shadow: 0 16px 34px -22px var(--rd-shadow-strong);
     transform: translateY(-1px);
   }
 }
 
-.redesign-shell .radio-station-card.is-active .radio-station-visual {
+.app-shell .radio-station-card.is-active .radio-station-visual {
   border-color: rgb(255 106 42 / 82%);
   box-shadow:
     0 0 0 1px rgb(255 106 42 / 18%) inset,
     0 14px 32px -20px rgb(255 93 35 / 58%);
 }
 
-.redesign-shell .radio-station-art {
+.app-shell .radio-station-art {
   width: 100% !important;
   height: 100% !important;
   min-height: 0 !important;
@@ -58,24 +58,24 @@
   border: 0 !important;
 }
 
-.redesign-shell .station-artwork-image {
+.app-shell .station-artwork-image {
   object-fit: contain;
   background: #f4f5f5;
 }
 
-.redesign-shell .radio-station-art .station-artwork-content {
+.app-shell .radio-station-art .station-artwork-content {
   align-items: center;
   justify-content: center;
   padding: clamp(0.7rem, 2vw, 1rem) !important;
   text-align: center;
 }
 
-.redesign-shell .radio-station-art .station-artwork-kicker,
-.redesign-shell .radio-station-art .station-artwork-content > div:last-child > div:last-child {
+.app-shell .radio-station-art .station-artwork-kicker,
+.app-shell .radio-station-art .station-artwork-content > div:last-child > div:last-child {
   display: none;
 }
 
-.redesign-shell .radio-station-art .station-artwork-logo {
+.app-shell .radio-station-art .station-artwork-logo {
   max-width: 100%;
   font-size: clamp(1.15rem, 4.8vw, 2rem) !important;
   line-height: 0.98;
@@ -83,7 +83,7 @@
   text-shadow: 0 1px 10px rgb(0 0 0 / 24%);
 }
 
-.redesign-shell .radio-station-live {
+.app-shell .radio-station-live {
   position: absolute;
   top: clamp(0.5rem, 1.8vw, 0.7rem);
   left: clamp(0.5rem, 1.8vw, 0.7rem);
@@ -104,13 +104,13 @@
   backdrop-filter: blur(8px);
 }
 
-.redesign-shell .radio-station-live .radio-eq {
+.app-shell .radio-station-live .radio-eq {
   height: 0.7rem;
   transform: scale(0.7);
   transform-origin: center;
 }
 
-.redesign-shell .radio-station-control {
+.app-shell .radio-station-control {
   position: absolute;
   right: clamp(0.5rem, 1.8vw, 0.7rem);
   bottom: clamp(0.5rem, 1.8vw, 0.7rem);
@@ -133,44 +133,44 @@
     transform 160ms ease;
 }
 
-.redesign-shell .radio-station-control:hover:not(:disabled) {
+.app-shell .radio-station-control:hover:not(:disabled) {
   border-color: rgb(255 106 42 / 58%);
   background: rgb(20 20 20 / 88%);
   color: white;
   transform: scale(1.04);
 }
 
-.redesign-shell .radio-station-control:focus-visible {
+.app-shell .radio-station-control:focus-visible {
   outline: 2px solid rgb(255 106 42 / 72%);
   outline-offset: 2px;
 }
 
-.redesign-shell .radio-station-control:disabled {
+.app-shell .radio-station-control:disabled {
   cursor: not-allowed;
   opacity: 0.46;
 }
 
-.redesign-shell .radio-station-control.is-stop {
+.app-shell .radio-station-control.is-stop {
   border-color: rgb(255 116 73 / 72%);
   background: linear-gradient(145deg, #ff7542, #ff5724);
   color: white;
   box-shadow: 0 9px 22px -12px rgb(255 82 25 / 78%);
 }
 
-.redesign-shell .radio-stop-icon {
+.app-shell .radio-stop-icon {
   width: 0.62rem;
   height: 0.62rem;
   border: 1.7px solid currentColor;
   border-radius: 0.1rem;
 }
 
-.redesign-shell .radio-station-meta {
+.app-shell .radio-station-meta {
   min-width: 0;
   padding-inline: 0.15rem;
   text-align: center;
 }
 
-.redesign-shell .radio-station-name {
+.app-shell .radio-station-name {
   display: -webkit-box;
   overflow: hidden;
   color: var(--pa-text);
@@ -182,7 +182,7 @@
   -webkit-line-clamp: 2;
 }
 
-.redesign-shell .radio-station-submeta {
+.app-shell .radio-station-submeta {
   display: flex;
   min-width: 0;
   align-items: center;
@@ -198,34 +198,34 @@
   white-space: nowrap;
 }
 
-.redesign-shell .radio-station-submeta > span:first-child {
+.app-shell .radio-station-submeta > span:first-child {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.redesign-shell .radio-station-submeta > span:last-child {
+.app-shell .radio-station-submeta > span:last-child {
   flex: 0 0 auto;
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
 }
 
 @media (min-width: 640px) {
-  .redesign-shell .radio-station-grid {
+  .app-shell .radio-station-grid {
     grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .redesign-shell .radio-station-grid {
+  .app-shell .radio-station-grid {
     grid-template-columns: repeat(auto-fill, minmax(9.25rem, 1fr));
   }
 }
 
 @media (max-width: 380px) {
-  .redesign-shell .radio-station-grid {
+  .app-shell .radio-station-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .redesign-shell .radio-station-live {
+  .app-shell .radio-station-live {
     max-width: calc(100% - 3.7rem);
     overflow: hidden;
     text-overflow: ellipsis;
