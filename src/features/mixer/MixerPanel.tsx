@@ -158,7 +158,9 @@ export const MixerPanel: Component<MixerPanelProps> = (props) => {
     <section class="pro-panel mixer-panel rounded-[28px] border p-5 sm:p-6">
       <div class="mb-5 flex items-start justify-between gap-4">
         <div>
-          <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">Mixer</p>
+          <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
+            Аудіоканали
+          </p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">Мікшер</h2>
           <p class="mt-1.5 text-xs leading-5 text-slate-500">Рівні сигналу та гучність каналів.</p>
         </div>

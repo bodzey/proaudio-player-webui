@@ -71,14 +71,14 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-              Internet radio
+              Інтернет-радіо
             </p>
             <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.025em] text-white">
               Популярні радіостанції
             </h2>
             <p class="mt-2 max-w-2xl text-xs leading-5 text-slate-500">
               Прямі потоки запускаються через локальний MPD-плеєр. Метадані ефіру, якщо їх передає
-              станція, автоматично з’являються у Now Playing.
+              станція, автоматично з’являються у блоці «Зараз відтворюється».
             </p>
           </div>
           <Show when={currentStreamUrl()}>
@@ -88,7 +88,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
           </Show>
         </div>
 
-        <ul class="radio-station-grid mt-6" role="list">
+        <ul class="radio-station-grid mt-6">
           <For each={radioStations()}>
             {(station) => {
               const active = () => isSameRadioStream(currentStreamUrl(), station.url);

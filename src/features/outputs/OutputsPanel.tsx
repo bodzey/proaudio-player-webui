@@ -84,13 +84,13 @@ export const OutputsPanel: Component<OutputsPanelProps> = (props) => {
       <div class="flex items-start justify-between gap-4">
         <div>
           <p class="text-[11px] font-semibold tracking-[0.2em] text-slate-500 uppercase">
-            Audio output
+            Аудіовихід
           </p>
           <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-white">
             Фізичні аудіовиходи
           </h2>
           <p class="mt-1.5 text-xs leading-5 text-slate-600">
-            Вибраний вихід отримує фінальний мікс Music + Alert.
+            Вибраний вихід отримує фінальний мікс музики та оповіщень.
           </p>
         </div>
         <button
