@@ -1,4 +1,4 @@
-import { DEMO_MODE } from './demo';
+import { DEMO_MODE, subscribeToDemoStatus } from './demo';
 import type { PlayerStatus } from './types';
 import { parsePlayerStatus } from './validation';
 
@@ -13,7 +13,7 @@ export interface StatusEventHandlers {
 export function subscribeToStatusEvents(handlers: StatusEventHandlers): () => void {
   if (DEMO_MODE) {
     queueMicrotask(() => handlers.onOpen?.());
-    return () => undefined;
+    return subscribeToDemoStatus(handlers.onStatus);
   }
 
   const source = new EventSource(STATUS_EVENTS_URL);
