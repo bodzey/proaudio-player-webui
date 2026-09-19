@@ -62,11 +62,7 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
 
   const radioMetadata = createMemo(() =>
     isRadio()
-      ? radioTrackMetadata(
-          props.status?.player.title,
-          props.status?.player.artist,
-          stationName(),
-        )
+      ? radioTrackMetadata(props.status?.player.title, props.status?.player.artist, stationName())
       : { title: '', artist: '' },
   );
 
@@ -188,4 +184,3 @@ export const PlayerPanel: Component<PlayerPanelProps> = (props) => {
     </section>
   );
 };
-
