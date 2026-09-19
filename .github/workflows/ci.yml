@@ -36,6 +36,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Preview formatted theme CSS
+        run: |
+          echo "===== src/styles/themes.css ====="
+          npx prettier src/styles/themes.css
+
       - name: Formatting
         run: npm run format:check
 
