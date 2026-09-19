@@ -58,12 +58,7 @@ describe('shouldResyncPlayerPosition', () => {
   it('resynchronizes seeks and transport/source changes', () => {
     expect(shouldResyncPlayerPosition(playing, playing, 140.8, 146)).toBe(true);
     expect(
-      shouldResyncPlayerPosition(
-        playing,
-        { ...playing, state: 'paused' },
-        140.8,
-        141,
-      ),
+      shouldResyncPlayerPosition(playing, { ...playing, state: 'paused' }, 140.8, 141),
     ).toBe(true);
     expect(
       shouldResyncPlayerPosition(
