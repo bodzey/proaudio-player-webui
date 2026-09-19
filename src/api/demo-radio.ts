@@ -43,7 +43,8 @@ function stationFromRemote(value: unknown): RadioDirectoryStation | undefined {
           .slice(0, 4)
       : [];
 
-  const codec = typeof record.codec === 'string' && record.codec.trim() ? record.codec.trim() : null;
+  const codec =
+    typeof record.codec === 'string' && record.codec.trim() ? record.codec.trim() : null;
   const bitrate = finiteNumber(record.bitrate);
 
   return {
