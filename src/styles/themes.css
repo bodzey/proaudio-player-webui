@@ -1,3 +1,8 @@
+"[0m
+[36;1mnpx prettier src/styles/themes.css[0m
+shell: /usr/bin/bash -e {0}
+##[endgroup]
+===== src/styles/themes.css =====
 :root[data-resolved-theme='light'] {
   --lt-canvas: #f3f5f7;
   --lt-canvas-deep: #edf1f3;
@@ -184,9 +189,7 @@
   color: var(--lt-text);
 }
 
-:root[data-resolved-theme='light']
-  .app-shell
-  .transport-button:not(.transport-button--primary) {
+:root[data-resolved-theme='light'] .app-shell .transport-button:not(.transport-button--primary) {
   border-color: var(--lt-border) !important;
   background: var(--lt-surface-muted) !important;
   color: #526168 !important;
@@ -300,10 +303,7 @@
   box-shadow: var(--lt-shadow-soft);
 }
 
-:root[data-resolved-theme='light']
-  .app-shell
-  .radio-station-card.is-active
-  .radio-action-button {
+:root[data-resolved-theme='light'] .app-shell .radio-station-card.is-active .radio-action-button {
   border-color: rgb(255 100 31 / 34%) !important;
   background: var(--lt-accent) !important;
   color: #fff !important;
@@ -368,9 +368,7 @@
   background: #fff !important;
 }
 
-:root[data-resolved-theme='light']
-  .app-shell
-  .alert-duty-badge:not(.is-active):not(.is-disabled),
+:root[data-resolved-theme='light'] .app-shell .alert-duty-badge:not(.is-active):not(.is-disabled),
 :root[data-resolved-theme='light'] .app-shell .alert-token-badge.is-configured,
 :root[data-resolved-theme='light'] .app-shell .alert-ready-badge {
   border-color: rgb(18 150 107 / 18%) !important;
