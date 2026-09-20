@@ -28,4 +28,15 @@ export default tseslint.config(
       globals: globals.nodeBuiltin,
     },
   },
+  {
+    files: ['chrome-extension/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.webextensions,
+        AudioWorkletProcessor: 'readonly',
+        registerProcessor: 'readonly',
+      },
+    },
+  },
 );
