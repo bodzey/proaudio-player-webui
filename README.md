@@ -128,3 +128,20 @@ The frontend validates realtime status frames before committing them to UI state
 `GET /api/v1/meters`; REST polling keeps the last-known state fresh while the main SSE connection
 reconnects. MUSIC, ALERT and logical MASTER remain separate controls, and the UI never substitutes
 the physical DAC sink for an unavailable MASTER state.
+
+## Chrome audio sender
+
+The `chrome-extension/` directory contains the Manifest V3 browser sender for
+network audio. It captures audio from the active tab after an explicit extension
+action and sends 48 kHz stereo float32 PCM to
+`/api/v1/audio/network` on the selected ProAudio Player.
+
+Load it for development with Chrome's **Load unpacked** action and select the
+`chrome-extension` directory. The player endpoint is stored locally by the
+extension. Chrome 116 or newer is required because the capture stream is handed
+from the extension action context to an offscreen document.
+
+The sender intentionally does not mirror the captured tab to the computer's
+default audio output while relay is active. The ProAudio Player MUSIC bus is the
+single programme output.
+
