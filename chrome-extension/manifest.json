@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "ProAudio Player Audio Sender",
+  "version": "0.1.0",
+  "description": "Send audio from the active Chrome tab to ProAudio Player.",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "offscreen", "storage", "tabCapture"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "ProAudio Player",
+    "default_popup": "popup.html"
+  }
+}
