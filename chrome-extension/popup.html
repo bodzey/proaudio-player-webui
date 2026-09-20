@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ProAudio Player</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">PROAUDIO PLAYER</div>
+      <h1>Аудіо з Chrome</h1>
+      <p class="description">
+        Передає звук активної вкладки безпосередньо в MUSIC-шину плеєра.
+      </p>
+
+      <label for="endpoint">Адреса плеєра</label>
+      <input
+        id="endpoint"
+        type="url"
+        inputmode="url"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="http://192.168.88.50:5371"
+      />
+
+      <div id="status" class="status">Готово</div>
+
+      <div class="actions">
+        <button id="start" type="button">Передати вкладку</button>
+        <button id="stop" type="button" class="secondary">Зупинити</button>
+      </div>
+
+      <p class="hint">
+        Запускайте передачу з вкладки YouTube Music, яку хочете слухати.
+      </p>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
