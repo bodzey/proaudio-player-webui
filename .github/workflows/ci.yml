@@ -8,12 +8,17 @@ on:
       - feature/proaudio-ui-redesign
   pull_request:
 
+concurrency:
+  group: webui-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   webui:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v5

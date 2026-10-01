@@ -144,11 +144,7 @@ async function startCapture({ streamId, endpoint, tabId }) {
   };
 
   current.enqueue = (samples) => {
-    const bytes = new Uint8Array(
-      samples.buffer,
-      samples.byteOffset,
-      samples.byteLength,
-    ).slice();
+    const bytes = new Uint8Array(samples.buffer, samples.byteOffset, samples.byteLength).slice();
 
     queuedBytes += bytes.byteLength;
     if (queuedBytes > MAX_QUEUED_BYTES) {
@@ -177,10 +173,7 @@ async function startCapture({ streamId, endpoint, tabId }) {
         samples.length - offset,
         current.chunk.length - current.chunkOffset,
       );
-      current.chunk.set(
-        samples.subarray(offset, offset + writable),
-        current.chunkOffset,
-      );
+      current.chunk.set(samples.subarray(offset, offset + writable), current.chunkOffset);
       current.chunkOffset += writable;
       offset += writable;
 
@@ -217,9 +210,7 @@ async function startCapture({ streamId, endpoint, tabId }) {
   }).then(async (response) => {
     if (!response.ok) {
       const payload = await response.text();
-      throw new Error(
-        payload || `Player rejected network audio with HTTP ${response.status}.`,
-      );
+      throw new Error(payload || `Player rejected network audio with HTTP ${response.status}.`);
     }
     return response;
   });

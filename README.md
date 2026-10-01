@@ -144,4 +144,3 @@ from the extension action context to an offscreen document.
 The sender intentionally does not mirror the captured tab to the computer's
 default audio output while relay is active. The ProAudio Player MUSIC bus is the
 single programme output.
-
