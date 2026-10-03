@@ -1,10 +1,13 @@
 import type { Component } from 'solid-js';
 
 import type { AudioSettings } from '../../api/types';
-import { HELP_CLASS, INPUT_CLASS, LABEL_CLASS, type FormMessage } from './AlertUi';
+import { type FormMessage } from './AlertUi';
+import { SettingsGroup, SettingsNumber, SettingsRange, SettingsSwitch } from './SettingsFields';
+import type { SettingsSection } from './settings-navigation';
 
 interface AudioSettingsSectionProps {
   settings: AudioSettings;
+  section: SettingsSection;
   busy: boolean;
   dirty: boolean;
   message: FormMessage | undefined;
@@ -14,23 +17,11 @@ interface AudioSettingsSectionProps {
 }
 
 export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props) => (
-  <section class="pro-panel alerts-card alert-audio-section rounded-[28px] border">
-    <div class="alert-section-heading">
-      <div>
-        <p class="alert-eyebrow">Налаштування аудіо</p>
-        <h2>Поведінка звуку під час тривоги</h2>
-        <p>
-          Ducking, часові параметри та хвилина мовчання. Рівень повідомлень ALERT задається одним
-          фейдером у мікшері автоматично.
-        </p>
-      </div>
-    </div>
-
+  <section class="settings-card">
     <form
-      ref={(element) => {
-        props.setFormRef(element);
-      }}
-      class="alert-audio-form"
+      ref={(element) => props.setFormRef(element)}
+      class="settings-form"
+      novalidate
       aria-busy={props.busy}
       onInput={() => props.onDirty()}
       onChange={() => props.onDirty()}
@@ -39,142 +30,104 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
         props.onSave();
       }}
     >
-      <fieldset class="contents" disabled={props.busy}>
-        <div class="alert-config-group alert-switch-group">
-          <div class="alert-config-title">
-            <span class="alert-config-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 12h2M18 12h2M8 7v10M16 7v10M12 4v16" />
-              </svg>
-            </span>
-            <div>
-              <h3>Основні перемикачі</h3>
-              <p>Незалежне керування тривогами та щоденною хвилиною мовчання.</p>
-            </div>
-          </div>
-
-          <div class="alert-switch-grid">
-            <label class="alert-switch-row">
-              <input
-                name="air_raid_alerts_enabled"
-                type="checkbox"
-                checked={
-                  props.settings.air_raid_alerts_enabled ??
-                  props.settings.notifications_enabled ??
-                  true
-                }
-              />
-              <span class="alert-switch-control" aria-hidden="true">
-                <span />
-              </span>
-              <span class="alert-switch-copy">
-                <b>Увімкнути систему оповіщень</b>
-                <small>
-                  Якщо вимкнути, плеєр припинить опитування API, завершить активне сповіщення та
-                  відновить попередній рівень звуку.
-                </small>
-              </span>
-            </label>
-
-            <label class="alert-switch-row">
-              <input
-                name="minute_silence_enabled"
-                type="checkbox"
-                checked={props.settings.minute_silence_enabled}
-              />
-              <span class="alert-switch-control" aria-hidden="true">
-                <span />
-              </span>
-              <span class="alert-switch-copy">
-                <b>Увімкнути хвилину мовчання</b>
-                <small>Запуск виконується один раз на добу за вказаним локальним часом.</small>
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <div class="alert-config-group">
-          <div class="alert-config-title with-chip">
-            <span class="alert-config-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7 5v14M17 5v14M4 9h6M14 15h6" />
-              </svg>
-            </span>
-            <div>
-              <h3>Приглушення музики</h3>
-              <p>Рівень та швидкість зниження музики під час системного оголошення.</p>
-            </div>
-          </div>
-          <div class="alert-config-fields two-cols">
-            <label class={LABEL_CLASS}>
-              Стишення музики, dB
-              <input
-                class={INPUT_CLASS}
-                name="duck_db"
-                type="number"
-                min="-60"
-                max="0"
-                step="0.1"
-                required
-                value={props.settings.duck_db}
-              />
-              <span class={HELP_CLASS}>На скільки зменшити гучність.</span>
-            </label>
-            <label class={LABEL_CLASS}>
-              Плавне стишення, с
-              <input
-                class={INPUT_CLASS}
+      <fieldset class="settings-form-body" disabled={props.busy}>
+        <div hidden={props.section !== 'announcements'}>
+          <header class="settings-card-heading">
+            <h2>Оповіщення</h2>
+            <p>Гучність оголошень і поведінка музики під час повітряної тривоги.</p>
+          </header>
+          <SettingsSwitch
+            name="air_raid_alerts_enabled"
+            label="Повітряні тривоги"
+            checked={
+              props.settings.air_raid_alerts_enabled ?? props.settings.notifications_enabled ?? true
+            }
+            help="Після вимкнення плеєр завершить активне оповіщення й відновить музику."
+          />
+          <SettingsGroup title="Звук оголошення">
+            <SettingsRange
+              name="alert_volume_percent"
+              label="Гучність оголошень"
+              min={0}
+              max={100}
+              step={0.1}
+              unit="%"
+              value={props.settings.alert_volume_percent}
+            />
+            <SettingsNumber
+              name="alert_repeat_interval_minutes"
+              label="Повторення оголошення, хв"
+              min={0}
+              max={1440}
+              value={props.settings.alert_repeat_interval_minutes}
+              help="0 — відтворювати лише при початку тривоги."
+            />
+          </SettingsGroup>
+          <SettingsGroup title="Музика під час тривоги">
+            <SettingsRange
+              name="duck_db"
+              label="Стишення музики"
+              min={-60}
+              max={0}
+              step={0.1}
+              unit="dB"
+              value={props.settings.duck_db}
+              help="0 dB — без стишення. Від’ємні значення зменшують гучність."
+            />
+            <SettingsSwitch
+              name="duck_only_during_announcement"
+              label="Стишувати лише під час оголошення"
+              checked={props.settings.duck_only_during_announcement}
+              help="Після завершення файла музика відновиться, навіть якщо тривога ще триває."
+            />
+          </SettingsGroup>
+          <details class="settings-advanced">
+            <summary>Розширені параметри звуку</summary>
+            <SettingsGroup title="Плавні переходи">
+              <SettingsNumber
                 name="duck_fade_seconds"
-                type="number"
-                min="0"
-                max="60"
-                step="0.1"
-                required
+                label="Стишення музики, с"
+                min={0}
+                max={60}
+                step="any"
                 value={props.settings.duck_fade_seconds}
               />
-              <span class={HELP_CLASS}>Час, за який музика досягне цільового рівня.</span>
-            </label>
-          </div>
-
-          <label class="alert-behavior-check">
-            <input
-              name="duck_only_during_announcement"
-              type="checkbox"
-              checked={props.settings.duck_only_during_announcement}
-            />
-            <span class="alert-check-box" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="m6.5 12.5 3.2 3.2 7.8-8" />
-              </svg>
-            </span>
-            <span>
-              <b>Приглушувати лише під час оголошення</b>
-              <small>
-                Після завершення аудіофайлу музика повертається до попереднього рівня, навіть якщо
-                тривога ще триває.
-              </small>
-            </span>
-          </label>
+              <SettingsNumber
+                name="restore_fade_seconds"
+                label="Відновлення музики, с"
+                min={0}
+                max={60}
+                step="any"
+                value={props.settings.restore_fade_seconds}
+              />
+              <SettingsNumber
+                name="default_restore_volume_percent"
+                label="Резервна гучність відновлення, %"
+                min={0}
+                max={100}
+                step="any"
+                value={props.settings.default_restore_volume_percent}
+                help="Застосовується лише за відсутності збереженого попереднього рівня."
+              />
+            </SettingsGroup>
+          </details>
         </div>
-
-        <div class="alert-config-group">
-          <div class="alert-config-title">
-            <span class="alert-config-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="8.2" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-            </span>
-            <div>
-              <h3>Хвилина мовчання</h3>
-              <p>Час запуску, часовий пояс, допустиме запізнення та рівні відтворення.</p>
-            </div>
-          </div>
-          <div class="alert-config-fields minute-grid">
-            <label class={LABEL_CLASS}>
-              Час початку
+        <div hidden={props.section !== 'schedule'}>
+          <header class="settings-card-heading">
+            <h2>Хвилина мовчання</h2>
+            <p>Щоденний запуск за часом, установленим для плеєра.</p>
+          </header>
+          <SettingsSwitch
+            name="minute_silence_enabled"
+            label="Щоденна хвилина мовчання"
+            checked={props.settings.minute_silence_enabled}
+            help="Відтворюється один раз на добу за вказаним розкладом."
+          />
+          <SettingsGroup title="Розклад">
+            <label class="settings-field">
+              <span>Час початку</span>
               <input
-                class={INPUT_CLASS}
+                class="settings-input"
                 name="minute_silence_start_time"
                 type="time"
                 step="1"
@@ -182,11 +135,10 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 value={props.settings.minute_silence_start_time}
               />
             </label>
-
-            <label class={LABEL_CLASS}>
-              Часовий пояс
+            <label class="settings-field">
+              <span>Часовий пояс</span>
               <input
-                class={INPUT_CLASS}
+                class="settings-input"
                 name="minute_silence_timezone"
                 type="text"
                 list="minute-silence-timezones"
@@ -198,137 +150,61 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
                 <option value="Europe/Kyiv" />
                 <option value="UTC" />
               </datalist>
+              <small>Розклад використовує цей пояс, незалежно від часу на вашому пристрої.</small>
             </label>
-
-            <label class={LABEL_CLASS}>
-              Допустиме запізнення, с
-              <input
-                class={INPUT_CLASS}
+            <SettingsRange
+              name="minute_silence_volume_percent"
+              label="Гучність хвилини мовчання"
+              min={0}
+              max={100}
+              step={0.1}
+              unit="%"
+              value={props.settings.minute_silence_volume_percent}
+              help="Відносно рівня оголошень."
+            />
+          </SettingsGroup>
+          <details class="settings-advanced">
+            <summary>Розширені параметри розкладу</summary>
+            <SettingsGroup title="Поведінка при запуску">
+              <SettingsNumber
                 name="minute_silence_catch_up_seconds"
-                type="number"
-                min="0"
-                max="86400"
-                step="1"
-                required
+                label="Допустиме запізнення, с"
+                min={0}
+                max={86400}
                 value={props.settings.minute_silence_catch_up_seconds}
               />
-            </label>
-
-            <label class={LABEL_CLASS}>
-              Плавне стишення музики, с
-              <input
-                class={INPUT_CLASS}
+              <SettingsNumber
                 name="minute_silence_music_fade_seconds"
-                type="number"
-                min="0"
-                max="60"
-                step="0.1"
-                required
+                label="Стишення перед початком, с"
+                min={0}
+                max={60}
+                step="any"
                 value={props.settings.minute_silence_music_fade_seconds}
               />
-            </label>
-
-            <label class={LABEL_CLASS + ' alert-field-wide'}>
-              Гучність хвилини мовчання, %
-              <input
-                class={INPUT_CLASS}
-                name="minute_silence_volume_percent"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
-                required
-                value={props.settings.minute_silence_volume_percent}
-              />
-              <span class={HELP_CLASS}>Відносно рівня ALERT у мікшері.</span>
-            </label>
-
-            <label class={LABEL_CLASS + ' alert-field-wide'}>
-              Рівень відновлення без знімка, %
-              <input
-                class={INPUT_CLASS}
-                name="default_restore_volume_percent"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
-                required
-                value={props.settings.default_restore_volume_percent}
-              />
-              <span class={HELP_CLASS}>Використовується, якщо немає збереженого рівня.</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="alert-config-group">
-          <div class="alert-config-title">
-            <span class="alert-config-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12a7 7 0 1 0 2-5M5 5v5h5" />
-              </svg>
-            </span>
-            <div>
-              <h3>Відновлення</h3>
-              <p>Повернення музики після завершення повідомлення або хвилини мовчання.</p>
-            </div>
-          </div>
-          <div class="alert-config-fields two-cols">
-            <label class={LABEL_CLASS}>
-              Час відновлення, с
-              <input
-                class={INPUT_CLASS}
-                name="restore_fade_seconds"
-                type="number"
-                min="0"
-                max="60"
-                step="0.1"
-                required
-                value={props.settings.restore_fade_seconds}
-              />
-              <span class={HELP_CLASS}>Плавне повернення до попереднього рівня.</span>
-            </label>
-
-            <label class={LABEL_CLASS}>
-              Повторення активної тривоги, хв
-              <input
-                class={INPUT_CLASS}
-                name="alert_repeat_interval_minutes"
-                type="number"
-                min="0"
-                max="1440"
-                step="1"
-                required
-                value={props.settings.alert_repeat_interval_minutes}
-              />
-              <span class={HELP_CLASS}>0 — не повторювати оголошення.</span>
-            </label>
-          </div>
+            </SettingsGroup>
+          </details>
         </div>
       </fieldset>
-
-      <div class="alert-audio-savebar" classList={{ 'is-dirty': props.dirty || props.busy }}>
-        <div>
-          <span class="alert-savebar-icon" aria-hidden="true">
-            i
-          </span>
-          <span>
-            <b>{props.dirty ? 'Є незбережені зміни' : 'Налаштування готові'}</b>
-            <small>
-              {props.message?.text ?? 'Після збереження всі параметри почнуть діяти одразу.'}
-            </small>
-          </span>
+      <footer class="settings-savebar">
+        <div
+          role="status"
+          aria-live="polite"
+          classList={{ 'is-error': props.message?.tone === 'error' }}
+        >
+          <strong>
+            {props.busy ? 'Зберігаємо…' : props.dirty ? 'Є незбережені зміни' : 'Зміни збережено'}
+          </strong>
+          <p>{props.message?.text ?? 'Параметри оповіщень і розкладу зберігаються разом.'}</p>
         </div>
         <button
           type="submit"
-          class="alert-button alert-button-primary alert-save-audio"
+          class="settings-primary-button"
           disabled={props.busy || !props.dirty}
+          aria-busy={props.busy}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 3.8h11.5L20 7.3V20H5zM8 3.8V9h8V3.8M8 20v-6h9v6" />
-          </svg>
-          {props.busy ? 'Збереження…' : 'Зберегти налаштування'}
+          {props.busy ? 'Збереження…' : 'Зберегти зміни'}
         </button>
-      </div>
+      </footer>
     </form>
   </section>
 );

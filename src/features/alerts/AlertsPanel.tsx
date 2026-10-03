@@ -1,4 +1,13 @@
-import { Show, createEffect, createSignal, on, onCleanup, onMount, type Component } from 'solid-js';
+import {
+  For,
+  Show,
+  createEffect,
+  createSignal,
+  on,
+  onCleanup,
+  onMount,
+  type Component,
+} from 'solid-js';
 
 import { api } from '../../api/client';
 import type {
@@ -15,6 +24,12 @@ import { errorText, formatBytes, LoadingCard, type BusyAction, type FormMessage 
 import { AudioSettingsSection } from './AudioSettingsSection';
 import { audioPayload, providerPayload } from './form';
 import { ProviderSettingsSection } from './ProviderSettingsSection';
+import {
+  SETTINGS_SECTIONS,
+  sectionForAudioField,
+  validateSettingsForm,
+  type SettingsSection,
+} from './settings-navigation';
 
 interface AlertsPanelProps {
   active: boolean;
@@ -22,6 +37,7 @@ interface AlertsPanelProps {
 }
 
 export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
+  const [section, setSection] = createSignal<SettingsSection>('announcements');
   const [provider, setProvider] = createSignal<AlertProviderSettings>();
   const [audio, setAudio] = createSignal<AudioSettings>();
   const [media, setMedia] = createSignal<AlertMediaResponse>();
@@ -92,7 +108,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   }
 
   async function saveProvider(): Promise<void> {
-    if (!providerForm.reportValidity()) {
+    if (!validateSettingsForm(providerForm, () => setSection('provider'))) {
       return;
     }
     let payload;
@@ -121,7 +137,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   }
 
   async function testProvider(): Promise<void> {
-    if (!providerForm.reportValidity()) {
+    if (!validateSettingsForm(providerForm, () => setSection('provider'))) {
       return;
     }
     let payload;
@@ -149,7 +165,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   }
 
   async function saveAudio(): Promise<void> {
-    if (!audioForm.reportValidity()) {
+    if (!validateSettingsForm(audioForm, (field) => setSection(sectionForAudioField(field)))) {
       return;
     }
     let payload;
@@ -280,8 +296,11 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   );
 
   return (
-    <div class="alerts-page alerts-v2 space-y-5">
-      <AlertStatusSection priority={props.priority} audio={audio()} />
+    <div class="alerts-page alerts-v2 settings-page space-y-5">
+      <header class="settings-page-heading">
+        <h1>Налаштування плеєра</h1>
+        <p>Оберіть групу параметрів. Зміни застосовуються після збереження.</p>
+      </header>
 
       <Show when={providerDirty() || audioDirty()}>
         <p class="draft-notice" role="status">
@@ -306,62 +325,117 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
         )}
       </Show>
 
-      <Show
-        when={provider()}
-        fallback={
-          <Show when={loading()}>
-            <LoadingCard />
-          </Show>
-        }
-        keyed
-      >
-        {(settings) => (
-          <ProviderSettingsSection
-            settings={settings}
-            busy={providerBusy()}
-            dirty={providerDirty()}
-            message={providerMessage()}
-            tokenVisible={tokenVisible()}
-            setFormRef={(element) => {
-              providerForm = element;
-            }}
-            onDirty={markProviderDirty}
-            onToggleToken={() => setTokenVisible((value) => !value)}
-            onSave={() => void saveProvider()}
-            onTest={() => void testProvider()}
-          />
-        )}
-      </Show>
+      <div class="settings-layout">
+        <nav class="settings-navigation" aria-label="Групи налаштувань">
+          <For each={SETTINGS_SECTIONS}>
+            {(item) => (
+              <button
+                type="button"
+                id={`settings-tab-${item.id}`}
+                aria-controls={`settings-panel-${item.id}`}
+                aria-current={section() === item.id ? 'page' : undefined}
+                onClick={() => setSection(item.id)}
+              >
+                <strong>{item.title}</strong>
+                <small>{item.description}</small>
+                <Show
+                  when={
+                    item.id === 'provider'
+                      ? providerDirty()
+                      : (item.id === 'announcements' || item.id === 'schedule') && audioDirty()
+                  }
+                >
+                  <span class="settings-draft-marker">Незбережені зміни</span>
+                </Show>
+              </button>
+            )}
+          </For>
+        </nav>
+        <div class="settings-content">
+          <div
+            id="settings-panel-provider"
+            role="region"
+            aria-labelledby="settings-tab-provider"
+            hidden={section() !== 'provider'}
+          >
+            <Show
+              when={provider()}
+              fallback={
+                <Show when={loading()}>
+                  <LoadingCard />
+                </Show>
+              }
+              keyed
+            >
+              {(settings) => (
+                <ProviderSettingsSection
+                  settings={settings}
+                  busy={providerBusy()}
+                  dirty={providerDirty()}
+                  message={providerMessage()}
+                  tokenVisible={tokenVisible()}
+                  setFormRef={(element) => {
+                    providerForm = element;
+                  }}
+                  onDirty={markProviderDirty}
+                  onToggleToken={() => setTokenVisible((value) => !value)}
+                  onSave={() => void saveProvider()}
+                  onTest={() => void testProvider()}
+                />
+              )}
+            </Show>
+          </div>
 
-      <Show when={media()} keyed>
-        {(files) => (
-          <AlertMediaSection
-            files={files}
-            busy={mediaBusy()}
-            resetAll={mediaResetAll()}
-            messages={mediaMessages()}
-            onUpload={(kind, file) => void uploadMedia(kind, file)}
-            onReset={(kind) => void resetMedia(kind)}
-            onResetAll={() => void resetAllMedia()}
-          />
-        )}
-      </Show>
+          <div
+            id="settings-panel-media"
+            role="region"
+            aria-labelledby="settings-tab-media"
+            hidden={section() !== 'media'}
+          >
+            <Show when={media()} keyed>
+              {(files) => (
+                <AlertMediaSection
+                  files={files}
+                  busy={mediaBusy()}
+                  resetAll={mediaResetAll()}
+                  messages={mediaMessages()}
+                  onUpload={(kind, file) => void uploadMedia(kind, file)}
+                  onReset={(kind) => void resetMedia(kind)}
+                  onResetAll={() => void resetAllMedia()}
+                />
+              )}
+            </Show>
+          </div>
 
-      <Show when={audio()} keyed>
-        {(settings) => (
-          <AudioSettingsSection
-            settings={settings}
-            busy={audioBusy()}
-            dirty={audioDirty()}
-            message={audioMessage()}
-            setFormRef={(element) => {
-              audioForm = element;
-            }}
-            onDirty={markAudioDirty}
-            onSave={() => void saveAudio()}
-          />
-        )}
-      </Show>
+          <div
+            role="region"
+            aria-labelledby={`settings-tab-${section() === 'schedule' ? 'schedule' : 'announcements'}`}
+            id={`settings-panel-${section() === 'schedule' ? 'schedule' : 'announcements'}`}
+            hidden={section() !== 'announcements' && section() !== 'schedule'}
+          >
+            <Show when={audio()} keyed>
+              {(settings) => (
+                <AudioSettingsSection
+                  settings={settings}
+                  section={section()}
+                  busy={audioBusy()}
+                  dirty={audioDirty()}
+                  message={audioMessage()}
+                  setFormRef={(element) => {
+                    audioForm = element;
+                  }}
+                  onDirty={markAudioDirty}
+                  onSave={() => void saveAudio()}
+                />
+              )}
+            </Show>
+          </div>
+        </div>
+      </div>
+      <details class="settings-diagnostics">
+        <summary>Стан оповіщень і діагностика</summary>
+        <AlertStatusSection priority={props.priority} audio={audio()} />
+      </details>
     </div>
   );
 };

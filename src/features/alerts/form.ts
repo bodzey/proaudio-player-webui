@@ -40,6 +40,9 @@ export function audioPayload(data: FormData): AudioSettingsUpdate {
     air_raid_alerts_enabled: airRaidAlertsEnabled,
     notifications_enabled: airRaidAlertsEnabled,
     duck_db: formNumber(data, 'duck_db'),
+    ...(data.has('alert_volume_percent')
+      ? { alert_volume_percent: formNumber(data, 'alert_volume_percent') }
+      : {}),
     minute_silence_volume_percent: formNumber(data, 'minute_silence_volume_percent'),
     minute_silence_enabled: data.get('minute_silence_enabled') === 'on',
     minute_silence_start_time: formString(data, 'minute_silence_start_time'),

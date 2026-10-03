@@ -1,6 +1,7 @@
-export type AppPage = 'player' | 'radio' | 'alerts';
+export type AppPage = 'player' | 'radio' | 'settings';
 
 export function pageFromHash(hash = window.location.hash): AppPage {
   const candidate = hash.slice(1);
-  return candidate === 'radio' || candidate === 'alerts' ? candidate : 'player';
+  if (candidate === 'alerts') return 'settings';
+  return candidate === 'radio' || candidate === 'settings' ? candidate : 'player';
 }

@@ -1,0 +1,357 @@
+.app-shell .settings-page-heading h1 {
+  color: var(--pa-text-strong);
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.app-shell .settings-page-heading p,
+.app-shell .settings-card-heading p,
+.app-shell .settings-help,
+.app-shell .settings-field small,
+.app-shell .settings-switch small,
+.app-shell .settings-savebar p {
+  color: var(--pa-muted);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.app-shell .settings-page-heading p {
+  margin-top: 0.4rem;
+}
+
+.app-shell .settings-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.app-shell .settings-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.app-shell .settings-navigation button {
+  min-width: 0;
+  min-height: 60px;
+  border: 1px solid var(--pa-border);
+  border-radius: 0.85rem;
+  background: var(--pa-surface);
+  padding: 0.85rem 1rem;
+  text-align: left;
+  color: var(--pa-text);
+}
+
+.app-shell .settings-navigation strong,
+.app-shell .settings-navigation small,
+.app-shell .settings-draft-marker {
+  display: block;
+}
+
+.app-shell .settings-navigation strong {
+  font-size: 0.8125rem;
+}
+
+.app-shell .settings-navigation small {
+  margin-top: 0.3rem;
+  color: var(--pa-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.app-shell .settings-navigation [aria-current='page'] {
+  border-color: var(--pa-accent-border);
+  background: var(--pa-accent-soft);
+}
+
+.app-shell .settings-navigation [aria-current='page'] strong {
+  color: var(--pa-accent-text);
+}
+
+.app-shell .settings-draft-marker {
+  margin-top: 0.35rem;
+  color: var(--pa-warning-text);
+  font-size: 0.6875rem;
+}
+
+.app-shell .settings-content {
+  min-width: 0;
+}
+
+.app-shell .settings-card {
+  overflow: clip;
+  border: 1px solid var(--pa-border);
+  border-radius: 1.25rem;
+  background: var(--pa-surface);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  color: var(--pa-text);
+}
+
+.app-shell .settings-card-heading {
+  margin-bottom: 1.4rem;
+}
+
+.app-shell .settings-card-heading h2 {
+  margin-bottom: 0.45rem;
+  color: var(--pa-text-strong);
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+.app-shell .settings-token-status {
+  display: inline-block;
+  margin-top: 0.75rem;
+  border: 1px solid var(--pa-border);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  color: var(--pa-text);
+  font-size: 0.75rem;
+}
+
+.app-shell .settings-form-body,
+.app-shell .settings-group {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+
+.app-shell .settings-group {
+  margin-top: 1.5rem;
+}
+
+.app-shell .settings-group legend {
+  margin-bottom: 0.85rem;
+  color: var(--pa-text-strong);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.app-shell .settings-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.app-shell .settings-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--pa-text);
+  font-size: 0.8125rem;
+}
+
+.app-shell .settings-field-wide,
+.app-shell .settings-range,
+.app-shell .settings-fields .settings-switch {
+  grid-column: 1 / -1;
+}
+
+.app-shell .settings-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 0.75rem;
+  background: var(--pa-inset);
+  padding: 0.6rem 0.75rem;
+  color: var(--pa-text);
+  font-size: 0.875rem;
+}
+
+.app-shell .settings-input::placeholder {
+  color: var(--pa-muted);
+}
+
+.app-shell .settings-input:user-invalid {
+  border-color: var(--pa-danger);
+}
+
+.app-shell .settings-range-heading,
+.app-shell .settings-range-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-shell .settings-range-heading {
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.app-shell .settings-range-value {
+  flex-shrink: 0;
+  color: var(--pa-accent-text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.app-shell .settings-range-controls [type='range'] {
+  min-width: 0;
+  height: 44px;
+  flex: 1;
+  accent-color: var(--pa-accent);
+}
+
+.app-shell .settings-range-controls [type='number'] {
+  width: 6rem;
+}
+
+.app-shell .settings-range .settings-help {
+  margin-top: 0.4rem;
+}
+
+.app-shell .settings-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 60px;
+  border-bottom: 1px solid var(--pa-border);
+  padding: 0.5rem 0 1rem;
+}
+
+.app-shell .settings-switch b,
+.app-shell .settings-switch small {
+  display: block;
+}
+
+.app-shell .settings-switch b {
+  font-size: 0.875rem;
+}
+
+.app-shell .settings-switch small {
+  margin-top: 0.35rem;
+}
+
+.app-shell .settings-switch input {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  accent-color: var(--pa-accent);
+}
+
+.app-shell .settings-advanced,
+.app-shell .settings-diagnostics {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--pa-border);
+  padding-top: 1rem;
+}
+
+.app-shell .settings-advanced summary,
+.app-shell .settings-diagnostics summary {
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--pa-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.app-shell summary:focus-visible {
+  outline: 2px solid var(--pa-accent);
+  outline-offset: 3px;
+}
+
+.app-shell .settings-savebar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--pa-border);
+  background: var(--pa-surface);
+  padding-top: 1.1rem;
+}
+
+.app-shell .settings-savebar > div:first-child {
+  min-width: 0;
+  flex: 1 1 16rem;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .settings-savebar strong {
+  font-size: 0.8125rem;
+}
+
+.app-shell .settings-savebar .is-error {
+  color: var(--pa-danger-text);
+}
+
+.app-shell .settings-action-buttons,
+.app-shell .settings-token-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.app-shell .settings-primary-button,
+.app-shell .settings-secondary-button {
+  min-height: 44px;
+  border: 1px solid var(--pa-border-strong);
+  border-radius: 0.75rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.app-shell .settings-primary-button {
+  border-color: var(--pa-accent);
+  background: var(--pa-accent);
+  color: var(--pa-on-accent);
+}
+
+.app-shell .settings-secondary-button {
+  background: var(--pa-surface-soft);
+  color: var(--pa-text);
+}
+
+.app-shell .settings-primary-button:disabled,
+.app-shell .settings-secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.app-shell .settings-security-hint {
+  margin-top: 1rem;
+}
+
+.app-shell .settings-diagnostics[open] > section {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 900px) {
+  .app-shell .settings-layout {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .app-shell .settings-navigation {
+    position: sticky;
+    top: 1rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .app-shell .settings-navigation small {
+    display: none;
+  }
+
+  .app-shell .settings-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell .settings-action-buttons {
+    width: 100%;
+  }
+
+  .app-shell .settings-action-buttons button {
+    flex: 1;
+  }
+}

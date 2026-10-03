@@ -1,14 +1,8 @@
 import { Show, type Component } from 'solid-js';
 
 import type { AlertProviderSettings } from '../../api/types';
-import {
-  HELP_CLASS,
-  INPUT_CLASS,
-  LABEL_CLASS,
-  messageClass,
-  type BusyAction,
-  type FormMessage,
-} from './AlertUi';
+import { type BusyAction, type FormMessage } from './AlertUi';
+import { SettingsGroup, SettingsNumber } from './SettingsFields';
 
 interface ProviderSettingsSectionProps {
   settings: AlertProviderSettings;
@@ -24,34 +18,20 @@ interface ProviderSettingsSectionProps {
 }
 
 export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = (props) => (
-  <section class="pro-panel alerts-card alert-api-card rounded-[28px] border">
-    <div class="alert-section-heading">
-      <div>
-        <p class="alert-eyebrow">API налаштування</p>
-        <h2>API повітряних тривог</h2>
-        <p>
-          Налаштування підключення до сервера alerts.in.ua. Перевірка API використовує введені
-          значення, але не зберігає їх.
-        </p>
-      </div>
-      <div
-        class={
-          props.settings.token_configured ? 'alert-token-badge is-configured' : 'alert-token-badge'
-        }
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m9.2 12.8 1.9 1.9 4.3-4.6" />
-          <circle cx="12" cy="12" r="8.2" />
-        </svg>
-        {props.settings.token_configured ? 'Токен налаштовано' : 'Токен відсутній'}
-      </div>
-    </div>
-
+  <section class="settings-card">
+    <header class="settings-card-heading">
+      <h2>Підключення API</h2>
+      <p>Локація, для якої плеєр отримує повідомлення про повітряні тривоги.</p>
+      <span class="settings-token-status">
+        {props.settings.token_configured
+          ? 'Токен налаштовано'
+          : 'Додайте API-токен для підключення'}
+      </span>
+    </header>
     <form
-      ref={(element) => {
-        props.setFormRef(element);
-      }}
-      class="alert-provider-form"
+      ref={(element) => props.setFormRef(element)}
+      class="settings-form"
+      novalidate
       aria-busy={props.busy !== null}
       onInput={() => props.onDirty()}
       onChange={() => props.onDirty()}
@@ -60,191 +40,145 @@ export const ProviderSettingsSection: Component<ProviderSettingsSectionProps> = 
         props.onSave();
       }}
     >
-      <fieldset class="contents" disabled={props.busy !== null}>
-        <label class={LABEL_CLASS + ' alert-span-full'}>
-          Шаблон адреси API
-          <div class="alert-input-shell has-leading-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M10.4 13.6 13.6 10.4M8.1 15.9l-1.3 1.3a3.2 3.2 0 0 1-4.5-4.5l3.2-3.2A3.2 3.2 0 0 1 10 9M15.9 8.1l1.3-1.3a3.2 3.2 0 0 1 4.5 4.5l-3.2 3.2A3.2 3.2 0 0 1 14 15" />
-            </svg>
-            <input
-              class={INPUT_CLASS}
-              name="endpoint"
-              type="text"
-              inputmode="url"
-              spellcheck={false}
-              required
-              maxlength="2048"
-              value={props.settings.endpoint}
-            />
-          </div>
-          <span class={HELP_CLASS}>
-            Адреса повинна містити <code>{'{uid}'}</code>.
-          </span>
-        </label>
-
-        <label class={LABEL_CLASS}>
-          UID локації
-          <input
-            class={INPUT_CLASS}
+      <fieldset class="settings-form-body" disabled={props.busy !== null}>
+        <SettingsGroup title="Локація">
+          <SettingsNumber
             name="location_uid"
-            type="number"
-            min="1"
-            max="4294967295"
-            step="1"
-            required
+            label="UID локації"
+            min={1}
+            max={4294967295}
             value={props.settings.location_uid}
+            help="Ідентифікатор локації у сервісі alerts.in.ua."
           />
-          <span class={HELP_CLASS}>Ідентифікатор вашої локації (uid).</span>
-        </label>
-
-        <label class={LABEL_CLASS}>
-          Тип локації
-          <select class={INPUT_CLASS} name="location_type" value={props.settings.location_type}>
-            <option value="hromada">Територіальна громада</option>
-            <option value="city">Місто</option>
-            <option value="raion">Район</option>
-            <option value="oblast">Область</option>
-            <option value="standalone">Окрема територія</option>
-          </select>
-          <span class={HELP_CLASS}>Оберіть тип вашої локації.</span>
-        </label>
-
-        <label class={LABEL_CLASS + ' alert-span-full'}>
-          Новий API-токен
-          <div class="alert-input-shell has-trailing-action">
-            <input
-              class={INPUT_CLASS}
-              name="token"
-              type={props.tokenVisible ? 'text' : 'password'}
-              autocomplete="new-password"
-              maxlength="4096"
-              placeholder="Залиште порожнім, щоб не змінювати"
-            />
-            <button
-              type="button"
-              class="alert-input-action"
-              aria-label={props.tokenVisible ? 'Приховати API-токен' : 'Показати API-токен'}
-              title={props.tokenVisible ? 'Приховати API-токен' : 'Показати API-токен'}
-              onClick={() => props.onToggleToken()}
+          <label class="settings-field">
+            <span>Тип локації</span>
+            <select
+              class="settings-input"
+              name="location_type"
+              value={props.settings.location_type}
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M2.8 12s3.2-5.2 9.2-5.2S21.2 12 21.2 12 18 17.2 12 17.2 2.8 12 2.8 12Z" />
-                <circle cx="12" cy="12" r="2.2" />
-              </svg>
-            </button>
-          </div>
-          <span class={HELP_CLASS}>Залиште порожнім, щоб не змінювати поточний токен.</span>
-        </label>
-
-        <details class="alert-advanced alert-span-full">
-          <summary>
-            <span>
-              <b>Розширені параметри API</b>
+              <option value="hromada">Територіальна громада</option>
+              <option value="city">Місто</option>
+              <option value="raion">Район</option>
+              <option value="oblast">Область</option>
+              <option value="standalone">Окрема територія</option>
+            </select>
+          </label>
+        </SettingsGroup>
+        <SettingsGroup title="Доступ до сервера">
+          <label class="settings-field settings-field-wide">
+            <span>API-токен</span>
+            <div class="settings-token-input">
+              <input
+                class="settings-input"
+                name="token"
+                type={props.tokenVisible ? 'text' : 'password'}
+                autocomplete="new-password"
+                maxlength="4096"
+                placeholder="Залиште порожнім, щоб зберегти поточний"
+              />
+              <button
+                type="button"
+                class="settings-secondary-button"
+                aria-pressed={props.tokenVisible}
+                onClick={() => props.onToggleToken()}
+              >
+                {props.tokenVisible ? 'Приховати' : 'Показати'}
+              </button>
+            </div>
+            <small>Збережений токен не відображається. Порожнє поле не видаляє його.</small>
+          </label>
+        </SettingsGroup>
+        <details class="settings-advanced">
+          <summary>Розширені параметри підключення</summary>
+          <SettingsGroup title="Сервер і повторні запити">
+            <label class="settings-field settings-field-wide">
+              <span>Шаблон адреси API</span>
+              <input
+                class="settings-input"
+                name="endpoint"
+                type="text"
+                inputmode="url"
+                spellcheck={false}
+                required
+                maxlength="2048"
+                value={props.settings.endpoint}
+              />
               <small>
-                Інтервал {props.settings.poll_interval_seconds} с · timeout{' '}
-                {props.settings.request_timeout_seconds} с · HTTP 429{' '}
-                {props.settings.rate_limit_backoff_seconds} с
+                Адреса має містити шаблон <code>{'{uid}'}</code>.
               </small>
-            </span>
-          </summary>
-          <div class="alert-provider-timing">
-            <label class={LABEL_CLASS}>
-              Інтервал опитування, с
-              <input
-                class={INPUT_CLASS}
-                name="poll_interval_seconds"
-                type="number"
-                min="8"
-                max="3600"
-                step="1"
-                required
-                value={props.settings.poll_interval_seconds}
-              />
-              <span class={HELP_CLASS}>Як часто перевіряти стан тривог.</span>
             </label>
-
-            <label class={LABEL_CLASS}>
-              Очікування відповіді, с
-              <input
-                class={INPUT_CLASS}
-                name="request_timeout_seconds"
-                type="number"
-                min="0.1"
-                max="120"
-                step="0.1"
-                required
-                value={props.settings.request_timeout_seconds}
-              />
-              <span class={HELP_CLASS}>Скільки чекати на відповідь сервера.</span>
-            </label>
-
-            <label class={LABEL_CLASS}>
-              Пауза після HTTP 429, с
-              <input
-                class={INPUT_CLASS}
-                name="rate_limit_backoff_seconds"
-                type="number"
-                min="60"
-                max="86400"
-                step="1"
-                required
-                value={props.settings.rate_limit_backoff_seconds}
-              />
-              <span class={HELP_CLASS}>Затримка після перевищення ліміту.</span>
-            </label>
-
-            <label class={LABEL_CLASS}>
-              Підтверджень відбою
-              <input
-                class={INPUT_CLASS}
-                name="clear_confirmations"
-                type="number"
-                min="1"
-                max="100"
-                step="1"
-                required
-                value={props.settings.clear_confirmations}
-              />
-              <span class={HELP_CLASS}>Кількість послідовних відповідей про відбій.</span>
-            </label>
-          </div>
+            <SettingsNumber
+              name="poll_interval_seconds"
+              label="Інтервал перевірки, с"
+              min={8}
+              max={3600}
+              step="any"
+              value={props.settings.poll_interval_seconds}
+            />
+            <SettingsNumber
+              name="request_timeout_seconds"
+              label="Очікування відповіді, с"
+              min={0.1}
+              max={120}
+              step="any"
+              value={props.settings.request_timeout_seconds}
+            />
+            <SettingsNumber
+              name="rate_limit_backoff_seconds"
+              label="Пауза після перевищення ліміту, с"
+              min={60}
+              max={86400}
+              step="any"
+              value={props.settings.rate_limit_backoff_seconds}
+            />
+            <SettingsNumber
+              name="clear_confirmations"
+              label="Підтверджень відбою"
+              min={1}
+              max={100}
+              value={props.settings.clear_confirmations}
+            />
+          </SettingsGroup>
         </details>
       </fieldset>
-
-      <div class="alert-form-actions alert-span-full">
-        <span
-          class={'alert-form-message ' + messageClass(props.message)}
+      <footer class="settings-savebar">
+        <div
           role="status"
           aria-live="polite"
+          classList={{ 'is-error': props.message?.tone === 'error' }}
         >
-          <Show when={props.dirty && !props.message?.text}>Є незбережені зміни</Show>
-          {props.message?.text ?? ''}
-        </span>
-        <div class="alert-action-buttons">
+          <strong>
+            {props.message?.text ??
+              (props.dirty ? 'Є незбережені зміни' : 'Налаштування збережено')}
+          </strong>
+          <p>Перевірка використовує введені значення й не зберігає їх.</p>
+        </div>
+        <div class="settings-action-buttons">
           <button
             type="button"
-            class="alert-button alert-button-secondary"
+            class="settings-secondary-button"
             disabled={props.busy !== null}
+            aria-busy={props.busy === 'test'}
             onClick={() => props.onTest()}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4.8v5.4h-5.4" />
-            </svg>
-            {props.busy === 'test' ? 'Перевірка…' : 'Перевірити API'}
+            {props.busy === 'test' ? 'Перевірка…' : 'Перевірити'}
           </button>
           <button
             type="submit"
-            class="alert-button alert-button-primary"
+            class="settings-primary-button"
             disabled={props.busy !== null || !props.dirty}
+            aria-busy={props.busy === 'save'}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 3.8h11.5L20 7.3V20H5zM8 3.8V9h8V3.8M8 20v-6h9v6" />
-            </svg>
-            {props.busy === 'save' ? 'Збереження…' : 'Зберегти'}
+            {props.busy === 'save' ? 'Збереження…' : 'Зберегти зміни'}
           </button>
         </div>
-      </div>
+      </footer>
+      <Show when={props.settings.token_configured}>
+        <p class="settings-help settings-security-hint">
+          Для зміни токена введіть нове значення та збережіть налаштування.
+        </p>
+      </Show>
     </form>
   </section>
 );

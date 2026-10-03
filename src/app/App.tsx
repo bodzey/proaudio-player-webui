@@ -61,7 +61,7 @@ export function App() {
     });
   });
 
-  const pageLabel = () => ({ player: 'Плеєр', radio: 'Радіо', alerts: 'Оповіщення' })[page()];
+  const pageLabel = () => ({ player: 'Плеєр', radio: 'Радіо', settings: 'Налаштування' })[page()];
   createEffect(() => {
     document.title = `${pageLabel()} – ProAudio Player`;
   });
@@ -216,8 +216,8 @@ export function App() {
             />
           </PageSection>
 
-          <PageSection active={page() === 'alerts'} retain class="page-stage page-stage--alerts">
-            <AlertsPanel priority={player.status()?.priority} active={page() === 'alerts'} />
+          <PageSection active={page() === 'settings'} retain class="page-stage page-stage--alerts">
+            <AlertsPanel priority={player.status()?.priority} active={page() === 'settings'} />
           </PageSection>
         </main>
 

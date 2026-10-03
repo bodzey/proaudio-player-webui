@@ -56,21 +56,8 @@ export const PrimaryNav: Component<PrimaryNavProps> = (props) => (
       <span class="nav-button-label">Радіо</span>
     </NavLink>
 
-    <NavLink page="alerts" current={props.page}>
-      <svg
-        viewBox="0 0 24 24"
-        class="size-4"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.7"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-        <path d="M10 21h4" />
-      </svg>
-      <span class="nav-button-label">Оповіщення</span>
+    <NavLink page="settings" current={props.page}>
+      <span class="nav-button-label">Налаштування</span>
       <Show when={props.alertActive}>
         <span class="nav-alert-dot size-1.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.65)]" />
       </Show>
