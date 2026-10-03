@@ -46,6 +46,10 @@ describe('settings categories', () => {
     const save = vi.spyOn(api, 'setAudioSettings');
     const saveProvider = vi.spyOn(api, 'setAlertSettings');
     const host = await mount();
+    for (const button of host.querySelectorAll<HTMLButtonElement>('.settings-navigation button')) {
+      const region = host.querySelector(`#${button.getAttribute('aria-controls')}`);
+      expect(region?.getAttribute('aria-labelledby')).toBe(button.id);
+    }
     const gain = host.querySelector<HTMLInputElement>('[name="duck_db"]')!;
     edit(gain, '-12.25');
     host.querySelector<HTMLButtonElement>('#settings-tab-provider')!.click();

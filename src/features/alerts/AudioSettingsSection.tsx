@@ -31,7 +31,12 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
       }}
     >
       <fieldset class="settings-form-body" disabled={props.busy}>
-        <div hidden={props.section !== 'announcements'}>
+        <div
+          id="settings-panel-announcements"
+          role="region"
+          aria-labelledby="settings-tab-announcements"
+          hidden={props.section !== 'announcements'}
+        >
           <header class="settings-card-heading">
             <h2>Оповіщення</h2>
             <p>Гучність оголошень і поведінка музики під час повітряної тривоги.</p>
@@ -112,7 +117,12 @@ export const AudioSettingsSection: Component<AudioSettingsSectionProps> = (props
             </SettingsGroup>
           </details>
         </div>
-        <div hidden={props.section !== 'schedule'}>
+        <div
+          id="settings-panel-schedule"
+          role="region"
+          aria-labelledby="settings-tab-schedule"
+          hidden={props.section !== 'schedule'}
+        >
           <header class="settings-card-heading">
             <h2>Хвилина мовчання</h2>
             <p>Щоденний запуск за часом, установленим для плеєра.</p>

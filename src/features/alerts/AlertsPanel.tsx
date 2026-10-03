@@ -392,7 +392,15 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
             aria-labelledby="settings-tab-media"
             hidden={section() !== 'media'}
           >
-            <Show when={media()} keyed>
+            <Show
+              when={media()}
+              fallback={
+                <Show when={loading()}>
+                  <LoadingCard />
+                </Show>
+              }
+              keyed
+            >
               {(files) => (
                 <AlertMediaSection
                   files={files}
@@ -407,13 +415,16 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
             </Show>
           </div>
 
-          <div
-            role="region"
-            aria-labelledby={`settings-tab-${section() === 'schedule' ? 'schedule' : 'announcements'}`}
-            id={`settings-panel-${section() === 'schedule' ? 'schedule' : 'announcements'}`}
-            hidden={section() !== 'announcements' && section() !== 'schedule'}
-          >
-            <Show when={audio()} keyed>
+          <div hidden={section() !== 'announcements' && section() !== 'schedule'}>
+            <Show
+              when={audio()}
+              fallback={
+                <Show when={loading()}>
+                  <LoadingCard />
+                </Show>
+              }
+              keyed
+            >
               {(settings) => (
                 <AudioSettingsSection
                   settings={settings}
