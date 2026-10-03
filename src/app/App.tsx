@@ -2,6 +2,7 @@ import { Show, createEffect, createResource, createSignal, onCleanup, onMount } 
 
 import { api } from '../api/client';
 import { subscribeToMeterEvents } from '../api/meters';
+import { ConnectionNotice } from '../components/ConnectionNotice';
 import { PriorityBanner } from '../components/PriorityBanner';
 import { AlertsPanel } from '../features/alerts/AlertsPanel';
 import { MixerPanel } from '../features/mixer/MixerPanel';
@@ -16,6 +17,7 @@ import { createThemeController } from '../state/theme';
 import { AppFooter } from './AppFooter';
 import { AppHeader } from './AppHeader';
 import { PrimaryNav } from './PrimaryNav';
+import { PageSection } from './PageSection';
 import { type AppPage, pageFromHash } from './navigation';
 
 type MeterState = 'idle' | 'connecting' | 'live' | 'reconnecting';
@@ -26,6 +28,7 @@ export function App() {
   const theme = createThemeController();
   const [systemInfo, { refetch: refetchSystemInfo }] = createResource(api.systemInfo);
   const [page, setPage] = createSignal<AppPage>(pageFromHash());
+  let mainContent!: HTMLElement;
   const [meterState, setMeterState] = createSignal<MeterState>('idle');
   const [pageVisible, setPageVisible] = createSignal(document.visibilityState === 'visible');
   const meterBuffer = new MeterBuffer();
@@ -43,13 +46,24 @@ export function App() {
   };
 
   onMount(() => {
-    const syncPage = () => setPage(pageFromHash());
+    const syncPage = () => {
+      const next = pageFromHash();
+      if (next === page()) return;
+      setPage(next);
+      mainContent.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
     window.addEventListener('hashchange', syncPage);
     window.addEventListener('popstate', syncPage);
     onCleanup(() => {
       window.removeEventListener('hashchange', syncPage);
       window.removeEventListener('popstate', syncPage);
     });
+  });
+
+  const pageLabel = () => ({ player: 'Плеєр', radio: 'Радіо', alerts: 'Оповіщення' })[page()];
+  createEffect(() => {
+    document.title = `${pageLabel()} – ProAudio Player`;
   });
 
   onMount(() => {
@@ -104,6 +118,16 @@ export function App() {
       <div class="app-ambient" aria-hidden="true" />
 
       <div class="app-frame relative mx-auto flex min-h-screen w-full flex-col px-3 py-3 sm:px-5 sm:py-5 lg:px-7 lg:py-7">
+        <a
+          href="#main-content"
+          class="skip-link"
+          onClick={(event) => {
+            event.preventDefault();
+            mainContent.focus();
+          }}
+        >
+          Перейти до керування
+        </a>
         <AppHeader
           temperatureCelsius={systemInfo()?.temperature_celsius}
           connection={player.connection()}
@@ -116,16 +140,34 @@ export function App() {
 
         <PrimaryNav page={page()} alertActive={player.status()?.priority.active === true} />
 
-        <main class="app-content min-w-0">
+        <main
+          ref={(element) => (mainContent = element)}
+          id="main-content"
+          class="app-content min-w-0"
+          tabindex="-1"
+          aria-label={pageLabel()}
+        >
+          <ConnectionNotice
+            state={player.connection()}
+            refreshing={player.refreshing()}
+            onRetry={() => void player.refresh()}
+          />
           <Show when={player.error()}>
             {(message) => (
               <div
-                class="mb-4 flex items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.055] px-3.5 py-3 text-xs text-amber-100/80 sm:mb-5 sm:px-4 sm:py-3.5 sm:text-sm"
+                class="mb-4 flex flex-wrap items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.055] px-3.5 py-3 text-xs text-amber-100/80 sm:mb-5 sm:px-4 sm:py-3.5 sm:text-sm"
                 role="alert"
                 aria-live="assertive"
               >
                 <span class="mt-1 size-1.5 shrink-0 rounded-full bg-amber-300" />
-                <span>{message()}</span>
+                <span class="min-w-0 flex-1 break-words">{message()}</span>
+                <button
+                  type="button"
+                  class="ux-button ml-auto shrink-0"
+                  onClick={player.dismissError}
+                >
+                  Закрити повідомлення
+                </button>
               </div>
             )}
           </Show>
@@ -140,7 +182,7 @@ export function App() {
                     status={player.status()}
                     pendingAction={player.pendingAction()}
                     onAction={(action) => void player.playerAction(action)}
-                    disabled={controlsUnavailable()}
+                    disabled={controlsUnavailable() || priorityBlocked()}
                   />
                 </div>
 
@@ -166,21 +208,17 @@ export function App() {
             </div>
           </Show>
 
-          <Show when={page() === 'radio'}>
-            <div class="page-stage page-stage--radio">
-              <RadioPanel
-                status={player.status()}
-                blocked={priorityBlocked()}
-                disabled={controlsUnavailable()}
-              />
-            </div>
-          </Show>
+          <PageSection active={page() === 'radio'} retain class="page-stage page-stage--radio">
+            <RadioPanel
+              status={player.status()}
+              blocked={priorityBlocked()}
+              disabled={controlsUnavailable()}
+            />
+          </PageSection>
 
-          <Show when={page() === 'alerts'}>
-            <div class="page-stage page-stage--alerts">
-              <AlertsPanel priority={player.status()?.priority} />
-            </div>
-          </Show>
+          <PageSection active={page() === 'alerts'} retain class="page-stage page-stage--alerts">
+            <AlertsPanel priority={player.status()?.priority} active={page() === 'alerts'} />
+          </PageSection>
         </main>
 
         <AppFooter

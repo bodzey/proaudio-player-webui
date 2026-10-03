@@ -40,6 +40,7 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
   });
 
   const send = (db: number) => {
+    if (props.blocked) return;
     const value = roundDb(db);
     lastSentDb = value;
     lastSentAt = performance.now();
@@ -88,6 +89,15 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
     if (sendTimer !== undefined) window.clearTimeout(sendTimer);
   });
 
+  createEffect(() => {
+    if (!props.blocked) return;
+    if (sendTimer !== undefined) window.clearTimeout(sendTimer);
+    sendTimer = undefined;
+    scheduledDb = undefined;
+    setDragging(false);
+    setDraft(roundDb(props.level.db));
+  });
+
   const valueFromPointer = (clientY: number): number => {
     const rect = track.getBoundingClientRect();
     if (rect.height <= 0) return draft();
@@ -109,6 +119,7 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (props.blocked) return;
     const fineStep = event.shiftKey ? 0.1 : 0.5;
     let next: number | undefined;
     switch (event.key) {
@@ -197,9 +208,16 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
               displayDb() === '−∞' ? 'мінус нескінченність dB' : `${displayDb()} dB`
             }`}
             aria-disabled={props.blocked}
+            aria-orientation="vertical"
+            title="Стрілки: ±0,5 dB. Shift: точне регулювання. Подвійне натискання: 0 dB."
             onKeyDown={handleKeyDown}
             onWheel={(event) => {
-              if (props.blocked) return;
+              if (
+                props.blocked ||
+                document.activeElement !== event.currentTarget ||
+                event.deltaY === 0
+              )
+                return;
               event.preventDefault();
               const step = event.shiftKey ? 0.1 : 0.5;
               const direction = event.deltaY < 0 ? 1 : -1;
@@ -207,8 +225,9 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
             }}
             onDblClick={() => !props.blocked && setKeyboardValue(0)}
             onPointerDown={(event) => {
-              if (props.blocked) return;
+              if (props.blocked || event.button !== 0) return;
               event.preventDefault();
+              track.focus({ preventScroll: true });
               dragStartY = event.clientY;
               dragStartPosition = dbToFaderPosition(draft());
               dragSensitivity = event.shiftKey ? 0.12 : 1;
@@ -216,7 +235,7 @@ export const MixerStrip: Component<MixerStripProps> = (props) => {
               setDragging(true);
             }}
             onPointerMove={(event) => {
-              if (!dragging()) return;
+              if (!dragging() || props.blocked) return;
               event.preventDefault();
               const samples = event.getCoalescedEvents?.() ?? [event];
               const latest = samples.at(-1) ?? event;

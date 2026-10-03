@@ -1,4 +1,4 @@
-import { Show, createSignal, onMount, type Component } from 'solid-js';
+import { Show, createEffect, createSignal, on, onCleanup, onMount, type Component } from 'solid-js';
 
 import { api } from '../../api/client';
 import type {
@@ -17,6 +17,7 @@ import { audioPayload, providerPayload } from './form';
 import { ProviderSettingsSection } from './ProviderSettingsSection';
 
 interface AlertsPanelProps {
+  active: boolean;
   priority: PriorityState | undefined;
 }
 
@@ -41,6 +42,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
 
   let providerForm!: HTMLFormElement;
   let audioForm!: HTMLFormElement;
+  let loadingSettings = false;
 
   function markProviderDirty(): void {
     setProviderDirty(true);
@@ -53,6 +55,10 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
   }
 
   async function loadSettings(): Promise<void> {
+    if (loadingSettings) return;
+    loadingSettings = true;
+    const previousProvider = provider();
+    const previousAudio = audio();
     setLoading(true);
     setLoadError(undefined);
     const [providerResult, audioResult, mediaResult] = await Promise.allSettled([
@@ -62,14 +68,16 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     ]);
     const errors: string[] = [];
     if (providerResult.status === 'fulfilled') {
-      setProvider(providerResult.value);
-      setProviderDirty(false);
+      if (!providerDirty() && providerBusy() === null && provider() === previousProvider) {
+        setProvider(providerResult.value);
+      }
     } else {
       errors.push(`API тривог: ${errorText(providerResult.reason)}`);
     }
     if (audioResult.status === 'fulfilled') {
-      setAudio(audioResult.value);
-      setAudioDirty(false);
+      if (!audioDirty() && !audioBusy() && audio() === previousAudio) {
+        setAudio(audioResult.value);
+      }
     } else {
       errors.push(`аудіопараметри: ${errorText(audioResult.reason)}`);
     }
@@ -80,6 +88,7 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
     }
     setLoadError(errors.length > 0 ? errors.join('; ') : undefined);
     setLoading(false);
+    loadingSettings = false;
   }
 
   async function saveProvider(): Promise<void> {
@@ -243,18 +252,55 @@ export const AlertsPanel: Component<AlertsPanelProps> = (props) => {
 
   onMount(() => {
     void loadSettings();
+    const protectDrafts = (event: BeforeUnloadEvent) => {
+      if (
+        providerDirty() ||
+        audioDirty() ||
+        providerBusy() ||
+        audioBusy() ||
+        mediaBusy() ||
+        mediaResetAll()
+      ) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', protectDrafts);
+    onCleanup(() => window.removeEventListener('beforeunload', protectDrafts));
   });
+
+  createEffect(
+    on(
+      () => props.active,
+      (active, previous) => {
+        if (active && previous === false) void loadSettings();
+      },
+      { defer: true },
+    ),
+  );
 
   return (
     <div class="alerts-page alerts-v2 space-y-5">
       <AlertStatusSection priority={props.priority} audio={audio()} />
 
+      <Show when={providerDirty() || audioDirty()}>
+        <p class="draft-notice" role="status">
+          Є незбережені зміни. Можна перейти в інший розділ і повернутися до них. Перед закриттям
+          сторінки збережіть налаштування.
+        </p>
+      </Show>
+
       <Show when={loadError()}>
         {(error) => (
           <div class="alert-load-error" role="alert">
             <span>Не вдалося завантажити частину налаштувань: {error()}</span>
-            <button type="button" onClick={() => void loadSettings()}>
-              Повторити
+            <button
+              type="button"
+              disabled={loading()}
+              aria-busy={loading()}
+              onClick={() => void loadSettings()}
+            >
+              {loading() ? 'Завантаження…' : 'Повторити'}
             </button>
           </div>
         )}

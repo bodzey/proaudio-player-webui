@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from 'solid-js';
+import { createSignal, onCleanup, onMount, untrack } from 'solid-js';
 
 import { api } from '../api/client';
 import { subscribeToStatusEvents } from '../api/events';
@@ -21,25 +21,42 @@ export function createPlayerState() {
   const [connection, setConnection] = createSignal<ConnectionState>('connecting');
   const [error, setError] = createSignal<string>();
   const [pendingAction, setPendingAction] = createSignal<PlayerAction>();
+  const [refreshing, setRefreshing] = createSignal(false);
 
   let unsubscribe: (() => void) | undefined;
   let fallbackTimer: number | undefined;
   let musicWorker: Promise<void> | undefined;
   const musicQueue: MusicCommand[] = [];
+  let refreshRequest: Promise<void> | undefined;
+  let reportRefreshFailure = false;
 
-  async function refresh(reportFailure = true): Promise<void> {
-    try {
-      setStatus(await api.status());
-      if (reportFailure) {
-        setConnection('online');
-        setError(undefined);
-      } else if (connection() === 'offline') {
-        setConnection('reconnecting');
-      }
-    } catch (cause) {
-      setConnection('offline');
-      if (reportFailure) setError(errorMessage(cause));
-    }
+  function refresh(reportFailure = true): Promise<void> {
+    reportRefreshFailure ||= reportFailure;
+    if (refreshRequest) return refreshRequest;
+    setRefreshing(true);
+    refreshRequest = api
+      .status()
+      .then((next) =>
+        untrack(() => {
+          setStatus(next);
+          if (reportRefreshFailure) {
+            setConnection('online');
+            setError(undefined);
+          } else if (connection() === 'offline') {
+            setConnection('reconnecting');
+          }
+        }),
+      )
+      .catch((cause: unknown) => {
+        setConnection('offline');
+        if (reportRefreshFailure) setError(errorMessage(cause));
+      })
+      .finally(() => {
+        refreshRequest = undefined;
+        reportRefreshFailure = false;
+        setRefreshing(false);
+      });
+    return refreshRequest;
   }
 
   async function playerAction(action: PlayerAction): Promise<void> {
@@ -215,6 +232,8 @@ export function createPlayerState() {
     error,
     pendingAction,
     refresh,
+    refreshing,
+    dismissError: () => setError(undefined),
     playerAction,
     setVolume,
     setMute,

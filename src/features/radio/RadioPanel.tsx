@@ -5,6 +5,7 @@ import type { PlayerStatus } from '../../api/types';
 import { StationArtwork } from './StationArtwork';
 import { radioStations, refreshRadioStations } from './catalog';
 import { activeRadioStreamUrl } from './presentation';
+import { filterRadioStations } from './search';
 import { isSameRadioStream } from './stations';
 
 interface RadioPanelProps {
@@ -16,11 +17,33 @@ interface RadioPanelProps {
 export const RadioPanel: Component<RadioPanelProps> = (props) => {
   const [pendingUrl, setPendingUrl] = createSignal<string | null>(null);
   const [customUrl, setCustomUrl] = createSignal('');
+  const [query, setQuery] = createSignal('');
+  const [messageTarget, setMessageTarget] = createSignal<'catalog' | 'custom'>('catalog');
   const [message, setMessage] = createSignal<{ kind: 'success' | 'error'; text: string } | null>(
     null,
   );
 
   const currentStreamUrl = () => activeRadioStreamUrl(props.status);
+  const filteredStations = () => filterRadioStations(radioStations(), query());
+
+  const feedback = () => (
+    <div class="radio-feedback-slot" aria-live="polite">
+      <Show when={message()}>
+        {(result) => (
+          <div
+            class={
+              result().kind === 'success'
+                ? 'radio-feedback-message is-success'
+                : 'radio-feedback-message is-error'
+            }
+            role="status"
+          >
+            {result().text}
+          </div>
+        )}
+      </Show>
+    </div>
+  );
 
   onMount(() => void refreshRadioStations());
 
@@ -77,8 +100,8 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
               Популярні радіостанції
             </h2>
             <p class="mt-2 max-w-2xl text-xs leading-5 text-slate-500">
-              Прямі потоки запускаються через локальний MPD-плеєр. Метадані ефіру, якщо їх передає
-              станція, автоматично з’являються у блоці «Зараз відтворюється».
+              Знайдіть станцію за назвою або жанром і натисніть «Слухати». Назва передачі чи
+              композиції з’явиться у розділі «Плеєр», якщо станція передає ці дані.
             </p>
           </div>
           <Show when={currentStreamUrl()}>
@@ -88,8 +111,37 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
           </Show>
         </div>
 
-        <ul class="radio-station-grid mt-6">
-          <For each={radioStations()}>
+        <div class="radio-search mt-5">
+          <label for="radio-search">Пошук станцій</label>
+          <div class="radio-search-row">
+            <input
+              id="radio-search"
+              type="search"
+              value={query()}
+              onInput={(event) => setQuery(event.currentTarget.value)}
+              placeholder="Назва або жанр"
+              aria-controls="radio-stations"
+            />
+            <Show when={query()}>
+              <button type="button" class="ux-button" onClick={() => setQuery('')}>
+                Очистити пошук
+              </button>
+            </Show>
+          </div>
+          <p class="ux-hint" role="status">
+            Станцій: {filteredStations().length} із {radioStations().length}
+          </p>
+        </div>
+        <Show when={messageTarget() === 'catalog'}>{feedback()}</Show>
+
+        <Show when={filteredStations().length === 0}>
+          <div class="radio-empty-state">
+            <p>Станцій за цим запитом не знайдено. Спробуйте іншу назву або очистіть пошук.</p>
+          </div>
+        </Show>
+
+        <ul id="radio-stations" class="radio-station-grid mt-6">
+          <For each={filteredStations()}>
             {(station) => {
               const active = () => isSameRadioStream(currentStreamUrl(), station.url);
               const pending = () => pendingUrl() === station.url;
@@ -115,26 +167,37 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
                         type="button"
                         class={active() ? 'radio-station-control is-stop' : 'radio-station-control'}
                         aria-pressed={active()}
+                        aria-busy={pending()}
                         aria-label={
                           active() ? `Зупинити ${station.name}` : `Слухати ${station.name}`
                         }
                         disabled={props.blocked || props.disabled || pendingUrl() !== null}
-                        onClick={() => void toggleStation(station.url, station.name)}
+                        onClick={() => {
+                          setMessageTarget('catalog');
+                          void toggleStation(station.url, station.name);
+                        }}
                       >
                         <Show
-                          when={active()}
+                          when={pending()}
                           fallback={
-                            <svg
-                              viewBox="0 0 24 24"
-                              class="size-5"
-                              fill="currentColor"
-                              aria-hidden="true"
+                            <Show
+                              when={active()}
+                              fallback={
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  class="size-5"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
+                                </svg>
+                              }
                             >
-                              <path d="M8 5.6v12.8a1 1 0 0 0 1.53.85l9.5-6.4a1 1 0 0 0 0-1.7l-9.5-6.4A1 1 0 0 0 8 5.6Z" />
-                            </svg>
+                              <span class="radio-stop-icon" aria-hidden="true" />
+                            </Show>
                           }
                         >
-                          <span class="radio-stop-icon" aria-hidden="true" />
+                          <span class="ux-spinner" aria-hidden="true" />
                         </Show>
                         <span class="sr-only">
                           {pending() ? 'Підключення' : active() ? 'Зупинити' : 'Слухати'}
@@ -176,6 +239,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
           class="mt-5 flex flex-col gap-3 lg:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
+            setMessageTarget('custom');
             void play(customUrl(), 'власний потік');
           }}
         >
@@ -199,14 +263,15 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
               customUrl().trim().length === 0
             }
             class="radio-play-button rounded-2xl border px-5 py-3 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+            aria-busy={pendingUrl() === customUrl().trim()}
           >
             {pendingUrl() === customUrl().trim() ? 'Підключення…' : 'Відтворити'}
           </button>
         </form>
 
         <p class="mt-3 text-xs leading-5 text-slate-500">
-          Підтримуються прямі HTTP/HTTPS MP3, AAC, M3U/M3U8 та інші формати, які може відкрити
-          MPD/FFmpeg у прошивці.
+          Вставте пряму HTTP/HTTPS адресу аудіопотоку або плейлиста MP3, AAC чи M3U/M3U8. Посилання
+          на сторінку радіостанції не підійде.
         </p>
 
         <Show when={props.disabled && !props.blocked}>
@@ -215,22 +280,7 @@ export const RadioPanel: Component<RadioPanelProps> = (props) => {
           </p>
         </Show>
 
-        <div class="radio-feedback-slot" aria-live="polite">
-          <Show when={message()}>
-            {(result) => (
-              <div
-                class={
-                  result().kind === 'success'
-                    ? 'radio-feedback-message rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3.5 py-2.5 text-xs text-emerald-200/75'
-                    : 'radio-feedback-message rounded-xl border border-red-400/15 bg-red-400/[0.05] px-3.5 py-2.5 text-xs text-red-200/75'
-                }
-                role="status"
-              >
-                {result().text}
-              </div>
-            )}
-          </Show>
-        </div>
+        <Show when={messageTarget() === 'custom'}>{feedback()}</Show>
       </section>
     </div>
   );
